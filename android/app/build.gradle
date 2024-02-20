@@ -111,6 +111,8 @@ dependencies {
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
+        implementation("com.facebook.react:react-native:0.58.3")
+
     } else {
         implementation jscFlavor
     }
