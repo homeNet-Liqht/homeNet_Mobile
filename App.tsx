@@ -6,10 +6,10 @@ import {NavigationContainer} from "@react-navigation/native";
 import {StatusBar} from "react-native";
 
 function App(): React.JSX.Element {
-    const [isShowSplash, setIsShowSplash] = useState(false)
+    const [isShowSplash, setIsShowSplash] = useState(true)
     useEffect(() =>{
         const timeout = setTimeout(() =>{
-            setIsShowSplash(true)
+            setIsShowSplash(false)
         },1500)
         return () => clearTimeout(timeout)
     },[])

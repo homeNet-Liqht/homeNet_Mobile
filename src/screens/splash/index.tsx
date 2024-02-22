@@ -1,6 +1,8 @@
 import React from 'react';
-import {Animated, ImageBackground, Text} from "react-native";
+import {ActivityIndicator, Animated, ImageBackground, Text} from "react-native";
 import View = Animated.View;
+import {SpaceComponent} from "../../components/SpaceComponent.tsx";
+import {appColors} from "../../constants/appColors.ts";
 
 
 function SplashScreen() {
@@ -24,9 +26,11 @@ function SplashScreen() {
                         fontWeight: "bold",
                     }}
                 >
-                    home<Text style={{color:"yellow"}}>Net</Text>
+                    home<Text style={{color:"#ECB22F"}}>Net</Text>
                 </Text>
             </View>
+            <SpaceComponent height={20}/>
+            <ActivityIndicator color={"#ECB22F"} size={22} />
         </ImageBackground>
     );
 }
