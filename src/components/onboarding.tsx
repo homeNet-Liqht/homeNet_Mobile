@@ -3,6 +3,8 @@ import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from 'react
 import Onboarding from 'react-native-onboarding-swiper';
 import LinearGradient from "react-native-linear-gradient";
 import {useNavigation} from "@react-navigation/native";
+import {setItem} from "../utils/asyncStorage.tsx";
+import WelComeScreen from "../screens/welcome/welComeScreen.tsx";
 
 
 const {width, height} = Dimensions.get("window")
@@ -10,6 +12,8 @@ const OnboardingScreen = () => {
     const navigation = useNavigation();
     const handleDone = () => {
         navigation.navigate();
+        setItem("onboarded","1")
+        console.log("a")
     }
 
     const doneButton = ({...props}) =>{

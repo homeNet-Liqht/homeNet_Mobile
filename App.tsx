@@ -1,13 +1,31 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-import AppNavigation from './src/navigation/appNavigation.tsx';
-import LinearGradient from 'react-native-linear-gradient';
+import {SplashScreen} from "./src/screens";
+import AuthNavigator from "./src/navigators/AuthNavigator.tsx";
+import {NavigationContainer} from "@react-navigation/native";
+import {StatusBar} from "react-native";
 
 function App(): React.JSX.Element {
+    const [isShowSplash, setIsShowSplash] = useState(false)
+    useEffect(() =>{
+        const timeout = setTimeout(() =>{
+            setIsShowSplash(true)
+        },1500)
+        return () => clearTimeout(timeout)
+    },[])
     return (
+       <>
+           <StatusBar hidden />
 
-        <AppNavigation/>
+           {
+               isShowSplash ?<SplashScreen/> :
+                   <NavigationContainer>
+                       <AuthNavigator/>
+                   </NavigationContainer>
 
+           }
+
+       </>
     )
 }
 
