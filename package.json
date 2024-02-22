@@ -10,6 +10,10 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-brands-svg-icons": "^6.5.1",
+    "@fortawesome/free-regular-svg-icons": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@react-native-async-storage/async-storage": "^1.22.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-firebase/app": "^18.8.0",
@@ -25,7 +29,9 @@
     "react-native-linear-gradient": "^2.8.3",
     "react-native-onboarding-swiper": "^1.2.0",
     "react-native-reanimated": "^3.7.1",
-    "react-native-screens": "^3.29.0"
+    "react-native-screens": "^3.29.0",
+    "react-native-swiper": "^1.6.0",
+    "react-native-vector-icons": "^10.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -38,6 +44,7 @@
     "@react-navigation/native": "^6.1.10",
     "@types/react": "^18.2.6",
     "@types/react-native-onboarding-swiper": "^1.1.9",
+    "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",
     "eslint": "^8.19.0",
