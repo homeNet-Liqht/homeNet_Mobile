@@ -4,7 +4,7 @@ import {globalStyles} from "../screens/styles/globalStyles.ts";
 import Swiper from 'react-native-swiper';
 import {appInfo} from "../constants/appInfo.ts";
 import {appColors} from "../constants/appColors.ts";
-import {useNavigation} from "@react-navigation/native";
+import TextComponent from "./TextComponent.tsx";
 
 
 const OnboardingScreen = ({navigation}: any) => {
@@ -33,7 +33,7 @@ const OnboardingScreen = ({navigation}: any) => {
                 alignItems: 'center'
             }]}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("GetStartedScreen")}><Text style={[styles.text, {color: appColors.white}]}>Skip</Text></TouchableOpacity>
+                    onPress={() => navigation.navigate("GetStartedScreen")}><TextComponent text={"Skip"} size={18} color={'white'} /></TouchableOpacity>
                 <TouchableOpacity style={{
                     borderRadius: 60,
                     backgroundColor: appColors.white,
@@ -43,7 +43,7 @@ const OnboardingScreen = ({navigation}: any) => {
                     justifyContent: "center",
                     alignItems: "center"
                 }}
-                onPress={() => index < 2 ? setIndex(index+1) : navigation.navigate("GetStartedScreen")} ><Text style={[styles.text]}>Next</Text></TouchableOpacity>
+                onPress={() => index < 2 ? setIndex(index+1) : navigation.navigate("GetStartedScreen")} ><TextComponent text={"Next"} size={18}/></TouchableOpacity>
 
             </View>
         </View>
@@ -57,9 +57,6 @@ const styles = StyleSheet.create({
         height: appInfo.size.HEIGHT,
         resizeMode: "cover"
     },
-    text: {
-        fontSize: 18,
-    }
 
 });
 
