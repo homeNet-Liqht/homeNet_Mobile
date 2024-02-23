@@ -20,7 +20,7 @@ interface Props {
     disable?: boolean;
 }
 
-export function ButtonComponent(props: Props) {
+function ButtonComponent(props: Props) {
 
     const {
         icon,
@@ -81,4 +81,6 @@ export function ButtonComponent(props: Props) {
             />
         </TouchableOpacity>
     );
-};
+}
+
+export default ButtonComponent

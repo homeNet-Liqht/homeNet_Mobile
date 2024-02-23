@@ -6,7 +6,7 @@ interface Props  {
     height: number
 }
 
-export function SpaceComponent(props: Props) {
+function SpaceComponent(props: Props) {
 
     const {width, height} = props
     return (
@@ -15,3 +15,5 @@ export function SpaceComponent(props: Props) {
       </View>
     );
 };
+
+export default SpaceComponent

@@ -29,5 +29,9 @@ export const globalStyles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 6,
     },
+    section: {
+        paddingHorizontal: 16,
+        paddingBottom: 20,
+    },
 
 })

@@ -1,8 +1,7 @@
 import React from 'react';
 import {ActivityIndicator, Animated, ImageBackground, Text} from "react-native";
 import View = Animated.View;
-import {SpaceComponent} from "../../components/SpaceComponent.tsx";
-import {appColors} from "../../constants/appColors.ts";
+import {SpaceComponent} from "../../components";
 
 
 function SplashScreen() {
