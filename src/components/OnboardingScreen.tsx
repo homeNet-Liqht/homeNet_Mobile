@@ -5,6 +5,7 @@ import Swiper from 'react-native-swiper';
 import {appInfo} from "../constants/appInfo.ts";
 import {appColors} from "../constants/appColors.ts";
 import TextComponent from "./TextComponent.tsx";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 
 const OnboardingScreen = ({navigation}: any) => {
@@ -43,7 +44,7 @@ const OnboardingScreen = ({navigation}: any) => {
                     justifyContent: "center",
                     alignItems: "center"
                 }}
-                onPress={() => index < 2 ? setIndex(index+1) : navigation.navigate("GetStartedScreen")} ><TextComponent text={"Next"} size={18}/></TouchableOpacity>
+                onPress={() => index < 2 ? setIndex(index+1) : navigation.navigate("GetStartedScreen")} ><FontAwesome name={'angle-right'} size={22} color={appColors.gray}/></TouchableOpacity>
 
             </View>
         </View>
