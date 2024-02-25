@@ -18,7 +18,6 @@ function LoginScreen() {
                 <ButtonComponent text={"Phone"} styles={{width:"60%", borderRadius: 30} } textColor={appColors.text} color={appColors.white}  type={'primary'}/>
                 <RowComponent justify={"center"}>
                     <TouchableOpacity >
-
                         <BouncyCheckbox  fillColor={appColors.primary} onPress={(isChecked: boolean) => {setIsSelect(isChecked)}} textComponent={
                             <TextComponent text={"  Agree to Terms and Conditions"}  />
                         } />
