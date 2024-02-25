@@ -5,7 +5,7 @@ import {ImageBackground} from "react-native";
 const WelComeScreen = () => {
   return (
       <ImageBackground
-          source={require("../../assets/splash.png")}
+          source={require("../../assets/imgs/splash.png")}
           resizeMode={"cover"}
           style={{flex: 1, padding: 15}}>
 

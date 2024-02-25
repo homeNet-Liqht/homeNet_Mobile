@@ -7,7 +7,7 @@ import {transform} from "@babel/core";
 const GetStartedScreen = ({navigation}:any) => {
     return (
         <View style={[globalStyles.container]}>
-            <ImageBackground source={require("../assets/Onboarding4.png")} style={[styles.ImgBg]}>
+            <ImageBackground source={require("../assets/imgs/Onboarding4.png")} style={[styles.ImgBg]}>
                 <TouchableOpacity style={[styles.btn]} onPress={() => navigation.navigate("LoginScreen")}><Text style={[styles.text]}>Get Started</Text></TouchableOpacity>
             </ImageBackground>
         </View>

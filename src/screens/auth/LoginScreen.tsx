@@ -1,17 +1,29 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 
-import {StyleSheet} from "react-native";
-import {ButtonComponent, ContainerComponent, SectionComponent} from "../../components";
-
+import {StyleSheet, Text, TouchableOpacity,} from "react-native";
+import {ButtonComponent, ContainerComponent, RowComponent, SectionComponent, TextComponent} from "../../components";
+import {appColors} from "../../constants/appColors.ts";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
+import SocialLogin from "./component/SocialLogin.tsx";
 
 function LoginScreen() {
+
+    const [isSelect,setIsSelect] = useState(false)
 
     return (
         <ContainerComponent isImageBackground>
             <SectionComponent styles={style.container}>
-                <ButtonComponent text={"Phone"} type={'primary'}/>
-                <ButtonComponent text={"Phone"} type={'primary'}/>
+                <SocialLogin />
+                <ButtonComponent text={"Phone"} styles={{width:"60%", borderRadius: 30} } textColor={appColors.text} color={appColors.white}  type={'primary'}/>
+                <RowComponent justify={"center"}>
+                    <TouchableOpacity >
+
+                        <BouncyCheckbox  fillColor={appColors.primary} onPress={(isChecked: boolean) => {setIsSelect(isChecked)}} textComponent={
+                            <TextComponent text={"  Agree to Terms and Conditions"}  />
+                        } />
+                    </TouchableOpacity>
+                </RowComponent>
             </SectionComponent>
         </ContainerComponent>
     );

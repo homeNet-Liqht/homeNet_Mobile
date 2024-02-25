@@ -1,10 +1,16 @@
+import {
+    View,
+    StyleProp,
+    ViewStyle,
+    TextStyle,
+    TouchableOpacity,
+} from 'react-native';
+import React, {ReactNode} from 'react';
+import {TextComponent} from '.';
 
-import * as React from 'react';
-import {ReactNode} from "react";
-import {StyleProp, TextStyle, TouchableOpacity, View, ViewStyle} from "react-native";
+import {appColors} from '../constants/appColors';
 import {globalStyles} from "../screens/styles/globalStyles.ts";
-import {appColors} from "../constants/appColors.ts";
-import TextComponent from "./TextComponent.tsx";
+
 
 interface Props {
     icon?: ReactNode;
@@ -20,14 +26,12 @@ interface Props {
     disable?: boolean;
 }
 
-function ButtonComponent(props: Props) {
-
+const ButtonComponent = (props: Props) => {
     const {
         icon,
         text,
         textColor,
         textStyles,
-        textFont,
         color,
         styles,
         onPress,
@@ -68,6 +72,7 @@ function ButtonComponent(props: Props) {
                         },
                     ]}
                     flex={icon && iconFlex === 'right' ? 1 : 0}
+
                 />
                 {icon && iconFlex === 'right' && icon}
             </TouchableOpacity>
@@ -81,6 +86,6 @@ function ButtonComponent(props: Props) {
             />
         </TouchableOpacity>
     );
-}
+};
 
-export default ButtonComponent
+export default ButtonComponent;
