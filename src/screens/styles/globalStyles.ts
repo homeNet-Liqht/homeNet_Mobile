@@ -33,5 +33,10 @@ export const globalStyles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingBottom: 20,
     },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
 
 })
