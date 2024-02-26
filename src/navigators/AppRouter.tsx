@@ -19,7 +19,10 @@ export const AppRouter = () => {
     }
 
     return (
-        <View>{auth ? <MainNavigator/> : <AuthNavigator/>}</View>
+
+        <>
+            {1>2 ? <MainNavigator/> : <AuthNavigator/>}
+        </>
     );
 };
 

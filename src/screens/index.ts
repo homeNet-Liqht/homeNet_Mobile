@@ -1,6 +1,6 @@
 import HomeScreen from "./home/HomeScreen.tsx";
-import LoginScreen from "./auth/LoginScreen.tsx";
+import WelcomeScreen from "./auth/WelcomeScreen.tsx";
 import SplashScreen from "./splash";
 export {
-    HomeScreen, LoginScreen, SplashScreen
+    HomeScreen, WelcomeScreen, SplashScreen
 }

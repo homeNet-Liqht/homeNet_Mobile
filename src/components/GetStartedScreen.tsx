@@ -8,7 +8,7 @@ const GetStartedScreen = ({navigation}:any) => {
     return (
         <View style={[globalStyles.container]}>
             <ImageBackground source={require("../assets/imgs/Onboarding4.png")} style={[styles.ImgBg]}>
-                <TouchableOpacity style={[styles.btn]} onPress={() => navigation.navigate("LoginScreen")}><Text style={[styles.text]}>Get Started</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.btn]} onPress={() => navigation.navigate("WelcomeScreen")}><Text style={[styles.text]}>Get Started</Text></TouchableOpacity>
             </ImageBackground>
         </View>
     )
