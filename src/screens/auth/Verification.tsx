@@ -85,7 +85,7 @@ const Verification = ({navigation, route}: any) => {
     };
 
     return (
-        <ContainerComponent back isImageBackground isScroll>
+        <ContainerComponent backgroundNumber={2} back isImageBackground isScroll>
             <SectionComponent>
                 <TextComponent text="Verification" title />
                 <SpaceComponent height={12} />

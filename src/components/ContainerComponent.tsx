@@ -16,6 +16,7 @@ import {globalStyles} from "../screens/styles/globalStyles.ts";
 
 
 interface Props {
+    backgroundNumber?: 1 | 2 ,
     isImageBackground?: boolean;
     isScroll?: boolean;
     title?: string;
@@ -24,7 +25,13 @@ interface Props {
 }
 
 const ContainerComponent = (props: Props) => {
-    const {children, isScroll, isImageBackground, title, back} = props;
+    const {
+        children,
+        isScroll,
+        isImageBackground,
+        title,
+        back,
+        backgroundNumber} = props;
 
     const navigation: any = useNavigation();
 
@@ -73,7 +80,7 @@ const ContainerComponent = (props: Props) => {
 
     return isImageBackground ? (
         <ImageBackground
-            source={require('../assets/imgs/splash.png')}
+            source={backgroundNumber == 2 ? require('../assets/imgs/blank-img.png'): require('../assets/imgs/splash.png')}
             style={{flex: 1}}
             imageStyle={{flex: 1}}>
             <SafeAreaView style={{flex: 1}}>{headerComponent()}</SafeAreaView>
