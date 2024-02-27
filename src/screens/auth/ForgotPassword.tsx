@@ -9,8 +9,8 @@ import {
     SectionComponent,
     SpaceComponent,
     TextComponent
-} from "../components";
-import {appColors} from "../constants/appColors.ts";
+} from "../../components";
+import {appColors} from "../../constants/appColors.ts";
 import {useState} from "react";
 import {Sms} from "iconsax-react-native";
 

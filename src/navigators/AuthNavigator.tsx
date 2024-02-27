@@ -6,7 +6,7 @@ import GetStartedScreen from "../components/GetStartedScreen.tsx";
 import Verification from "../screens/auth/Verification.tsx";
 import LoginScreen from "../screens/auth/LoginScreen.tsx";
 import SignUpScreen from "../screens/auth/SignUpScreen.tsx";
-import ForgotPassword from "../screens/ForgotPassword.tsx";
+import ForgotPassword from "../screens/auth/ForgotPassword.tsx";
 
 export default function AuthNavigator() {
     const Stack = createNativeStackNavigator();

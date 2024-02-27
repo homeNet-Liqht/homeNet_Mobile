@@ -14,6 +14,7 @@ import {appColors} from '../../constants/appColors';
 import {LoadingModal} from '../../modals';
 import {Validate} from '../../utils/validate';
 import SocialLogin from "./component/SocialLogin.tsx";
+import {authApi} from "../../apis";
 
 interface ErrorMessages {
     email: string;
@@ -29,6 +30,7 @@ const initValue = {
 };
 
 const SignUpScreen = ({navigation}: any) => {
+
     const [values, setValues] = useState(initValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<any>();
@@ -99,13 +101,20 @@ const SignUpScreen = ({navigation}: any) => {
     };
 
     const handleRegister = async () => {
-        const api = '/verification';
-        setIsLoading(true);
 
+        // setIsLoading(true);
+        const data = await authApi.signUp({
+            email: values.email,
+            password: values.password,
+            name: values.username,
 
-        navigation.navigate('Verification', {
-                code: 0,email: '', password: '',username:''
-        });
+        })
+
+        console.log("data",data)
+
+        // navigation.navigate('Verification', {
+        //         code: 0,email: '', password: '',username:''
+        // });
 
     };
 
