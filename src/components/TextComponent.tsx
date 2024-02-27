@@ -1,5 +1,6 @@
-import {StyleProp, Text, TextStyle} from "react-native";
+import {Platform, StyleProp, Text, TextStyle} from "react-native";
 import {appColors} from "../constants/appColors.ts";
+import {globalStyles} from "../screens/styles/globalStyles.ts";
 
 interface Props {
     text: string,
@@ -9,18 +10,39 @@ interface Props {
     font?: string,
     title?: boolean,
     styles?: StyleProp<TextStyle>
+    numberOfLine?: number;
+
 }
 
 const TextComponent = (props: Props) => {
-    const {text,title,color, size, flex, font, styles} = props
+    const {
+        text,
+        title,
+        color,
+        size,
+        flex,
+        font,
+        styles,
+        numberOfLine,
 
-    return(
-        <Text style={[{
-            color: color ?? appColors.text,
-            flex: flex ?? 0,
-            fontSize: size ?? title ? 24: 14,
-        }, styles ]}>{text}</Text>
-    )
+    } = props
+    const fontSizeDefault = Platform.OS === 'ios' ? 16 : 14;
+
+    return (
+        <Text
+            numberOfLines={numberOfLine}
+            style={[
+                globalStyles.text,
+                {
+                    color: color ?? appColors.text,
+                    flex: flex ?? 0,
+                    fontSize: size ? size : title ? 24 : fontSizeDefault,
+                },
+                styles,
+            ]}>
+            {text}
+        </Text>
+    );
 }
 
 

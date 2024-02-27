@@ -7,7 +7,7 @@ import {SpaceComponent} from "../../components";
 function SplashScreen() {
     return (
         <ImageBackground
-            source={require("../../assets/splash-img.png")}
+            source={require("../../assets/imgs/splash-img.png")}
             resizeMode={"cover"}
             style={{
                 flex: 1,

@@ -15,11 +15,11 @@ const OnboardingScreen = ({navigation}: any) => {
         <View style={[globalStyles.container]}>
             <Swiper style={{}} loop={false} activeDotStyle={{width: 30,}} activeDotColor={appColors.white}
                     onIndexChanged={num => setIndex(num)} index={index}>
-                <Image source={require("../assets/oboarding1.png")}
+                <Image source={require("../assets/imgs/oboarding1.png")}
                        style={styles.onboarding}/>
-                <Image source={require("../assets/onboarding2.png")}
+                <Image source={require("../assets/imgs/onboarding2.png")}
                        style={styles.onboarding}/>
-                <Image source={require("../assets/onboarding3.png")}
+                <Image source={require("../assets/imgs/onboarding3.png")}
                        style={styles.onboarding}/>
             </Swiper>
             <View style={[{

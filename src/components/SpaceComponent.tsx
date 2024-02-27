@@ -3,7 +3,7 @@ import {View} from "react-native";
 
 interface Props  {
     width?: number,
-    height: number
+    height?: number
 }
 
 function SpaceComponent(props: Props) {

@@ -18,6 +18,7 @@ export const globalStyles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 16,
         minHeight: 56,
+        flexDirection: 'row',
     },
     shadow: {
         shadowColor: 'rgba(0,0,0,0.5)',
@@ -32,6 +33,19 @@ export const globalStyles = StyleSheet.create({
     section: {
         paddingHorizontal: 16,
         paddingBottom: 20,
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    iconContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#3D56F0',
+        width: 30,
+        height: 30,
+        borderRadius: 100,
     },
 
 })
