@@ -15,6 +15,7 @@ import {LoadingModal} from '../../modals';
 import {Validate} from '../../utils/validate';
 import SocialLogin from "./component/SocialLogin.tsx";
 import {authApi} from "../../apis";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 
 interface ErrorMessages {
     email: string;
@@ -35,6 +36,8 @@ const SignUpScreen = ({navigation}: any) => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<any>();
     const [isDisable, setIsDisable] = useState(true);
+
+    const {setItem} = useAsyncStorage('EmailVerification')
 
     const dispatch = useDispatch();
 
@@ -63,7 +66,7 @@ const SignUpScreen = ({navigation}: any) => {
         setValues(data);
     };
 
-    const formValidator = (key: string) => {
+    const formValidator = (key: string,val?: string) => {
         const data = {...errorMessage};
         let message = '';
 
@@ -91,8 +94,11 @@ const SignUpScreen = ({navigation}: any) => {
                 } else {
                     message = '';
                 }
-
                 break;
+            case "error":
+                if (val){
+                    message = val
+                }
         }
 
         data[`${key}`] = message;
@@ -102,20 +108,21 @@ const SignUpScreen = ({navigation}: any) => {
 
     const handleRegister = async () => {
 
-        // setIsLoading(true);
-        const data = await authApi.signUp({
-            email: values.email,
-            password: values.password,
-            name: values.username,
+        setIsLoading(true);
+        try {
+            const data = await authApi.signUp({
+                email: values.email,
+                password: values.password,
+                name: values.username,
 
-        })
+            })
+            await setItem(values.email)
+            navigation.navigate('Verification');
+        }catch (e: any){
+            setIsLoading(false);
+            formValidator("error",e.data.data)
 
-        console.log("data",data)
-
-        // navigation.navigate('Verification', {
-        //         code: 0,email: '', password: '',username:''
-        // });
-
+        }
     };
 
     return (
@@ -160,7 +167,7 @@ const SignUpScreen = ({navigation}: any) => {
                     />
                 </SectionComponent>
 
-                {errorMessage && (
+                {errorMessage  && (
                     <SectionComponent>
                         {Object.keys(errorMessage).map(
                             (error, index) =>

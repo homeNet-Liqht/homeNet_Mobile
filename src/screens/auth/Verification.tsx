@@ -10,15 +10,18 @@ import {
 } from '../../components';
 import {ArrowRight} from 'iconsax-react-native';
 import {appColors} from '../../constants/appColors';
-
 import {LoadingModal} from '../../modals';
 import {useDispatch} from 'react-redux';
 import {globalStyles} from "../styles/globalStyles.ts";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {authApi} from "../../apis";
 
 const Verification = ({navigation, route}: any) => {
-    const {code, email, password, username} = route.params;
+    const {getItem} = useAsyncStorage('EmailVerification')
 
-    const [currentCode, setCurrentCode] = useState<string>(code);
+    const [email, setEmail] = useState('')
+
+    const [currentCode, setCurrentCode] = useState<string>();
     const [codeValues, setCodeValues] = useState<string[]>([]);
     const [newCode, setNewCode] = useState('');
     const [limit, setLimit] = useState(120);
@@ -32,8 +35,14 @@ const Verification = ({navigation, route}: any) => {
 
     const dispatch = useDispatch();
 
+    const SendEmailVerification = async () => {
+        const email = await getItem()
+        email && setEmail(email)
+
+    }
     useEffect(() => {
         ref1.current.focus();
+        SendEmailVerification()
     }, []);
 
     useEffect(() => {
@@ -56,7 +65,6 @@ const Verification = ({navigation, route}: any) => {
     const handleChangeCode = (val: string, index: number) => {
         const data = [...codeValues];
         data[index] = val;
-
         setCodeValues(data);
     };
 
@@ -71,16 +79,20 @@ const Verification = ({navigation, route}: any) => {
     };
 
     const handleVerification = async () => {
-        if (limit > 0) {
-            if (parseInt(newCode) !== parseInt(currentCode)) {
-                setErrorMessage('Invalid code!!!');
-            } else {
-                setErrorMessage('');
+        try {
+            setIsLoading(true);
 
-                //call api
-            }
-        } else {
-            setErrorMessage('Time out verification code, please resend new code!!!');
+            const res = await authApi.SendOtpConfirmation({
+                email: "65dd9e4f073bcb6297008b99",
+                otp: newCode
+            })
+            setIsLoading(false);
+            console.log(res)
+            navigation.navigate("LoginScreen")
+        }catch(e: any){
+            setIsLoading(false);
+
+            // console.log(e.data.data)
         }
     };
 

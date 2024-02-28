@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     text: {
         textAlign: 'center',
         color: "white",
-        fontWeight: "700", fontSize: 20
+        fontWeight: "700",
+        fontSize: 20
     }
 })
 
