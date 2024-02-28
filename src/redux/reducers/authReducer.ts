@@ -14,12 +14,10 @@ const initialState: initialState = {
 
 const authSlice =  createSlice({
     name: 'auth',
-    initialState: {
-        authData: initialState
-    },
+    initialState,
     reducers: {
         addAuth : (state, action) => {
-            state.authData = action.payload
+            state.accessToken = action.payload
         }
     }
 })

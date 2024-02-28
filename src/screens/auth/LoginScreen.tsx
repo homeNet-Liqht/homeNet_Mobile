@@ -9,20 +9,31 @@ import {
 } from "../../components";
 import {appColors} from "../../constants/appColors.ts";
 import {useState} from "react";
-import {Switch, Text} from "react-native";
-import {Sms} from "iconsax-react-native";
+import {Switch,} from "react-native";
+import {Lock, Sms} from "iconsax-react-native";
 import SocialLogin from "./component/SocialLogin.tsx";
+import {LoadingModal} from "../../modals";
+import {authApi} from "../../apis";
+import CookieManager from '@react-native-cookies/cookies';
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {useDispatch} from "react-redux";
+import {addAuth} from "../../redux/reducers/authReducer.ts";
+
 const initValue = {
-    username: '',
     email: '',
     password: '',
-    confirmPassword: '',
 };
 
+
+
 export const LoginScreen = ({navigation}: any) => {
+
+    const {setItem} =  useAsyncStorage('accessToken')
+    const [isLoading,setIsLoading] = useState(false)
     const [isRemember, setIsRemember] = useState(true);
     const [values, setValues] = useState(initValue);
 
+    const dispatch = useDispatch()
     const handleChangeValue = (key: string, value: string) => {
         const data: any = {...values};
 
@@ -31,23 +42,42 @@ export const LoginScreen = ({navigation}: any) => {
         setValues(data);
     };
 
+    const handleLogin = async () =>{
+        try {
+
+            const res= await  authApi.login(values.email, values.password)
+            console.warn("login success")
+            await CookieManager.get(`${process.env.REACT_APP_API_URL}/auth/signin`)
+                .then((cookies) => {
+                    dispatch(addAuth(cookies.accesstoken.value))
+                    setItem(cookies.accesstoken.value)
+                });
+
+        }catch (e:any) {
+            console.warn(`${e.data}`)
+
+        }
+    }
+
+
     return (
         <ContainerComponent back>
             <SectionComponent>
                 <TextComponent text={"Login"} styles={{fontWeight: "bold"}} size={24} color={appColors.primary}/>
                 <SpaceComponent height={21}/>
                 <InputComponent
+                    type={"email-address"}
                     affix={<Sms size={22} color={appColors.gray}/>}
                     placeHolder={"abc@gmail.com"}
                     value={values.email}
                     onChange={ val => handleChangeValue("email", val )}
                     isPassword={false}/>
                 <InputComponent
-                    affix={<Sms size={22} color={appColors.gray}/>}
+                    affix={<Lock size={22} color={appColors.gray} />}
                     placeHolder={"Password"}
                     value={values.password}
                     onChange={ val => handleChangeValue("password", val )}
-                    isPassword={false}/>
+                    isPassword={true}/>
                 <RowComponent justify="space-between">
                     <RowComponent onPress={() => setIsRemember(!isRemember)}>
                         <Switch
@@ -68,7 +98,7 @@ export const LoginScreen = ({navigation}: any) => {
             </SectionComponent>
             <SpaceComponent height={16} />
             <SectionComponent>
-                <ButtonComponent text={"Login"} type={"primary"}/>
+                <ButtonComponent text={"Login"} type={"primary"} onPress={() => handleLogin()}/>
             </SectionComponent>
             <SectionComponent>
                 <TextComponent text={"OR"} size={25} styles={{fontWeight: "bold", textAlign:"center"}} color={appColors.gray}/>
@@ -84,6 +114,8 @@ export const LoginScreen = ({navigation}: any) => {
                     />
                 </RowComponent>
             </SectionComponent>
+            <LoadingModal visible={isLoading} />
+
         </ContainerComponent>
     );
 };

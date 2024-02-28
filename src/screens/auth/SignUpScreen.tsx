@@ -35,28 +35,11 @@ const SignUpScreen = ({navigation}: any) => {
     const [values, setValues] = useState(initValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<any>();
-    const [isDisable, setIsDisable] = useState(true);
 
     const {setItem} = useAsyncStorage('EmailVerification')
 
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (
-            !errorMessage ||
-            (errorMessage &&
-                (errorMessage.email ||
-                    errorMessage.password ||
-                    errorMessage.confirmPassword)) ||
-            !values.email ||
-            !values.password ||
-            !values.confirmPassword
-        ) {
-            setIsDisable(true);
-        } else {
-            setIsDisable(false);
-        }
-    }, [errorMessage, values]);
+;
 
     const handleChangeValue = (key: string, value: string) => {
         const data: any = {...values};
@@ -129,7 +112,7 @@ const SignUpScreen = ({navigation}: any) => {
         <>
             <ContainerComponent backgroundNumber={2} isImageBackground isScroll back>
                 <SectionComponent>
-                    <TextComponent size={24} title text="Sign up" />
+                    <TextComponent size={24} title text="Sign up" color={appColors.primary} styles={{fontWeight: "bold"} } />
                     <SpaceComponent height={21} />
                     <InputComponent
                         value={values.username}
@@ -186,7 +169,6 @@ const SignUpScreen = ({navigation}: any) => {
                     <ButtonComponent
                         onPress={handleRegister}
                         text="SIGN UP"
-                        disable={isDisable}
                         type="primary"
                     />
                 </SectionComponent>

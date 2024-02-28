@@ -5,7 +5,7 @@ export default function MainNavigator() {
     const Stack = createNativeStackNavigator();
     return(
         <Stack.Navigator screenOptions={{headerShown: false}}>
-            <Stack.Screen name={"Main"} component={TabNavigator}/>
+            <Stack.Screen name={"MainScreen"} component={TabNavigator}/>
         </Stack.Navigator>
     )
 }

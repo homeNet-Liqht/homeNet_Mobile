@@ -83,12 +83,13 @@ const Verification = ({navigation, route}: any) => {
             setIsLoading(true);
 
             const res = await authApi.SendOtpConfirmation({
-                email: "65dd9e4f073bcb6297008b99",
+                email: email,
                 otp: newCode
             })
             setIsLoading(false);
-            console.log(res)
+
             navigation.navigate("LoginScreen")
+
         }catch(e: any){
             setIsLoading(false);
 
@@ -192,7 +193,7 @@ const Verification = ({navigation, route}: any) => {
             <SectionComponent>
                 {limit > 0 ? (
                     <RowComponent justify="center">
-                        <TextComponent text="Re-send code in  " flex={0} />
+                        <TextComponent text="Re-send code in " flex={0} />
                         <TextComponent
                             text={`${(limit - (limit % 60)) / 60}:${
                                 limit - (limit - (limit % 60))
