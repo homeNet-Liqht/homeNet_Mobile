@@ -1,5 +1,8 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+
+import ResetPassword from "../screens/auth/ResetPassword.tsx";
+
 import {HomeScreen, WelcomeScreen} from '../screens';
 import onboardingScreen from '../components/OnboardingScreen.tsx';
 import GetStartedScreen from '../components/GetStartedScreen.tsx';
@@ -10,6 +13,7 @@ import ForgotPassword from '../screens/auth/ForgotPassword.tsx';
 import ProfileScreen from '../screens/profile/ProfileScreen.tsx';
 import JoinFamilyScreen from '../screens/profile/JoinFamilyScreen.tsx';
 import CreateFamilyScreen from '../screens/profile/CreateFamilyScreen.tsx';
+
 
 export default function AuthNavigator() {
   const Stack = createNativeStackNavigator();
@@ -22,8 +26,10 @@ export default function AuthNavigator() {
       <Stack.Screen name={'LoginScreen'} component={LoginScreen} />
       <Stack.Screen name={'SignUpScreen'} component={SignUpScreen} />
 
-      <Stack.Screen name={'ForgotPassword'} component={ForgotPassword} />
-      <Stack.Screen name={'Verification'} component={Verification} />
+
+            <Stack.Screen name={"ForgotPassword"} component={ForgotPassword}/>
+            <Stack.Screen name={"ResetPassword"} component={ResetPassword}/>
+            <Stack.Screen name={"Verification"} component={Verification}/>
 
       <Stack.Screen name={'FamilyCreate'} component={CreateFamilyScreen} />
       <Stack.Screen name={'JoinFamily'} component={JoinFamilyScreen} />
@@ -33,5 +39,4 @@ export default function AuthNavigator() {
 
 
     </Stack.Navigator>
-  );
 }

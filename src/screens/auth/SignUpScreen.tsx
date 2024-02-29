@@ -15,6 +15,7 @@ import {LoadingModal} from '../../modals';
 import {Validate} from '../../utils/validate';
 import SocialLogin from "./component/SocialLogin.tsx";
 import {authApi} from "../../apis";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 
 interface ErrorMessages {
     email: string;
@@ -34,26 +35,11 @@ const SignUpScreen = ({navigation}: any) => {
     const [values, setValues] = useState(initValue);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<any>();
-    const [isDisable, setIsDisable] = useState(true);
+
+    const {setItem} = useAsyncStorage('EmailVerification')
 
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        if (
-            !errorMessage ||
-            (errorMessage &&
-                (errorMessage.email ||
-                    errorMessage.password ||
-                    errorMessage.confirmPassword)) ||
-            !values.email ||
-            !values.password ||
-            !values.confirmPassword
-        ) {
-            setIsDisable(true);
-        } else {
-            setIsDisable(false);
-        }
-    }, [errorMessage, values]);
+;
 
     const handleChangeValue = (key: string, value: string) => {
         const data: any = {...values};
@@ -63,7 +49,7 @@ const SignUpScreen = ({navigation}: any) => {
         setValues(data);
     };
 
-    const formValidator = (key: string) => {
+    const formValidator = (key: string,val?: string) => {
         const data = {...errorMessage};
         let message = '';
 
@@ -91,8 +77,11 @@ const SignUpScreen = ({navigation}: any) => {
                 } else {
                     message = '';
                 }
-
                 break;
+            case "error":
+                if (val){
+                    message = val
+                }
         }
 
         data[`${key}`] = message;
@@ -102,27 +91,28 @@ const SignUpScreen = ({navigation}: any) => {
 
     const handleRegister = async () => {
 
-        // setIsLoading(true);
-        const data = await authApi.signUp({
-            email: values.email,
-            password: values.password,
-            name: values.username,
+        setIsLoading(true);
+        try {
+            const data = await authApi.signUp({
+                email: values.email,
+                password: values.password,
+                name: values.username,
 
-        })
+            })
+            await setItem(values.email)
+            navigation.navigate('Verification',{ref:"LoginScreen", email: values.email,type: "Signup"});
+        }catch (e: any){
+            setIsLoading(false);
+            formValidator("error",e.data.data)
 
-        console.log("data",data)
-
-        // navigation.navigate('Verification', {
-        //         code: 0,email: '', password: '',username:''
-        // });
-
+        }
     };
 
     return (
         <>
             <ContainerComponent backgroundNumber={2} isImageBackground isScroll back>
                 <SectionComponent>
-                    <TextComponent size={24} title text="Sign up" />
+                    <TextComponent size={24} title text="Sign up" color={appColors.primary} styles={{fontWeight: "bold"} } />
                     <SpaceComponent height={21} />
                     <InputComponent
                         value={values.username}
@@ -160,7 +150,7 @@ const SignUpScreen = ({navigation}: any) => {
                     />
                 </SectionComponent>
 
-                {errorMessage && (
+                {errorMessage  && (
                     <SectionComponent>
                         {Object.keys(errorMessage).map(
                             (error, index) =>
@@ -179,7 +169,6 @@ const SignUpScreen = ({navigation}: any) => {
                     <ButtonComponent
                         onPress={handleRegister}
                         text="SIGN UP"
-                        disable={isDisable}
                         type="primary"
                     />
                 </SectionComponent>
