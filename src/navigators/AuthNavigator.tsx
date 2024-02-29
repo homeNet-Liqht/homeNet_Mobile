@@ -7,6 +7,7 @@ import Verification from "../screens/auth/Verification.tsx";
 import LoginScreen from "../screens/auth/LoginScreen.tsx";
 import SignUpScreen from "../screens/auth/SignUpScreen.tsx";
 import ForgotPassword from "../screens/auth/ForgotPassword.tsx";
+import ResetPassword from "../screens/auth/ResetPassword.tsx";
 
 export default function AuthNavigator() {
     const Stack = createNativeStackNavigator();
@@ -21,6 +22,7 @@ export default function AuthNavigator() {
             <Stack.Screen name={"SignUpScreen"} component={SignUpScreen}/>
 
             <Stack.Screen name={"ForgotPassword"} component={ForgotPassword}/>
+            <Stack.Screen name={"ResetPassword"} component={ResetPassword}/>
             <Stack.Screen name={"Verification"} component={Verification}/>
 
         </Stack.Navigator>

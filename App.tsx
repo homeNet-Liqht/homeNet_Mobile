@@ -7,6 +7,7 @@ import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {Provider} from "react-redux";
 import store from "./src/redux/store.ts";
 import AppRouter from "./src/navigators/AppRouter.tsx";
+import {AlertNotificationRoot} from 'react-native-alert-notification';
 
 function App(): React.JSX.Element {
 
@@ -14,11 +15,13 @@ function App(): React.JSX.Element {
     return (
         <>
             <StatusBar hidden/>
-            <Provider store={store}>
-                <NavigationContainer>
-                    <AppRouter/>
-                </NavigationContainer>
-            </Provider>
+            <AlertNotificationRoot>
+                <Provider store={store}>
+                    <NavigationContainer>
+                        <AppRouter/>
+                    </NavigationContainer>
+                </Provider>
+            </AlertNotificationRoot>
         </>
     )
 }

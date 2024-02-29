@@ -100,7 +100,7 @@ const SignUpScreen = ({navigation}: any) => {
 
             })
             await setItem(values.email)
-            navigation.navigate('Verification');
+            navigation.navigate('Verification',{ref:"LoginScreen", email: values.email,type: "Signup"});
         }catch (e: any){
             setIsLoading(false);
             formValidator("error",e.data.data)

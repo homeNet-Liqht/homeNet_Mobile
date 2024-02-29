@@ -15,13 +15,12 @@ import {useDispatch} from 'react-redux';
 import {globalStyles} from "../styles/globalStyles.ts";
 import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {authApi} from "../../apis";
+import {ALERT_TYPE, Dialog} from "react-native-alert-notification";
 
-const Verification = ({navigation, route}: any) => {
-    const {getItem} = useAsyncStorage('EmailVerification')
+const Verification = ({navigation,route}: any) => {
 
     const [email, setEmail] = useState('')
 
-    const [currentCode, setCurrentCode] = useState<string>();
     const [codeValues, setCodeValues] = useState<string[]>([]);
     const [newCode, setNewCode] = useState('');
     const [limit, setLimit] = useState(120);
@@ -36,7 +35,7 @@ const Verification = ({navigation, route}: any) => {
     const dispatch = useDispatch();
 
     const SendEmailVerification = async () => {
-        const email = await getItem()
+        const email = route.params.email
         email && setEmail(email)
 
     }
@@ -84,16 +83,21 @@ const Verification = ({navigation, route}: any) => {
 
             const res = await authApi.SendOtpConfirmation({
                 email: email,
-                otp: newCode
+                otp: newCode,
+                type: `${route.params.type}`
             })
             setIsLoading(false);
 
-            navigation.navigate("LoginScreen")
+            navigation.navigate(`${route.params.ref}`,{email: email})
 
         }catch(e: any){
             setIsLoading(false);
-
-            // console.log(e.data.data)
+            Dialog.show({
+                type: ALERT_TYPE.DANGER,
+                title: "Failed",
+                textBody: `${e.data}`,
+                button: 'close',
+            })
         }
     };
 

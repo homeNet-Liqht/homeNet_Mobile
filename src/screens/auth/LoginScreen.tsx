@@ -37,29 +37,41 @@ export const LoginScreen = ({navigation}: any) => {
     const dispatch = useDispatch()
     const handleChangeValue = (key: string, value: string) => {
         const data: any = {...values};
-
         data[`${key}`] = value;
-
         setValues(data);
     };
 
     const handleLogin = async () =>{
         try {
+            setIsLoading(true)
+            await authApi.login(values.email, values.password)
 
-            const res= await  authApi.login(values.email, values.password)
             await CookieManager.get(`${process.env.REACT_APP_API_URL}/auth/signin`)
                 .then((cookies) => {
-                    Dialog.show({
-                        type: ALERT_TYPE.SUCCESS,
-                        title: 'Success',
-                        textBody: 'Congrats! this is dialog box success',
-                        button: 'close',
-                    })
+                    setIsLoading(false)
                     dispatch(addAuth({email: values.email, accessToken: cookies.accesstoken.value}))
                     setItem(isRemember ?  cookies.accesstoken.value : values.email,)
                 });
 
         }catch (e:any) {
+            setIsLoading(false)
+            if (e.status == 403){
+                Dialog.show({
+                    type: ALERT_TYPE.WARNING,
+                    title: "Login Failed",
+                    textBody: `${e.data}`,
+                    button: 'Verify now',
+                    onHide: ()=>{navigation.navigate("Verification",{ref:"LoginScreen"})}
+                })
+            }else {
+                Dialog.show({
+                    type: ALERT_TYPE.DANGER,
+                    title: "Login Failed",
+                    textBody: `${e.data}`,
+                    button: 'close',
+                })
+            }
+
 
         }
     }
