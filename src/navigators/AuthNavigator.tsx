@@ -21,10 +21,8 @@ export default function AuthNavigator() {
             <Stack.Screen name={"SignUpScreen"} component={SignUpScreen}/>
 
             <Stack.Screen name={"ForgotPassword"} component={ForgotPassword}/>
-
-
-
             <Stack.Screen name={"Verification"} component={Verification}/>
+
         </Stack.Navigator>
     )
 }

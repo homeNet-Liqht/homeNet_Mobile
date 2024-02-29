@@ -18,6 +18,7 @@ import CookieManager from '@react-native-cookies/cookies';
 import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {useDispatch} from "react-redux";
 import {addAuth} from "../../redux/reducers/authReducer.ts";
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 const initValue = {
     email: '',
@@ -46,15 +47,19 @@ export const LoginScreen = ({navigation}: any) => {
         try {
 
             const res= await  authApi.login(values.email, values.password)
-            console.warn("login success")
             await CookieManager.get(`${process.env.REACT_APP_API_URL}/auth/signin`)
                 .then((cookies) => {
-                    dispatch(addAuth(cookies.accesstoken.value))
-                    setItem(cookies.accesstoken.value)
+                    Dialog.show({
+                        type: ALERT_TYPE.SUCCESS,
+                        title: 'Success',
+                        textBody: 'Congrats! this is dialog box success',
+                        button: 'close',
+                    })
+                    dispatch(addAuth({email: values.email, accessToken: cookies.accesstoken.value}))
+                    setItem(isRemember ?  cookies.accesstoken.value : values.email,)
                 });
 
         }catch (e:any) {
-            console.warn(`${e.data}`)
 
         }
     }
