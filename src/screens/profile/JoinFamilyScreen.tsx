@@ -10,7 +10,7 @@ import {
 
 export default function JoinFamilyScreen() {
   const [invitedLink, setInvitedLink] = useState('');
-  const handleOnChange = value => {
+  const handleOnChange = (value : any) => {
     setInvitedLink(value);
   };
   return (

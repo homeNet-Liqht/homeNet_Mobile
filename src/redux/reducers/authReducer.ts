@@ -1,31 +1,31 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice} from '@reduxjs/toolkit';
 
 interface initialState {
-    email: string,
-    accessToken: string
+  email: string;
+  accessToken: string;
 }
 
 const initialState: initialState = {
-    email: '',
-    accessToken: ''
-}
+  email: '',
+  accessToken: '',
+};
 
-const authSlice =  createSlice({
-    name: 'auth',
-    initialState:{
-        authData: initialState
+const authSlice = createSlice({
+  name: 'auth',
+  initialState: {
+    authData: initialState,
+  },
+  reducers: {
+    addAuth: (state, action) => {
+      state.authData = action.payload;
     },
-    reducers: {
-        addAuth : (state, action) => {
-            state.authData = action.payload
-        },
-        removeAuth: (state, action) =>{
-            state.authData = initialState
-        }
-    }
-})
+    removeAuth: (state, action) => {
+      state.authData = initialState;
+    },
+  },
+});
 
-export const authReducer = authSlice.reducer
-export const {addAuth, removeAuth } = authSlice.actions
+export const authReducer = authSlice.reducer;
+export const {addAuth, removeAuth} = authSlice.actions;
 
-export const authSelector = (state: any) => state.authReducer.authData
+export const authSelector = (state: any) => state.authReducer.authData;

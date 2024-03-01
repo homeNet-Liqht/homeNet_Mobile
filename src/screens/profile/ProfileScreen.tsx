@@ -1,11 +1,5 @@
-import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  ImageBackground,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useState } from "react";
+import { View, ImageBackground, TouchableOpacity, Button } from "react-native";
 import {
   ContainerComponent,
   RowComponent,
@@ -14,44 +8,102 @@ import {
   TextComponent,
   ButtonComponent,
   InputComponent,
-} from '../../components';
-import {appInfo} from '../../constants/appInfo';
-import {StyleSheet} from 'react-native';
-import {appColors} from '../../constants/appColors';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import UpdatePicture from './components/UpdatePicture';
-
-export default function ProfileScreen({navigation}: any) {
+} from "../../components";
+import { appInfo } from "../../constants/appInfo";
+import { StyleSheet } from "react-native";
+import { appColors } from "../../constants/appColors";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+import UpdatePicture from "./components/UpdatePicture";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addUser,
+  editUser,
+  userSelector,
+} from "../../redux/reducers/userReducer";
+import {
+  ALERT_TYPE,
+  Dialog,
+  AlertNotificationRoot,
+  Toast,
+} from "react-native-alert-notification";
+import { userApi } from "../../apis";
+import { formatBirthday } from "../../utils/formatBirthday";
+import DatePicker from "react-native-date-picker";
+import { LoadingModal } from "../../modals";
+import capitalizedText from "../../utils/capitalizedText";
+export default function ProfileScreen({ navigation }: any) {
+  const user = useSelector(userSelector);
+  const [isOpen, setIsOpen] = useState(false);
   const [editImage, setEditImage] = useState(false);
   const [editInfo, setEditInfo] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState({
-    name: 'Thai Hoang',
-    birthday: '20/11/2003',
+    name: user.name,
+    birthday: new Date(),
+    phone: user.phone,
   });
-  const handleInfoChange = value => {
-    setInputValues(prevState => ({
-      ...prevState,
-      [fieldName]: value,
-    }));
+  const handleInfoChange = (key: string, value: string | Date) => {
+    const data: any = { ...inputValues };
+    data[`${key}`] = value;
+    setInputValues(data);
   };
+
+  const handleEditInfo = async () => {
+    try {
+      setIsLoading(true);
+      const response = await userApi.editUser(
+        user._id,
+        inputValues.name,
+        inputValues.birthday,
+        inputValues.phone
+      );
+
+      setIsLoading(false);
+      dispatch(editUser(response.data.data));
+  
+      
+    } catch (error) {
+      
+      setIsLoading(false);
+      if (error) {
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: "Edit Failed",
+          textBody: `${error.data.data}`,
+          button: "Close",
+        });
+      }
+    }
+    
+  };
+  console.log(user);
+  
   return (
-    <ContainerComponent back isScroll color={'#A3A4E5'}>
-      <View style={{backgroundColor: '#A3A4E5'}}>
+    <ContainerComponent back isScroll color={"#A3A4E5"}>
+      <View style={{ backgroundColor: "#A3A4E5" }}>
         <ImageBackground
           source={{
-            uri: 'https://th.bing.com/th/id/R.67906584562cfe06b57d99c15a470a8d?rik=qCnOAECBi%2flDvg&pid=ImgRaw&r=0',
+            uri:
+              "https://th.bing.com/th/id/R.67906584562cfe06b57d99c15a470a8d?rik=qCnOAECBi%2flDvg&pid=ImgRaw&r=0",
           }}
           style={styles.image}
           imageStyle={{
-            resizeMode: 'contain',
-          }}>
+            resizeMode: "contain",
+          }}
+        >
           {editImage && <UpdatePicture />}
           <SectionComponent>
             <SpaceComponent height={15}></SpaceComponent>
             <TouchableOpacity
               style={styles.edit}
-              onPress={() => setEditImage(!editImage)}>
-              <EvilIcons name={editImage ? 'close' : 'pencil'} size={25} color={appColors.gray} />
+              onPress={() => setEditImage(!editImage)}
+            >
+              <EvilIcons
+                name={editImage ? "close" : "pencil"}
+                size={25}
+                color={appColors.gray}
+              />
             </TouchableOpacity>
           </SectionComponent>
         </ImageBackground>
@@ -62,75 +114,121 @@ export default function ProfileScreen({navigation}: any) {
               padding: 24,
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
-              backgroundColor: '#fff',
-            }}>
-            <RowComponent styles={{marginHorizontal: 8}}>
+              backgroundColor: "#fff",
+            }}
+          >
+            <RowComponent styles={{ marginHorizontal: 8 }}>
               <View
                 style={{
                   marginRight: 12,
-                  justifyContent: 'space-around',
-                  flexDirection: 'column',
-                }}>
+                  justifyContent: "space-around",
+                  flexDirection: "column",
+                }}
+              >
                 {editInfo ? (
-                  <View>
+                  <View
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
                     <InputComponent
                       value={inputValues.name}
-                      onChange={handleInfoChange}
+                      onChange={(value) =>
+                        handleInfoChange("name", capitalizedText(value))
+                      }
                       isPassword={false}
+                      styles={{ width: "70%", height: 40, minHeight: 40 }}
                     />
-                    <InputComponent
-                      value={inputValues.birthday}
-                      onChange={handleInfoChange}
-                      isPassword={false}
-                    />
+                    <View>
+                      <ButtonComponent
+                        text="Pick a new Date"
+                        onPress={() => setIsOpen(!isOpen)}
+                        type="primary"
+                        styles={{
+                          minHeight: 50,
+                          height: 50,
+                        }}
+                      />
+                      <DatePicker
+                        mode="date"
+                        modal
+                        date={new Date(user.birthday)}
+                        onConfirm={(date) => {
+                          handleInfoChange("birthday", date);
+                          console.log(inputValues);
+
+                          setIsOpen(false);
+                        }}
+                        open={isOpen}
+                        onCancel={() => {
+                          setIsOpen(false);
+                        }}
+                      />
+                    </View>
                   </View>
                 ) : (
                   <View>
                     <TextComponent
-                      text={inputValues.name}
+                      text={user.name}
                       size={23}
-                      styles={{fontWeight: '700'}}
+                      styles={{ fontWeight: "700" }}
                     />
-                    <TextComponent text={inputValues.birthday} size={12} />
+                    <TextComponent
+                      text={formatBirthday(user.birthday)}
+                      size={12}
+                    />
                   </View>
                 )}
-
-                <TextComponent
-                  text="thaihoang@gmail.com"
-                  size={14}
-                  color="#ccc"
-                />
+                <RowComponent>
+                  <TextComponent text={user.email} size={14} color="#ccc" />
+                </RowComponent>
               </View>
-              <ButtonComponent
-                text={editInfo ? 'Save' : 'Edit'}
-                type="primary"
-                styles={{
-                  width: '70%',
-                  minHeight: 20,
-                  borderRadius: 25,
-                  padding: 10,
-                  marginLeft: 10,
-                }}
-                onPress={() => setEditInfo(!editInfo)}
-              />
+              {editInfo ? (
+                <ButtonComponent
+                  text={"Save"}
+                  type="primary"
+                  styles={{
+                    width: "70%",
+                    minHeight: 20,
+                    borderRadius: 25,
+                    padding: 10,
+                    marginLeft: 10,
+                  }}
+                  onPress={() => {
+                    handleEditInfo();
+                    setEditInfo(!editInfo);
+                  }}
+                />
+              ) : (
+                <ButtonComponent
+                  text={"Edit"}
+                  type="primary"
+                  styles={{
+                    width: "70%",
+                    minHeight: 20,
+                    borderRadius: 25,
+                    padding: 10,
+                    marginLeft: 10,
+                  }}
+                  onPress={() => setEditInfo(!editInfo)}
+                />
+              )}
             </RowComponent>
             <SpaceComponent height={24} />
             <SectionComponent>
               <ButtonComponent
                 text="Create your own family group"
                 type="primary"
-                styles={{width: '100%', borderRadius: 25}}
-                onPress={() => navigation.navigate('FamilyCreate')}
+                styles={{ width: "100%", borderRadius: 25 }}
+                onPress={() => navigation.navigate("FamilyCreate")}
               />
               <ButtonComponent
                 text="Join in a family group with a link"
                 type="primary"
-                onPress={() => navigation.navigate('JoinFamily')}
+                onPress={() => navigation.navigate("JoinFamily")}
                 textColor={appColors.primary}
                 styles={{
-                  width: '100%',
+                  width: "100%",
                   borderRadius: 25,
-                  backgroundColor: '#fff',
+                  backgroundColor: "#fff",
                   borderWidth: 1.5,
                   borderColor: appColors.primary,
                 }}
@@ -140,40 +238,40 @@ export default function ProfileScreen({navigation}: any) {
                 type="primary"
                 textColor="#ECB22F"
                 styles={{
-                  width: '100%',
+                  width: "100%",
                   borderRadius: 25,
-                  backgroundColor: '#fff',
+                  backgroundColor: "#fff",
                   borderWidth: 1.5,
-                  borderColor: '#ECB22F',
+                  borderColor: "#ECB22F",
                 }}
               />
             </SectionComponent>
           </SectionComponent>
         </RowComponent>
       </View>
+      <LoadingModal visible={isLoading} />
     </ContainerComponent>
   );
 }
-
 const styles = StyleSheet.create({
   image: {
     width: appInfo.size.WIDTH,
     height: (appInfo.size.HEIGHT * 1.5) / 3,
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
+    justifyContent: "flex-end",
+    flexDirection: "row",
     paddingTop: 10,
     borderRadius: 25,
   },
   edit: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 50,
     right: 12,
     top: 0,
     padding: 12,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     width: 50,
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

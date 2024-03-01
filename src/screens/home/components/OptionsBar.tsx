@@ -1,19 +1,18 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {RowComponent, TextComponent} from '../../../components';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {appColors} from '../../../constants/appColors';
+import React from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { RowComponent, TextComponent } from '../../../components'
+import EvilIcons from 'react-native-vector-icons/EvilIcons'
+import { appColors } from '../../../constants/appColors'
 
 export default function OptionsBar() {
-
-
   return (
     <RowComponent
       styles={{
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 15,
-      }}>
+      }}
+    >
       <TouchableOpacity>
         <EvilIcons name={'navicon'} size={30} />
       </TouchableOpacity>
@@ -27,12 +26,13 @@ export default function OptionsBar() {
             <TextComponent
               text="0"
               color={appColors.white}
-              size={12}></TextComponent>
+              size={12}
+            ></TextComponent>
           </View>
         </TouchableOpacity>
       </RowComponent>
     </RowComponent>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -54,4 +54,4 @@ const styles = StyleSheet.create({
       },
     ],
   },
-});
+})
