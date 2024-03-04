@@ -108,7 +108,6 @@ const SocialLogin = ({ navigation }: any) => {
           icon={<Google />}
           onPress={() => handleGoogleLogin()}
         />
-        <LoginButton />
         <ButtonComponent
           styles={{ borderRadius: 30 }}
           text={"Facebook"}
