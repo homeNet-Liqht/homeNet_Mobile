@@ -8,7 +8,7 @@ import {
     TextComponent
 } from "../../components";
 import {appColors} from "../../constants/appColors.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Switch,} from "react-native";
 import {Lock, Sms} from "iconsax-react-native";
 import SocialLogin from "./component/SocialLogin.tsx";
@@ -18,7 +18,7 @@ import CookieManager from '@react-native-cookies/cookies';
 import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {useDispatch} from "react-redux";
 import {addAuth} from "../../redux/reducers/authReducer.ts";
-import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import {ALERT_TYPE, Dialog, AlertNotificationRoot, Toast} from 'react-native-alert-notification';
 
 const initValue = {
     email: '',
@@ -26,44 +26,67 @@ const initValue = {
 };
 
 
+export const LoginScreen = ({navigation, route}: any) => {
 
-export const LoginScreen = ({navigation}: any) => {
 
-    const {setItem} =  useAsyncStorage('accessToken')
-    const [isLoading,setIsLoading] = useState(false)
+    const {setItem} = useAsyncStorage('accessToken')
+    const [isLoading, setIsLoading] = useState(false)
     const [isRemember, setIsRemember] = useState(true);
     const [values, setValues] = useState(initValue);
-
+    const [isDisable, setIsDisable] = useState(true)
     const dispatch = useDispatch()
     const handleChangeValue = (key: string, value: string) => {
         const data: any = {...values};
+        if (route.email) {
+            data["email"] = route.email
+        }
         data[`${key}`] = value;
         setValues(data);
     };
 
-    const handleLogin = async () =>{
+    useEffect(() => {
+        if (values.email  && values.password) {
+            setIsDisable(false)
+        }else {
+            setIsDisable(true)
+        }
+
+    }, [values]);
+
+    const handleLogin = async () => {
         try {
             setIsLoading(true)
-            await authApi.login(values.email, values.password)
+            if (!values.email || !values.password) {
+                setIsLoading(false)
+                Dialog.show({
+                    type: ALERT_TYPE.WARNING,
+                    title: "Login Failed",
+                    textBody: "please enter enough your information",
+                    button: 'Close',
+                })
+            } else {
+                await authApi.login(values.email, values.password)
 
-            await CookieManager.get(`${process.env.REACT_APP_API_URL}/auth/signin`)
-                .then((cookies) => {
-                    setIsLoading(false)
-                    dispatch(addAuth({email: values.email, accessToken: cookies.accesstoken.value}))
-                    setItem(isRemember ?  cookies.accesstoken.value : values.email,)
-                });
-
-        }catch (e:any) {
+                await CookieManager.get(`${process.env.REACT_APP_API_URL}/auth/signin`)
+                    .then((cookies) => {
+                        setIsLoading(false)
+                        dispatch(addAuth({email: values.email, accessToken: cookies.accesstoken.value}))
+                        setItem(isRemember ? cookies.accesstoken.value : values.email,)
+                    });
+            }
+        } catch (e: any) {
             setIsLoading(false)
-            if (e.status == 403){
+            if (e.status == 403) {
                 Dialog.show({
                     type: ALERT_TYPE.WARNING,
                     title: "Login Failed",
                     textBody: `${e.data}`,
                     button: 'Verify now',
-                    onHide: ()=>{navigation.navigate("Verification",{ref:"LoginScreen"})}
+                    onHide: () => {
+                        navigation.navigate("Verification", {ref: "LoginScreen"})
+                    }
                 })
-            }else {
+            } else {
                 Dialog.show({
                     type: ALERT_TYPE.DANGER,
                     title: "Login Failed",
@@ -71,8 +94,6 @@ export const LoginScreen = ({navigation}: any) => {
                     button: 'close',
                 })
             }
-
-
         }
     }
 
@@ -87,13 +108,18 @@ export const LoginScreen = ({navigation}: any) => {
                     affix={<Sms size={22} color={appColors.gray}/>}
                     placeHolder={"abc@gmail.com"}
                     value={values.email}
-                    onChange={ val => handleChangeValue("email", val )}
+
+                    onChange={(val) => {
+                        handleChangeValue("email", val)
+                    }}
                     isPassword={false}/>
                 <InputComponent
-                    affix={<Lock size={22} color={appColors.gray} />}
+                    affix={<Lock size={22} color={appColors.gray}/>}
                     placeHolder={"Password"}
                     value={values.password}
-                    onChange={ val => handleChangeValue("password", val )}
+                    onChange={val => {
+                        handleChangeValue("password", val)
+                    }}
                     isPassword={true}/>
                 <RowComponent justify="space-between">
                     <RowComponent onPress={() => setIsRemember(!isRemember)}>
@@ -101,10 +127,12 @@ export const LoginScreen = ({navigation}: any) => {
                             trackColor={{true: appColors.primary}}
                             thumbColor={appColors.white}
                             value={isRemember}
-                            onChange={() => setIsRemember(!isRemember)}
+                            onChange={() => {
+                                setIsRemember(!isRemember)
+                            }}
                         />
-                        <SpaceComponent width={4} />
-                        <TextComponent text="Remember me" />
+                        <SpaceComponent width={4}/>
+                        <TextComponent text="Remember me"/>
                     </RowComponent>
                     <ButtonComponent
                         text="Forgot Password?"
@@ -113,17 +141,18 @@ export const LoginScreen = ({navigation}: any) => {
                     />
                 </RowComponent>
             </SectionComponent>
-            <SpaceComponent height={16} />
+            <SpaceComponent height={16}/>
             <SectionComponent>
-                <ButtonComponent text={"Login"} type={"primary"} onPress={() => handleLogin()}/>
+                <ButtonComponent text={"Login"} type={"primary"} disable={isDisable} onPress={() => handleLogin()}/>
             </SectionComponent>
             <SectionComponent>
-                <TextComponent text={"OR"} size={25} styles={{fontWeight: "bold", textAlign:"center"}} color={appColors.gray}/>
+                <TextComponent text={"OR"} size={25} styles={{fontWeight: "bold", textAlign: "center"}}
+                               color={appColors.gray}/>
             </SectionComponent>
             <SocialLogin/>
             <SectionComponent>
                 <RowComponent justify="center">
-                    <TextComponent text="Don’t have an account? " />
+                    <TextComponent text="Don’t have an account? "/>
                     <ButtonComponent
                         type="link"
                         text="Sign up"
@@ -131,7 +160,7 @@ export const LoginScreen = ({navigation}: any) => {
                     />
                 </RowComponent>
             </SectionComponent>
-            <LoadingModal visible={isLoading} />
+            <LoadingModal visible={isLoading}/>
 
         </ContainerComponent>
     );

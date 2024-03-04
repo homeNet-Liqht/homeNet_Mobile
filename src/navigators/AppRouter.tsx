@@ -2,17 +2,16 @@ import React, {useEffect, useState} from 'react';
 
 import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {useDispatch, useSelector} from "react-redux";
-import {addAuth, authSelector} from "../redux/reducers/authReducer.ts";
+import {addAuth, alreadyAccess, authSelector, isAccessSelected} from "../redux/reducers/authReducer.ts";
 import MainNavigator from "./MainNavigator.tsx";
+import {SplashScreen, WelcomeScreen} from "../screens";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import AuthNavigator from "./AuthNavigator.tsx";
-import {SplashScreen} from "../screens";
 
 export const AppRouter = () => {
 
     const [isShowSplash, setIsShowSplash] = useState(true);
-    const {getItem} = useAsyncStorage("accessToken")
     const auth = useSelector(authSelector)
-
 
     const dispatch = useDispatch();
 
@@ -27,19 +26,32 @@ export const AppRouter = () => {
 
     }, []);
     const checkLogin = async () => {
-        const token = await getItem()
-        token && dispatch(addAuth(token)) ;
+        const token = await useAsyncStorage("accessToken").getItem()
+        token && dispatch(addAuth(token));
+
     }
 
 
     return (
 
         <>
-            { isShowSplash
-                ? (<SplashScreen/>)
-                :  auth.accessToken
-                    ? (<MainNavigator/>)
-                    : (<AuthNavigator/>)}
+            {isShowSplash
+                ?
+                <>
+                    <SplashScreen/>
+
+                </>
+                : auth.accessToken
+                    ? <>
+
+                        <MainNavigator/>
+                    </>
+                    :
+                    <>
+                        <AuthNavigator/>
+
+                    </>
+            }
         </>
     );
 };

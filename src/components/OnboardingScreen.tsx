@@ -6,14 +6,16 @@ import {appInfo} from "../constants/appInfo.ts";
 import {appColors} from "../constants/appColors.ts";
 import TextComponent from "./TextComponent.tsx";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 
 
 const OnboardingScreen = ({navigation}: any) => {
+
     const [index, setIndex] = useState(0)
 
     return (
         <View style={[globalStyles.container]}>
-            <Swiper style={{}} loop={false} activeDotStyle={{width: 30,}} activeDotColor={appColors.white}
+            <Swiper style={{}}  loop={false} activeDotStyle={{width: 30,}} activeDotColor={appColors.white}
                     onIndexChanged={num => setIndex(num)} index={index}>
                 <Image source={require("../assets/imgs/oboarding1.png")}
                        style={styles.onboarding}/>
@@ -44,8 +46,9 @@ const OnboardingScreen = ({navigation}: any) => {
                     justifyContent: "center",
                     alignItems: "center"
                 }}
-                onPress={() => index < 2 ? setIndex(index+1) : navigation.navigate("GetStartedScreen")} ><FontAwesome name={'angle-right'} size={22} color={appColors.gray}/></TouchableOpacity>
-
+                onPress={() => {
+                    index < 2 ? setIndex(index + 1) : navigation.navigate("GetStartedScreen")
+                }} ><FontAwesome name={'angle-right'} size={22} color={appColors.gray}/></TouchableOpacity>
             </View>
         </View>
     );
@@ -56,7 +59,7 @@ const styles = StyleSheet.create({
         flex: 1,
         width: appInfo.size.WIDTH,
         height: appInfo.size.HEIGHT,
-        resizeMode: "cover"
+        resizeMode: "cover",
     },
 
 });

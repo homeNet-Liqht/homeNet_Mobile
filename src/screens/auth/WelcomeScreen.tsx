@@ -16,18 +16,11 @@ function GetStartedScreen({navigation}: any) {
             <SectionComponent styles={style.container}>
                 <SocialLogin />
                 <ButtonComponent
-                    text={"Phone"}
+                    text={"Account"}
                     styles={{width:"60%", borderRadius: 30} }
                     textColor={appColors.text}
                     color={appColors.white}  type={'primary'}
                     onPress={() => navigation.navigate("LoginScreen")}/>
-                <RowComponent justify={"center"}>
-                    <TouchableOpacity >
-                        <BouncyCheckbox  fillColor={appColors.primary} onPress={(isChecked: boolean) => {setIsSelect(isChecked)}} textComponent={
-                            <TextComponent text={"  Agree to Terms and Conditions"}  />
-                        } />
-                    </TouchableOpacity>
-                </RowComponent>
             </SectionComponent>
         </ContainerComponent>
     );

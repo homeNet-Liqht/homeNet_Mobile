@@ -13,7 +13,8 @@ const initialState: initialState = {
 const authSlice =  createSlice({
     name: 'auth',
     initialState:{
-        authData: initialState
+        authData: initialState,
+        isAccess: false
     },
     reducers: {
         addAuth : (state, action) => {
@@ -21,11 +22,15 @@ const authSlice =  createSlice({
         },
         removeAuth: (state, action) =>{
             state.authData = initialState
+        },
+        alreadyAccess: (state, action) =>{
+            state.isAccess = action.payload
         }
     }
 })
 
 export const authReducer = authSlice.reducer
-export const {addAuth, removeAuth } = authSlice.actions
+export const {addAuth, removeAuth,alreadyAccess } = authSlice.actions
 
 export const authSelector = (state: any) => state.authReducer.authData
+export const isAccessSelected = (state: any) => state.authReducer.isAccess
