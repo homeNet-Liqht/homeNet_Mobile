@@ -31,6 +31,10 @@ import { formatBirthday } from "../../utils/formatBirthday";
 import DatePicker from "react-native-date-picker";
 import { LoadingModal } from "../../modals";
 import capitalizedText from "../../utils/capitalizedText";
+import { removeAuth } from "../../redux/reducers/authReducer.ts";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { LoginManager } from "react-native-fbsdk-next";
 export default function ProfileScreen({ navigation }: any) {
   const user = useSelector(userSelector);
   const [isOpen, setIsOpen] = useState(false);
@@ -79,7 +83,6 @@ export default function ProfileScreen({ navigation }: any) {
     <ContainerComponent back isScroll color={"#A3A4E5"}>
       <View style={{ backgroundColor: "#A3A4E5" }}>
         <ImageBackground
-
           source={
             user.photo
               ? { uri: user.photo }
@@ -163,7 +166,7 @@ export default function ProfileScreen({ navigation }: any) {
                     </View>
                   </View>
                 ) : (
-                  <View style={{ marginLeft: "9%"}}>
+                  <View style={{ marginLeft: "9%" }}>
                     <TextComponent
                       text={user.name}
                       size={21}
@@ -178,7 +181,12 @@ export default function ProfileScreen({ navigation }: any) {
                   </View>
                 )}
                 <RowComponent styles={{ width: "85%", overflow: "hidden" }}>
-                  <TextComponent text={user.email} size={14} color="#ccc" numberOfLine={1}/>
+                  <TextComponent
+                    text={user.email}
+                    size={14}
+                    color="#ccc"
+                    numberOfLine={1}
+                  />
                 </RowComponent>
               </View>
               {editInfo ? (
@@ -237,6 +245,12 @@ export default function ProfileScreen({ navigation }: any) {
                 text="Log out"
                 type="primary"
                 textColor="#ECB22F"
+                onPress={async () => {
+                  await AsyncStorage.removeItem("accessToken");
+                  await GoogleSignin.signOut();
+                  LoginManager.logOut();
+                  dispatch(removeAuth({}));
+                }}
                 styles={{
                   width: "100%",
                   borderRadius: 25,
@@ -259,6 +273,7 @@ const styles = StyleSheet.create({
     height: (appInfo.size.HEIGHT * 1.5) / 3,
     justifyContent: "flex-end",
     flexDirection: "row",
+    objectFit: "cover",
     paddingTop: 10,
     borderRadius: 25,
   },

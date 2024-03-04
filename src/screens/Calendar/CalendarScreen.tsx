@@ -4,6 +4,8 @@ import {ButtonComponent} from "../../components";
 import {useDispatch} from "react-redux";
 import {removeAuth} from "../../redux/reducers/authReducer.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { LoginManager } from 'react-native-fbsdk-next';
 
 
 function CalendarScreen() {
@@ -15,7 +17,9 @@ function CalendarScreen() {
                 type="primary"
                 text="Logout"
                 onPress={async () => {
-                    await AsyncStorage.clear()
+                    await AsyncStorage.removeItem("accessToken")
+                    await GoogleSignin.signOut();
+                    LoginManager.logOut();
                     dispatch(removeAuth({}));
                 }}
             />
