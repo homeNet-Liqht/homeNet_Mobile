@@ -18,7 +18,6 @@ const SocialLogin = ({navigation}: any) => {
         textColor={'black'}
         iconFlex={'left'}
         icon={<Google />}
-        onPress={() => navigation.navigate('HomeScreen')}
       />
     </SectionComponent>
   );

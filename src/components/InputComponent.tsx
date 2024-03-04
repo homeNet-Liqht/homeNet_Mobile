@@ -2,10 +2,12 @@ import * as React from 'react';
 import {ReactNode, useState} from 'react';
 import {
   KeyboardType,
+  StyleProp,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
 import {EyeSlash} from 'iconsax-react-native';
 import {appColors} from '../constants/appColors.ts';
@@ -20,6 +22,7 @@ interface Props {
   isPassword: boolean;
   allowClear?: boolean;
   type?: KeyboardType;
+  styles? : StyleProp<ViewStyle>
   onEnd?: () => void;
 }
 
@@ -34,12 +37,13 @@ const InputComponent = (props: Props) => {
     allowClear,
     type,
     onEnd,
+    styles
   } = props;
 
   const [isShowPassword, setIsShowPassword] = useState(isPassword ?? false);
   return (
     <>
-      <View style={style.inputContainer}>
+      <View style={[style.inputContainer, styles]}>
         {affix ?? affix}
         <TextInput
           style={style.input}
