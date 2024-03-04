@@ -14,7 +14,7 @@ function GetStartedScreen({navigation}: any) {
     return (
         <ContainerComponent isImageBackground>
             <SectionComponent styles={style.container}>
-                <SocialLogin />
+                <SocialLogin navigation={navigation}/>
                 <ButtonComponent
                     text={"Account"}
                     styles={{width:"60%", borderRadius: 30} }

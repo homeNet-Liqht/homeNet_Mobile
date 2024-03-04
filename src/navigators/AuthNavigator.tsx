@@ -35,10 +35,10 @@ export default function AuthNavigator() {
 
             {
                 isAccess &&
-                    <>
-                        <Stack.Screen name={"onboarding"} component={OnboardingScreen}/>
-                        <Stack.Screen name={"GetStartedScreen"} component={GetStartedScreen}/>
-                    </>
+                <>
+                    <Stack.Screen name={"onboarding"} component={OnboardingScreen}/>
+                    <Stack.Screen name={"GetStartedScreen"} component={GetStartedScreen}/>
+                </>
             }
             <>
                 <Stack.Screen name={"WelcomeScreen"} component={WelcomeScreen}/>
