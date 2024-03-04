@@ -1,3 +1,3 @@
 import Google from "./google.svg"
-
-export {Google}
+import Facebook from "./facebook.svg"
+export {Google, Facebook}

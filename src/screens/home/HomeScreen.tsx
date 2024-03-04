@@ -43,7 +43,7 @@ function HomeScreen({navigation}: any) {
       <ContainerComponent>
         <SectionComponent>
           <OptionsBar />
-          <WelcomeBar navigation={navigation} name={userData.name} />
+          <WelcomeBar navigation={navigation} name={userData.name} photo={userData.photo}/>
           <WeatherBar />
         </SectionComponent>
 
