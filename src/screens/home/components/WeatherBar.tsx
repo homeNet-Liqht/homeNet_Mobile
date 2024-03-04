@@ -18,7 +18,7 @@ export default function WeatherBar() {
       try {
         const granted = await requestLocationPermission();
         if (granted) {
-          const position = await getCurrentLocation();
+          const position: any = await getCurrentLocation();
           setCurrentPosition(position);
         }
       } catch (error) {

@@ -26,7 +26,7 @@ export default function AuthNavigator() {
     }, []);
     const checkLogin = async () => {
         const access = await getItem()
-        !access && dispatch(alreadyAccess(true))
+        access == null && dispatch(alreadyAccess(true))
     }
 
 
