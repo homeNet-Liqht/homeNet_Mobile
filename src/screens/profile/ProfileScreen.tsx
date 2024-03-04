@@ -61,10 +61,7 @@ export default function ProfileScreen({ navigation }: any) {
 
       setIsLoading(false);
       dispatch(editUser(response.data.data));
-  
-      
     } catch (error) {
-      
       setIsLoading(false);
       if (error) {
         Dialog.show({
@@ -75,18 +72,19 @@ export default function ProfileScreen({ navigation }: any) {
         });
       }
     }
-    
   };
   console.log(user);
-  
+
   return (
     <ContainerComponent back isScroll color={"#A3A4E5"}>
       <View style={{ backgroundColor: "#A3A4E5" }}>
         <ImageBackground
-          source={{
-            uri:
-              "https://th.bing.com/th/id/R.67906584562cfe06b57d99c15a470a8d?rik=qCnOAECBi%2flDvg&pid=ImgRaw&r=0",
-          }}
+
+          source={
+            user.photo
+              ? { uri: user.photo }
+              : require("../../assets/imgs/profile.png")
+          }
           style={styles.image}
           imageStyle={{
             resizeMode: "contain",
@@ -165,11 +163,13 @@ export default function ProfileScreen({ navigation }: any) {
                     </View>
                   </View>
                 ) : (
-                  <View>
+                  <View style={{ marginLeft: "9%"}}>
                     <TextComponent
                       text={user.name}
-                      size={23}
-                      styles={{ fontWeight: "700" }}
+                      size={21}
+                      styles={{
+                        fontWeight: "700",
+                      }}
                     />
                     <TextComponent
                       text={formatBirthday(user.birthday)}
@@ -177,8 +177,8 @@ export default function ProfileScreen({ navigation }: any) {
                     />
                   </View>
                 )}
-                <RowComponent>
-                  <TextComponent text={user.email} size={14} color="#ccc" />
+                <RowComponent styles={{ width: "85%", overflow: "hidden" }}>
+                  <TextComponent text={user.email} size={14} color="#ccc" numberOfLine={1}/>
                 </RowComponent>
               </View>
               {editInfo ? (
