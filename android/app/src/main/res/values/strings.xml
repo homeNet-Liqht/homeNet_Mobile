@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">homeNet_Mobile</string>
+    <string name="app_name">homeNet</string>
     <string name="facebook_app_id">427623953051055</string>
     <string name="facebook_client_token">a56a94b13091bc926ef675592567c3dd</string>
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
