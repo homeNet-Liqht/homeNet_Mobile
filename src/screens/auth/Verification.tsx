@@ -10,15 +10,17 @@ import {
 } from '../../components';
 import {ArrowRight} from 'iconsax-react-native';
 import {appColors} from '../../constants/appColors';
-
 import {LoadingModal} from '../../modals';
 import {useDispatch} from 'react-redux';
 import {globalStyles} from "../styles/globalStyles.ts";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {authApi} from "../../apis";
+import {ALERT_TYPE, Dialog} from "react-native-alert-notification";
 
-const Verification = ({navigation, route}: any) => {
-    const {code, email, password, username} = route.params;
+const Verification = ({navigation,route}: any) => {
 
-    const [currentCode, setCurrentCode] = useState<string>(code);
+    const [email, setEmail] = useState('')
+
     const [codeValues, setCodeValues] = useState<string[]>([]);
     const [newCode, setNewCode] = useState('');
     const [limit, setLimit] = useState(120);
@@ -32,8 +34,14 @@ const Verification = ({navigation, route}: any) => {
 
     const dispatch = useDispatch();
 
+    const SendEmailVerification = async () => {
+        const email = route.params.email
+        email && setEmail(email)
+
+    }
     useEffect(() => {
         ref1.current.focus();
+        SendEmailVerification()
     }, []);
 
     useEffect(() => {
@@ -56,7 +64,6 @@ const Verification = ({navigation, route}: any) => {
     const handleChangeCode = (val: string, index: number) => {
         const data = [...codeValues];
         data[index] = val;
-
         setCodeValues(data);
     };
 
@@ -71,16 +78,26 @@ const Verification = ({navigation, route}: any) => {
     };
 
     const handleVerification = async () => {
-        if (limit > 0) {
-            if (parseInt(newCode) !== parseInt(currentCode)) {
-                setErrorMessage('Invalid code!!!');
-            } else {
-                setErrorMessage('');
+        try {
+            setIsLoading(true);
 
-                //call api
-            }
-        } else {
-            setErrorMessage('Time out verification code, please resend new code!!!');
+            const res = await authApi.SendOtpConfirmation({
+                email: email,
+                otp: newCode,
+                type: `${route.params.type}`
+            })
+            setIsLoading(false);
+
+            navigation.navigate(`${route.params.ref}`,{email: email})
+
+        }catch(e: any){
+            setIsLoading(false);
+            Dialog.show({
+                type: ALERT_TYPE.DANGER,
+                title: "Failed",
+                textBody: `${e.data}`,
+                button: 'close',
+            })
         }
     };
 
@@ -180,7 +197,7 @@ const Verification = ({navigation, route}: any) => {
             <SectionComponent>
                 {limit > 0 ? (
                     <RowComponent justify="center">
-                        <TextComponent text="Re-send code in  " flex={0} />
+                        <TextComponent text="Re-send code in " flex={0} />
                         <TextComponent
                             text={`${(limit - (limit % 60)) / 60}:${
                                 limit - (limit - (limit % 60))

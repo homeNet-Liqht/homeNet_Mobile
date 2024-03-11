@@ -7,42 +7,21 @@ import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {Provider} from "react-redux";
 import store from "./src/redux/store.ts";
 import AppRouter from "./src/navigators/AppRouter.tsx";
+import {AlertNotificationRoot} from 'react-native-alert-notification';
 
 function App(): React.JSX.Element {
-    const [isShowSplash, setIsShowSplash] = useState(true)
-    const {getItem, setItem} = useAsyncStorage('accessToken')
-    const [accessToken, setAccessToken] = useState('')
 
-
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setIsShowSplash(false)
-        }, 1500)
-        return () => clearTimeout(timeout)
-    }, [])
-
-    useEffect(() => {
-        checkLogin()
-    }, []);
-
-    const checkLogin = async () => {
-        const token = await getItem()
-        token && setAccessToken(token)
-    }
 
     return (
         <>
             <StatusBar hidden/>
-
-            <Provider store={store}>
-                {
-                    isShowSplash ? <SplashScreen/> :
-                        <NavigationContainer>
-                            <AppRouter/>
-                        </NavigationContainer>
-                }
-            </Provider>
-
+            <AlertNotificationRoot>
+                <Provider store={store}>
+                    <NavigationContainer>
+                        <AppRouter/>
+                    </NavigationContainer>
+                </Provider>
+            </AlertNotificationRoot>
         </>
     )
 }

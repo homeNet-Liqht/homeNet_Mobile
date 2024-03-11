@@ -3,12 +3,22 @@ import {Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View} from "
 import {globalStyles} from "../screens/styles/globalStyles.ts";
 import {appInfo} from "../constants/appInfo.ts";
 import {transform} from "@babel/core";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {useDispatch} from "react-redux";
+import {alreadyAccess} from "../redux/reducers/authReducer.ts";
 
 const GetStartedScreen = ({navigation}:any) => {
+    const {setItem} = useAsyncStorage('alreadyAccess')
+    const dispatch = useDispatch();
+
     return (
         <View style={[globalStyles.container]}>
             <ImageBackground source={require("../assets/imgs/Onboarding4.png")} style={[styles.ImgBg]}>
-                <TouchableOpacity style={[styles.btn]} onPress={() => navigation.navigate("WelcomeScreen")}><Text style={[styles.text]}>Get Started</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.btn]} onPress={() => {
+                    setItem("true")
+                    dispatch(alreadyAccess(false))
+
+                }}><Text style={[styles.text]}>Get Started</Text></TouchableOpacity>
             </ImageBackground>
         </View>
     )
@@ -33,7 +43,8 @@ const styles = StyleSheet.create({
     text: {
         textAlign: 'center',
         color: "white",
-        fontWeight: "700", fontSize: 20
+        fontWeight: "700",
+        fontSize: 20
     }
 })
 
