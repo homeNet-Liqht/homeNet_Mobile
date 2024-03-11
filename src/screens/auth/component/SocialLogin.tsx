@@ -13,16 +13,12 @@ import LoadingModal from "../../../modals/LoadingModal.tsx";
 import { useDispatch } from "react-redux";
 import { addAuth } from "../../../redux/reducers/authReducer.ts";
 import CookieManager from "@react-native-cookies/cookies";
-import {
-  Settings,
-  LoginManager,
-  LoginButton,
-  Profile,
-} from "react-native-fbsdk-next";
+import { Settings, LoginManager, Profile } from "react-native-fbsdk-next";
 GoogleSignin.configure({
   webClientId:
-    "832402804801-e4q8gdqr1sqda5brt14skrda108bt3oh.apps.googleusercontent.com",
+    "734126399931-ermr8ckeqt5fhrnt07h5j2kd12j2nq4n.apps.googleusercontent.com",
 });
+
 Settings.setAppID("427623953051055");
 
 const SocialLogin = ({ navigation }: any) => {
@@ -34,11 +30,16 @@ const SocialLogin = ({ navigation }: any) => {
     });
     setIsLoading(true);
     try {
+      console.log("Preparing Google");
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-      const user = userInfo.user;
 
+      await GoogleSignin.revokeAccess();
+
+      const user = userInfo.user;
+      console.log(user);
+      
       const res = await authApi.SignInWithGoogle(user);
 
       await CookieManager.get(
@@ -54,7 +55,8 @@ const SocialLogin = ({ navigation }: any) => {
         );
       });
     } catch (error) {
-      console.log(error);
+      console.log("error while signin:", error, error.code);
+      setIsLoading(false);
     }
   };
 
@@ -73,7 +75,7 @@ const SocialLogin = ({ navigation }: any) => {
           const user = {
             name: profile.name,
             photo: profile.imageURL,
-            email: profile.userID,
+            email: profile.email ? profile.email : profile.userID,
           };
           const res = await authApi.SignInWithGoogle(user);
 
