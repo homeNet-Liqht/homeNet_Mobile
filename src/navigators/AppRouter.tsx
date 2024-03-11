@@ -13,11 +13,12 @@ export const AppRouter = () => {
     const [isShowSplash, setIsShowSplash] = useState(true);
     const auth = useSelector(authSelector)
 
+
+
     const dispatch = useDispatch();
 
     useEffect(() => {
         checkLogin();
-
         const timeout = setTimeout(() => {
             setIsShowSplash(false);
         }, 1500);
@@ -28,9 +29,7 @@ export const AppRouter = () => {
     const checkLogin = async () => {
         const token = await useAsyncStorage("accessToken").getItem()
         token && dispatch(addAuth(token));
-
     }
-
 
     return (
 
@@ -41,7 +40,7 @@ export const AppRouter = () => {
                     <SplashScreen/>
 
                 </>
-                : auth.accessToken
+                : auth
                     ? <>
 
                         <MainNavigator/>
@@ -49,7 +48,6 @@ export const AppRouter = () => {
                     :
                     <>
                         <AuthNavigator/>
-
                     </>
             }
         </>

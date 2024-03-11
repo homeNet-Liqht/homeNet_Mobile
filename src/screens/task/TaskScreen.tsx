@@ -8,14 +8,14 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { LoginManager } from 'react-native-fbsdk-next';
 
 
-function CalendarScreen() {
+function TaskScreen() {
     const dispatch = useDispatch()
 
     return (
         <View>
-            <Text>CalendarScreen</Text>
+            <Text>TaskScreen</Text>
         </View>
     );
 }
 
-export default CalendarScreen;
+export default TaskScreen;

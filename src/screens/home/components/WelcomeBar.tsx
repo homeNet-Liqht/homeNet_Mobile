@@ -34,7 +34,7 @@ export default function WelcomeBar({ navigation, name, photo }: any) {
       <SectionComponent>
         <TouchableOpacity
           style={styles.profileWrapper}
-          onPress={() => navigation.navigate("ProfilePage")}
+          onPress={() => navigation.navigate("ProfileScreen")}
         >
           <Image
             style={styles.profileImg}

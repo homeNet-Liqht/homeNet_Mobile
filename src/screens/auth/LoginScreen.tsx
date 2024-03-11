@@ -29,9 +29,7 @@ const initValue = {
 export const LoginScreen = ({navigation, route}: any) => {
 
 
-    const {setItem} = useAsyncStorage('accessToken')
     const [isLoading, setIsLoading] = useState(false)
-    const [isRemember, setIsRemember] = useState(true);
     const [values, setValues] = useState(initValue);
     const [isDisable, setIsDisable] = useState(true)
     const dispatch = useDispatch()
@@ -70,8 +68,9 @@ export const LoginScreen = ({navigation, route}: any) => {
                 await CookieManager.get(`${process.env.REACT_APP_API_URL}/auth/signin`)
                     .then((cookies) => {
                         setIsLoading(false)
-                        dispatch(addAuth({email: values.email, accessToken: cookies.accesstoken.value}))
-                        setItem(isRemember ? cookies.accesstoken.value : values.email,)
+                        dispatch(addAuth({accessToken: cookies.accesstoken.value}))
+                        useAsyncStorage("accessToken").setItem(cookies.accesstoken.value)
+                        useAsyncStorage("refreshToken").setItem(cookies.refreshtoken.value)
                     });
             }
         } catch (e: any) {
@@ -80,7 +79,7 @@ export const LoginScreen = ({navigation, route}: any) => {
                 Dialog.show({
                     type: ALERT_TYPE.WARNING,
                     title: "Login Failed",
-                    textBody: `${e.data}`,
+                    textBody: `${e.data.data}`,
                     button: 'Verify now',
                     onHide: () => {
                         navigation.navigate("Verification", {ref: "LoginScreen"})
@@ -90,7 +89,7 @@ export const LoginScreen = ({navigation, route}: any) => {
                 Dialog.show({
                     type: ALERT_TYPE.DANGER,
                     title: "Login Failed",
-                    textBody: `${e.data}`,
+                    textBody: `${e.data.status}`,
                     button: 'close',
                 })
             }
@@ -122,18 +121,6 @@ export const LoginScreen = ({navigation, route}: any) => {
                     }}
                     isPassword={true}/>
                 <RowComponent justify="space-between">
-                    <RowComponent onPress={() => setIsRemember(!isRemember)}>
-                        <Switch
-                            trackColor={{true: appColors.primary}}
-                            thumbColor={appColors.white}
-                            value={isRemember}
-                            onChange={() => {
-                                setIsRemember(!isRemember)
-                            }}
-                        />
-                        <SpaceComponent width={4}/>
-                        <TextComponent text="Remember me"/>
-                    </RowComponent>
                     <ButtonComponent
                         text="Forgot Password?"
                         onPress={() => navigation.navigate('ForgotPassword')}

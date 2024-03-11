@@ -6,6 +6,7 @@ import {ButtonComponent, ContainerComponent, RowComponent, SectionComponent, Tex
 import {appColors} from "../../constants/appColors.ts";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import SocialLogin from "./component/SocialLogin.tsx";
+import {appInfo} from "../../constants/appInfo.ts";
 
 function GetStartedScreen({navigation}: any) {
 
@@ -15,13 +16,16 @@ function GetStartedScreen({navigation}: any) {
         <ContainerComponent isImageBackground>
             <SectionComponent styles={style.container}>
                 <SocialLogin navigation={navigation}/>
+                <RowComponent styles={{paddingHorizontal: 20}}>
                 <ButtonComponent
                     text={"Account"}
-                    styles={{width:"60%", borderRadius: 30} }
+                    styles={{ width: appInfo.size.WIDTH * 0.5,borderRadius: 30} }
                     textColor={appColors.text}
                     color={appColors.white}  type={'primary'}
                     onPress={() => navigation.navigate("LoginScreen")}/>
+                </RowComponent>
             </SectionComponent>
+
         </ContainerComponent>
     );
 }

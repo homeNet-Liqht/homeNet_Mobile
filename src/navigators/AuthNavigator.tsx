@@ -30,7 +30,6 @@ export default function AuthNavigator() {
   const checkLogin = async () => {
     const access = await getItem();
     access == null && dispatch(alreadyAccess(true));
-    console.log(access);
   };
 
   return (
