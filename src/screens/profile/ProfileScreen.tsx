@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addUser,
   editUser,
+  removeUser,
   userSelector,
 } from "../../redux/reducers/userReducer";
 import {
@@ -43,9 +44,8 @@ export default function ProfileScreen({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState({
-    name: user ,
+    name: user,
     birthday: new Date(),
-
   });
   const handleInfoChange = (key: string, value: string | Date) => {
     const data: any = { ...inputValues };
@@ -59,7 +59,7 @@ export default function ProfileScreen({ navigation }: any) {
       const response = await userApi.editUser(
         user._id,
         inputValues.name,
-        inputValues.birthday,
+        inputValues.birthday
       );
 
       setIsLoading(false);
@@ -244,9 +244,12 @@ export default function ProfileScreen({ navigation }: any) {
                 textColor="#ECB22F"
                 onPress={async () => {
                   await AsyncStorage.removeItem("accessToken");
+                  await AsyncStorage.removeItem("refreshToken");
                   await GoogleSignin.signOut();
                   LoginManager.logOut();
+
                   dispatch(removeAuth({}));
+                  dispatch(removeUser());
                 }}
                 styles={{
                   width: "100%",

@@ -8,7 +8,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {userApi} from '../../apis';
 import {addUser, userSelector} from '../../redux/reducers/userReducer';
 import {LoadingModal} from '../../modals';
-import {authSelector} from "../../redux/reducers/authReducer.ts";
 
 function HomeScreen({navigation}: any) {
     const [userData, setUserData] = useState(useSelector(userSelector));
@@ -38,7 +37,7 @@ function HomeScreen({navigation}: any) {
         userData && (
             <ContainerComponent>
                 <SectionComponent>
-                    <OptionsBar/>
+                    <OptionsBar navigation={navigation}/>
                     <WelcomeBar navigation={navigation} name={userData.name} photo={userData.photo}/>
                     <WeatherBar />
                 </SectionComponent>

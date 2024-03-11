@@ -4,7 +4,7 @@ import { RowComponent, TextComponent } from '../../../components'
 import EvilIcons from 'react-native-vector-icons/EvilIcons'
 import { appColors } from '../../../constants/appColors'
 
-export default function OptionsBar() {
+export default function OptionsBar({navigation} : any) {
   return (
     <RowComponent
       styles={{
@@ -20,7 +20,7 @@ export default function OptionsBar() {
         <TouchableOpacity>
           <EvilIcons name={'plus'} size={35} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
           <EvilIcons name={'bell'} size={35} style={styles.bell} />
           <View style={styles.noti}>
             <TextComponent

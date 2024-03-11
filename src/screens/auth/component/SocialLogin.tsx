@@ -48,8 +48,10 @@ const SocialLogin = ({ navigation }: any) => {
       await CookieManager.get(
         `${process.env.REACT_APP_API_URL}/auth/social-login`
       ).then((cookie) => {
-        console.log(cookie);
+        useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
+        useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
         setIsLoading(false);
+
         dispatch(
           addAuth({
             email: res.data.data.email,
@@ -73,30 +75,35 @@ const SocialLogin = ({ navigation }: any) => {
         console.log("Login Cancelled");
       } else {
         const profile = await Profile.getCurrentProfile();
+
         if (profile) {
           const user = {
             name: profile.name,
             photo: profile.imageURL,
-            email: profile.email ? profile.email : profile.userID,
+            email: profile.userID,
           };
           const res = await authApi.SignInWithGoogle(user);
 
           await CookieManager.get(
             `${process.env.REACT_APP_API_URL}/auth/social-login`
           ).then((cookie) => {
-            setIsLoading(false);
+            console.log(cookie);
+
             useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
-            useAsyncStorage("refreshToken").setItem(cookie.refreshtoekn.value);
+            useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
             dispatch(
               addAuth({
                 email: res.data.data.email,
                 accessToken: cookie.accesstoken.value,
               })
             );
+            setIsLoading(false);
           });
         }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <SectionComponent>
