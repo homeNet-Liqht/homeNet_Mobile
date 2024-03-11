@@ -13,54 +13,55 @@ import LoadingModal from "../../../modals/LoadingModal.tsx";
 import {useDispatch} from "react-redux";
 import {addAuth} from "../../../redux/reducers/authReducer.ts";
 import CookieManager from "@react-native-cookies/cookies";
-import {
-    Settings,
-    LoginManager,
-    LoginButton,
-    Profile,
-} from "react-native-fbsdk-next";
-import {useAsyncStorage} from "@react-native-async-storage/async-storage";
-import {appInfo} from "../../../constants/appInfo.ts";
 
+import { Settings, LoginManager, Profile } from "react-native-fbsdk-next";
 GoogleSignin.configure({
-    webClientId:
-        "832402804801-e4q8gdqr1sqda5brt14skrda108bt3oh.apps.googleusercontent.com",
+  webClientId:
+    "734126399931-ermr8ckeqt5fhrnt07h5j2kd12j2nq4n.apps.googleusercontent.com",
+
 });
+
 Settings.setAppID("427623953051055");
 
-const SocialLogin = ({navigation}: any) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const dispatch = useDispatch();
-    const handleGoogleLogin = async () => {
-        await GoogleSignin.hasPlayServices({
-            showPlayServicesUpdateDialog: true,
-        });
-        setIsLoading(true);
-        try {
-            await GoogleSignin.hasPlayServices();
+const SocialLogin = ({ navigation }: any) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const handleGoogleLogin = async () => {
+    await GoogleSignin.hasPlayServices({
+      showPlayServicesUpdateDialog: true,
+    });
+    setIsLoading(true);
+    try {
+      console.log("Preparing Google");
+      await GoogleSignin.hasPlayServices();
 
-            const userInfo = await GoogleSignin.signIn();
-            const user = userInfo.user;
+      const userInfo = await GoogleSignin.signIn();
 
-            const res = await authApi.SignInWithGoogle(user);
+      await GoogleSignin.revokeAccess();
 
-            await CookieManager.get(
-                `${process.env.REACT_APP_API_URL}/auth/social-login`
-            ).then((cookie) => {
-                setIsLoading(false);
-                useAsyncStorage("accessToken").setItem(cookie.accesstoken.value)
-                useAsyncStorage("refreshToken").setItem(cookie.refreshtoekn.value)
-                dispatch(
-                    addAuth({
-                        email: res.data.data.email,
-                        accessToken: cookie.accesstoken.value,
-                    })
-                );
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    };
+      const user = userInfo.user;
+      console.log(user);
+      
+      const res = await authApi.SignInWithGoogle(user);
+
+      await CookieManager.get(
+        `${process.env.REACT_APP_API_URL}/auth/social-login`
+      ).then((cookie) => {
+        console.log(cookie);
+        setIsLoading(false);
+        dispatch(
+          addAuth({
+            email: res.data.data.email,
+            accessToken: cookie.accesstoken.value,
+          })
+        );
+      });
+    } catch (error) {
+      console.log("error while signin:", error, error.code);
+      setIsLoading(false);
+    }
+  };
+
 
     const handleFacebookLogin = async () => {
         try {
@@ -72,14 +73,14 @@ const SocialLogin = ({navigation}: any) => {
                 console.log("Login Cancelled");
             } else {
                 const profile = await Profile.getCurrentProfile();
+        if (profile) {
+          const user = {
+            name: profile.name,
+            photo: profile.imageURL,
+            email: profile.email ? profile.email : profile.userID,
+          };
+          const res = await authApi.SignInWithGoogle(user);
 
-                if (profile) {
-                    const user = {
-                        name: profile.name,
-                        photo: profile.imageURL,
-                        email: profile.userID,
-                    };
-                    const res = await authApi.SignInWithGoogle(user);
 
                     await CookieManager.get(
                         `${process.env.REACT_APP_API_URL}/auth/social-login`
