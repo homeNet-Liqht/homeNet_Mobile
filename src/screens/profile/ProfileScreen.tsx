@@ -43,9 +43,9 @@ export default function ProfileScreen({ navigation }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [inputValues, setInputValues] = useState({
-    name: user.name,
+    name: user ,
     birthday: new Date(),
-    phone: user.phone,
+
   });
   const handleInfoChange = (key: string, value: string | Date) => {
     const data: any = { ...inputValues };
@@ -60,7 +60,6 @@ export default function ProfileScreen({ navigation }: any) {
         user._id,
         inputValues.name,
         inputValues.birthday,
-        inputValues.phone
       );
 
       setIsLoading(false);
@@ -77,7 +76,6 @@ export default function ProfileScreen({ navigation }: any) {
       }
     }
   };
-  console.log(user);
 
   return (
     <ContainerComponent back isScroll color={"#A3A4E5"}>
@@ -154,7 +152,6 @@ export default function ProfileScreen({ navigation }: any) {
                         date={new Date(user.birthday)}
                         onConfirm={(date) => {
                           handleInfoChange("birthday", date);
-                          console.log(inputValues);
 
                           setIsOpen(false);
                         }}
@@ -226,7 +223,7 @@ export default function ProfileScreen({ navigation }: any) {
                 text="Create your own family group"
                 type="primary"
                 styles={{ width: "100%", borderRadius: 25 }}
-                onPress={() => navigation.navigate("FamilyCreate")}
+                onPress={() => navigation.navigate("CreateFamilyScreen")}
               />
               <ButtonComponent
                 text="Join in a family group with a link"

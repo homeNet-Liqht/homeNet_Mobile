@@ -1,19 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
 
-interface initialState {
-    email: string,
-    accessToken: string
-}
 
-const initialState: initialState = {
-    email: '',
-    accessToken: ''
-}
 
 const authSlice =  createSlice({
     name: 'auth',
     initialState:{
-        authData: initialState,
+        authData: '',
         isAccess: false
     },
     reducers: {
@@ -21,7 +13,7 @@ const authSlice =  createSlice({
             state.authData = action.payload
         },
         removeAuth: (state, action) =>{
-            state.authData = initialState
+            state.authData = ''
         },
         alreadyAccess: (state, action) =>{
             state.isAccess = action.payload

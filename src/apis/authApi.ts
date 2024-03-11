@@ -25,6 +25,10 @@ const authApi = {
     const url = "/auth/social-login"
 
     return axiosClient.post(url, user)
+  },
+  refreshToken: () =>{
+    const url = "/auth/refresh"
+    return axiosClient.post(url,{})
   }
 };
 

@@ -30,7 +30,6 @@ function ResetPassword({navigation,route}: any) {
 
     const [isLoading, setIsLoading] = useState(false)
 
-    console.log(values)
     const handeResetPassword =  async () => {
         setIsLoading(true);
         try {
