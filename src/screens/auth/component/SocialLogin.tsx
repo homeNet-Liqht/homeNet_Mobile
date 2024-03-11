@@ -33,7 +33,6 @@ const SocialLogin = ({ navigation }: any) => {
     });
     setIsLoading(true);
     try {
-      console.log("Preparing Google");
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
@@ -41,7 +40,6 @@ const SocialLogin = ({ navigation }: any) => {
       await GoogleSignin.revokeAccess();
 
       const user = userInfo.user;
-      console.log(user);
 
       const res = await authApi.SignInWithGoogle(user);
 
