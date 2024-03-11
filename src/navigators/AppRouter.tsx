@@ -12,7 +12,7 @@ export const AppRouter = () => {
 
     const [isShowSplash, setIsShowSplash] = useState(true);
     const auth = useSelector(authSelector)
-
+    
 
 
     const dispatch = useDispatch();
