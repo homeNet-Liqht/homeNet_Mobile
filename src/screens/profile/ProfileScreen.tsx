@@ -16,17 +16,11 @@ import EvilIcons from "react-native-vector-icons/EvilIcons";
 import UpdatePicture from "./components/UpdatePicture";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  addUser,
   editUser,
   removeUser,
   userSelector,
 } from "../../redux/reducers/userReducer";
-import {
-  ALERT_TYPE,
-  Dialog,
-  AlertNotificationRoot,
-  Toast,
-} from "react-native-alert-notification";
+import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
 import { userApi } from "../../apis";
 import { formatBirthday } from "../../utils/formatBirthday";
 import DatePicker from "react-native-date-picker";
@@ -36,6 +30,7 @@ import { removeAuth } from "../../redux/reducers/authReducer.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { LoginManager } from "react-native-fbsdk-next";
+import { NotificationServices } from "../../utils/notificationService.tsx";
 export default function ProfileScreen({ navigation }: any) {
   const user = useSelector(userSelector);
   const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +46,31 @@ export default function ProfileScreen({ navigation }: any) {
     const data: any = { ...inputValues };
     data[`${key}`] = value;
     setInputValues(data);
+  };
+
+  const handleLogout = async () => {
+    setIsLoading(true);
+    const fcmToken = await AsyncStorage.getItem("fcmToken");
+
+    if (fcmToken) {
+      if (user.fcmToken && user.fcmToken.length > 0) {
+        const items = [...user.fcmToken];
+        const index = items.findIndex((element) => element === fcmToken);
+        if (index !== -1) {
+          items.splice(index, 1);
+        }
+
+        await NotificationServices.Update(user._id, items);
+      }
+    }
+    await AsyncStorage.removeItem("accessToken");
+    await AsyncStorage.removeItem("refreshToken");
+    await AsyncStorage.removeItem("user");
+    await GoogleSignin.signOut();
+    LoginManager.logOut();
+    dispatch(removeAuth({}));
+    dispatch(removeUser());
+    setIsLoading(false);
   };
 
   const handleEditInfo = async () => {
@@ -242,15 +262,7 @@ export default function ProfileScreen({ navigation }: any) {
                 text="Log out"
                 type="primary"
                 textColor="#ECB22F"
-                onPress={async () => {
-                  await AsyncStorage.removeItem("accessToken");
-                  await AsyncStorage.removeItem("refreshToken");
-                  await GoogleSignin.signOut();
-                  LoginManager.logOut();
-
-                  dispatch(removeAuth({}));
-                  dispatch(removeUser());
-                }}
+                onPress={handleLogout}
                 styles={{
                   width: "100%",
                   borderRadius: 25,
