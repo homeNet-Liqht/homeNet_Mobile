@@ -13,6 +13,7 @@ import {ButtonComponent, RowComponent, TextComponent} from '.';
 import {ArrowLeft} from 'iconsax-react-native';
 import {appColors} from '../constants/appColors';
 import {globalStyles} from '../screens/styles/globalStyles.ts';
+import {appInfo} from "../constants/appInfo.ts";
 
 interface Props {
   backgroundNumber?: 1 | 2;
@@ -39,7 +40,7 @@ const ContainerComponent = (props: Props) => {
 
   const headerComponent = () => {
     return (
-      <View style={{flex: 1, paddingTop: 30}}>
+      <View style={{flex: 1, paddingTop: appInfo.size.HEIGHT * 0.05}}>
         {(title || back) && (
           <RowComponent
             styles={{

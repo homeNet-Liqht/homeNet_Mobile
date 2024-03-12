@@ -1,26 +1,27 @@
 import React, {useState} from 'react';
 import {
-    ImageBackground,
+    Image, SafeAreaView,
     StyleSheet,
     TouchableOpacity,
 } from 'react-native';
 import {
     ButtonComponent,
-    ContainerComponent,
     InputComponent,
-    RowComponent,
+    RowComponent, TextComponent,
 } from '../../components';
 import {appInfo} from '../../constants/appInfo';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {DocumentPickerResponse} from 'react-native-document-picker';
 import {selectFile} from '../../utils/photoLibraryAction';
-import { appColors } from '../../constants/appColors';
-export default function CreateFamilyScreen() {
+import {appColors} from '../../constants/appColors';
+import {ArrowLeft} from "iconsax-react-native";
+
+export default function CreateFamilyScreen({navigation}: any) {
     const [familyName, setFamilyName] = useState('');
     const [fileResponse, setFileResponse] =
-        useState<DocumentPickerResponse | null>(null);
+        useState<DocumentPickerResponse | any>(null);
 
-    const handleOnChange = value => setFamilyName(value);
+    const handleOnChange = (value: any) => setFamilyName(value);
     const handlePhotoPicker = async () => {
         const response = await selectFile();
         if (response) {
@@ -28,92 +29,72 @@ export default function CreateFamilyScreen() {
         }
     };
     return (
-        <ContainerComponent back title="Create a Family">
-            <RowComponent>
-                <ImageBackground
-                    source={require('../../assets/imgs/family-tree.png')}
-                    style={styles.image}
-                    imageStyle={{
-                        resizeMode: 'contain',
-                    }}>
+        <SafeAreaView
+            style={{
+                flex: 1,
+                justifyContent: "space-around",
+                alignItems: "center",
+            }}
+        >
+            <RowComponent
+                styles={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    minWidth: 48,
+                    minHeight: 48,
+                    justifyContent: 'flex-start',
+                }}>
 
-                    {fileResponse ? (
-                        <RowComponent>
-                            <ImageBackground
-                                source={{uri: fileResponse[0].uri}}
-                                style={styles.imageFrame}>
-                                <TouchableOpacity
-                                    style={styles.redo}
-                                    onPress={()=> setFileResponse(null)}>
-                                    <EvilIcons name="redo" size={35} color={appColors.white} />
-                                </TouchableOpacity>
-                            </ImageBackground>
-                        </RowComponent>
-                    ) : (
-                        <TouchableOpacity style={styles.frame} onPress={handlePhotoPicker}>
-                            <EvilIcons name="image" size={85} />
-                        </TouchableOpacity>
-                    )}
-                </ImageBackground>
+                <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{marginRight: 12}}>
+                    <ArrowLeft size={24} color={appColors.text}/>
+                </TouchableOpacity>
+                <TextComponent text={"My Family"} size={16} flex={1}/>
             </RowComponent>
 
-            <RowComponent>
-                <InputComponent
-                    value="Hoang's Family"
-                    isPassword={false}
-                    onChange={handleOnChange}
-                />
+            {fileResponse ? (
+                <RowComponent>
+                    <Image
+                        style={{
+                            backgroundColor: appColors.gray,
+                            width: appInfo.size.HEIGHT * 0.2,
+                            height: appInfo.size.HEIGHT * 0.2,
+                            borderRadius: 100
+                        }}
+                        source={{uri: fileResponse[0].uri}}/>
+
+                    <TouchableOpacity
+                        style={{
+                            backgroundColor: appColors.primary,
+                            position: "absolute",
+                            top: 10,
+                            width: 40,
+                            height: 40
+                        }}
+                        onPress={() => setFileResponse(null)}>
+                        <EvilIcons name="close" size={35} color={appColors.white}/>
+                    </TouchableOpacity>
+
+                </RowComponent>
+            ) : (
+                <TouchableOpacity style={{
+                    backgroundColor: appColors.gray,
+                    width: appInfo.size.HEIGHT * 0.2,
+                    height: appInfo.size.HEIGHT * 0.2,
+                    borderRadius: 100
+
+                }} onPress={handlePhotoPicker}>
+                    <EvilIcons style={{position: "absolute", right: "23%", top: "30%"}} name="image" size={85}/>
+                </TouchableOpacity>
+            )}
+
+
+            <RowComponent styles={{flexDirection: "column"}}>
+                <InputComponent value={familyName} onChange={val => setFamilyName(val)} isPassword={false}/>
+                <ButtonComponent text={"Create"} color={appColors.primary} type={"primary"}/>
             </RowComponent>
-            <ButtonComponent
-                type="primary"
-                text="Continue"
-                styles={{borderRadius: 25}}
-            />
-        </ContainerComponent>
+        </SafeAreaView>
     );
 }
-const styles = StyleSheet.create({
-    image: {
-        width: appInfo.size.WIDTH * 0.65,
-        height: appInfo.size.HEIGHT * 0.65,
-        justifyContent: 'flex-end',
-        flexDirection: 'row',
-        paddingTop: 10,
-        borderRadius: 25,
-        objectFit: 'cover',
-    },
-    frame: {
-        position: 'absolute',
-        bottom: 58,
-        right: appInfo.size.WIDTH * 0.22,
-        transform: [
-            {
-                rotateZ: '-3deg',
-            },
-        ],
-    },
-    redo: {
-        position: 'absolute',
-        backgroundColor: appColors.primary,
-        width: 40,
-        height: 40,
-        justifyContent: "center",
-        alignItems: "center",
-        borderRadius: 40,
-        top: -20,
-        right: -25
-    },
-    imageFrame: {
-        position: 'absolute',
-        width: 95,
-        height: 65,
-        bottom: 58,
-        objectFit: 'cover',
-        right: appInfo.size.WIDTH * 0.2,
-        transform: [
-            {
-                rotateZ: '-3deg',
-            },
-        ],
-    },
-});
+const styles = StyleSheet.create({});

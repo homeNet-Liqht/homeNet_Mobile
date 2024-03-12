@@ -14,7 +14,11 @@ function App(): React.JSX.Element {
 
     return (
         <>
-            <StatusBar hidden/>
+            <StatusBar
+                backgroundColor={"rgba(0, 0, 0, 0)"} // Transparent background color
+                translucent={true} // Make the status bar translucent
+                barStyle={"dark-content"}
+            />
             <AlertNotificationRoot>
                 <Provider store={store}>
                     <NavigationContainer>

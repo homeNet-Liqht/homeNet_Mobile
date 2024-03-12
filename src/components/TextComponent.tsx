@@ -21,7 +21,6 @@ const TextComponent = (props: Props) => {
         color,
         size,
         flex,
-        font,
         styles,
         numberOfLine,
 
