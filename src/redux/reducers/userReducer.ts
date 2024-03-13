@@ -8,6 +8,7 @@ const userSlice = createSlice({
       birthday: "",
       email: "",
       name: "",
+      photo:""
     },
   },
   reducers: {
@@ -18,7 +19,7 @@ const userSlice = createSlice({
       state.userData = action.payload
     },
     removeUser: state => {
-      state.userData = {birthday: "",email: "",name: ""};
+      state.userData = {birthday: "",email: "",name: "",photo: ""};
     },
   },
 });

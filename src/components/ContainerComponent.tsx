@@ -34,6 +34,7 @@ const ContainerComponent = (props: Props) => {
     back,
     color,
     backgroundNumber,
+
   } = props;
 
   const navigation: any = useNavigation();

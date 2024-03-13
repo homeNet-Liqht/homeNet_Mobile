@@ -77,7 +77,7 @@ function HomeScreen({navigation}: any) {
             }}
             >
                 <RowComponent styles={{justifyContent:"space-between"}}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.openDrawer()}>
                         <HambergerMenu size={25} color={appColors.white}/>
                     </TouchableOpacity>
                     <RowComponent>
@@ -89,7 +89,7 @@ function HomeScreen({navigation}: any) {
                             height={50}
                         />
                         <TextComponent size={10} color={appColors.white}  text={currentWeather.weather}/>
-                        <TextComponent size={10} color={"yellow"} styles={{fontWeight:"bold"}}  text={" "+currentWeather.temp}/>
+                        <TextComponent size={10} color={"yellow"} styles={{fontWeight:"bold"}}  text={" "+(parseFloat(currentWeather.temp) - 273.15).toString()+ "°C"}/>
                     </RowComponent>
                     <CircleComponent  color={"#524CE0"} size={36} >
                         <Notification size={24} color={appColors.white}/>
@@ -105,7 +105,7 @@ function HomeScreen({navigation}: any) {
                     </CircleComponent>
                 </RowComponent>
                 <RowComponent styles={{justifyContent: "flex-start", alignItems:"flex-start", flexDirection: "column"}}>
-                    <TextComponent color={appColors.white} text={"Good Morning"}/>
+                    <TextComponent size={12} color={appColors.white} text={"Good Morning"}/>
                     <TextComponent color={appColors.white} size={24} styles={{fontWeight:"bold"}} text={userData.name}/>
                 </RowComponent>
             </View>
@@ -119,6 +119,7 @@ function HomeScreen({navigation}: any) {
             }}>
 
             </View>
+            <LoadingModal visible={isLoading}/>
         </View>
     );
 }

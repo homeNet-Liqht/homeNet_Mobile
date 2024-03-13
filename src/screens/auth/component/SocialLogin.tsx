@@ -37,11 +37,11 @@ const SocialLogin = ({navigation}: any) => {
             await GoogleSignin.hasPlayServices();
 
             const userInfo = await GoogleSignin.signIn();
+            console.log(userInfo)
 
             await GoogleSignin.revokeAccess();
 
             const user = userInfo.user;
-
             const res = await authApi.SignInWithGoogle(user);
 
             await CookieManager.get(
