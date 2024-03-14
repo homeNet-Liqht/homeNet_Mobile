@@ -37,7 +37,6 @@ const SocialLogin = ({navigation}: any) => {
             await GoogleSignin.hasPlayServices();
 
             const userInfo = await GoogleSignin.signIn();
-            console.log(userInfo)
 
             await GoogleSignin.revokeAccess();
 

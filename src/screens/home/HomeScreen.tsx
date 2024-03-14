@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Image, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {ContainerComponent, RowComponent, SectionComponent, TextComponent} from '../../components';
-import OptionsBar from './components/OptionsBar';
-import WelcomeBar from './components/WelcomeBar';
-import WeatherBar from './components/WeatherBar';
+import {RowComponent, TextComponent} from '../../components';
 import {useDispatch, useSelector} from 'react-redux';
 import {userApi} from '../../apis';
 import {addUser, userSelector} from '../../redux/reducers/userReducer';
@@ -14,7 +11,6 @@ import {appInfo} from "../../constants/appInfo.ts";
 import {HambergerMenu, Notification} from "iconsax-react-native";
 import getCurrentPosition from "../../utils/getCurrentPosition.ts";
 import getWeatherOfCurrentPosition from "../../utils/getWeatherOfCurrentPosition.ts";
-import capitalizedText from "../../utils/capitalizedText.tsx";
 import CircleComponent from "../../components/CircleComponent.tsx";
 
 function HomeScreen({navigation}: any) {
@@ -109,9 +105,6 @@ function HomeScreen({navigation}: any) {
                     <TextComponent color={appColors.white} size={24} styles={{fontWeight:"bold"}} text={userData.name}/>
                 </RowComponent>
             </View>
-
-
-
 
 
             <View style={{
