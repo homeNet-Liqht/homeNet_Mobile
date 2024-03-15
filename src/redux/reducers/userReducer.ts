@@ -8,7 +8,7 @@ const userSlice = createSlice({
       birthday: "",
       email: "",
       name: "",
-      photo:""
+      photo:"",
       fcmToken: [],
     },
   },
