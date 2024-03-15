@@ -17,8 +17,8 @@ import {
 
 export default function UpdatePicture() {
   const [fileResponse, setFileResponse] =
-    useState<DocumentPickerResponse | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    useState<DocumentPickerResponse | any>();
+  const [selectedImage, setSelectedImage] = useState<string | any>(null);
 
   const handleCaptureImage = async () => {
     let isCameraPermitted = await requestCameraPermission();
