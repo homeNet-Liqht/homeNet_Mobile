@@ -11,8 +11,8 @@ import {
 import capitalizedText  from "../../../utils/capitalizedText";
 
 export default function WeatherBar() {
-  const [currentPosition, setCurrentPosition] = useState({});
-  const [currentWeather, setCurrentWeather] = useState({});
+  const [currentPosition, setCurrentPosition] = useState({latitude:"",longitude:""});
+  const [currentWeather, setCurrentWeather] = useState({icon:'', temp: '', weather:""});
   useEffect(() => {
     const fetchCurrentLocation = async () => {
       try {
@@ -31,7 +31,7 @@ export default function WeatherBar() {
 
   useEffect(() => {
     const fetchWeather = async () => {
-      if (currentPosition.latitude && currentPosition.longitude) {
+      if (currentPosition.latitude && currentPosition.latitude) {
         try {
           const response = await axios.get(
             `https://api.openweathermap.org/data/2.5/weather?lat=${currentPosition.latitude}&lon=${currentPosition.longitude}&appid=${process.env.WEATHER_APP_API}`
@@ -53,7 +53,7 @@ export default function WeatherBar() {
   const temperatureConvert = (temp: any) => Math.floor(temp - 273.15) + "°";
 
   return (
-    <SectionComponent styles={{ padding: 0 }}>
+    <SectionComponent styles={{ padding: 0, margin:0 }}>
       {currentPosition && currentWeather ? (
         <RowComponent
           styles={{ justifyContent: "flex-start", alignItems: "center" }}
@@ -68,6 +68,7 @@ export default function WeatherBar() {
           <TextComponent
             text={capitalizedText(currentWeather.weather) + " "}
             size={18}
+
           />
           <TextComponent
             text={temperatureConvert(currentWeather.temp)}
