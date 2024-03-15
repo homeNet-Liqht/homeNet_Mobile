@@ -28,7 +28,7 @@ function HomeScreen({ navigation }: any) {
       const user = currentUser.data;
       dispatch(addUser(user));
       setUserData(user);
-      await AsyncStorage.setItem("user",JSON.stringify(user));
+      await AsyncStorage.setItem("user", JSON.stringify(user));
     }
     setIsLoading(false);
   };

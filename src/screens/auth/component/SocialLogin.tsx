@@ -27,6 +27,7 @@ Settings.setAppID("427623953051055");
 const SocialLogin = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
+
   const handleGoogleLogin = async () => {
     await GoogleSignin.hasPlayServices({
       showPlayServicesUpdateDialog: true,
@@ -36,7 +37,7 @@ const SocialLogin = ({ navigation }: any) => {
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-
+      
       await GoogleSignin.revokeAccess();
 
       const user = userInfo.user;
@@ -107,7 +108,7 @@ const SocialLogin = ({ navigation }: any) => {
     <SectionComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
         <ButtonComponent
-          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
           text={"Google"}
           type={"primary"}
           color={appColors.white}
@@ -119,14 +120,14 @@ const SocialLogin = ({ navigation }: any) => {
       </RowComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
         <ButtonComponent
-          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
           text={"Facebook"}
           type={"primary"}
           color={appColors.white}
           textColor={"black"}
           iconFlex={"left"}
           icon={<Facebook />}
-          onPress={() => handleFacebookLogin()}
+          onPress={() => handleFacebookLogin}
         />
       </RowComponent>
       <LoadingModal visible={isLoading} />
