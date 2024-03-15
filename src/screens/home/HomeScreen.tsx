@@ -1,3 +1,4 @@
+
 import React, {useEffect, useState} from 'react';
 import {Image, StatusBar, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {RowComponent, TextComponent} from '../../components';
@@ -115,6 +116,7 @@ function HomeScreen({navigation}: any) {
             <LoadingModal visible={isLoading}/>
         </View>
     );
+
 }
 
 export default HomeScreen;
