@@ -1,25 +1,26 @@
 import * as React from "react";
 import {
-  ButtonComponent,
-  RowComponent,
-  SectionComponent,
+    ButtonComponent,
+    RowComponent,
+    SectionComponent,
 } from "../../../components";
-import { appColors } from "../../../constants/appColors.ts";
-import { Google, Facebook } from "../../../assets/svgs";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useState } from "react";
+import {appColors} from "../../../constants/appColors.ts";
+import {Google, Facebook} from "../../../assets/svgs";
+import {GoogleSignin} from "@react-native-google-signin/google-signin";
+import {useState} from "react";
 import authApi from "../../../apis/authApi.ts";
 import LoadingModal from "../../../modals/LoadingModal.tsx";
-import { useDispatch } from "react-redux";
-import { addAuth } from "../../../redux/reducers/authReducer.ts";
+import {useDispatch} from "react-redux";
+import {addAuth} from "../../../redux/reducers/authReducer.ts";
 import CookieManager from "@react-native-cookies/cookies";
 
-import { Settings, LoginManager, Profile } from "react-native-fbsdk-next";
-import { useAsyncStorage } from "@react-native-async-storage/async-storage";
-import { appInfo } from "../../../constants/appInfo.ts";
+import {Settings, LoginManager, Profile} from "react-native-fbsdk-next";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
+import {appInfo} from "../../../constants/appInfo.ts";
+
 GoogleSignin.configure({
-  webClientId:
-    "734126399931-ermr8ckeqt5fhrnt07h5j2kd12j2nq4n.apps.googleusercontent.com",
+    webClientId:
+        "734126399931-ermr8ckeqt5fhrnt07h5j2kd12j2nq4n.apps.googleusercontent.com",
 });
 
 Settings.setAppID("427623953051055");
@@ -40,66 +41,72 @@ const SocialLogin = ({ navigation }: any) => {
       
       await GoogleSignin.revokeAccess();
 
-      const user = userInfo.user;
 
-      const res = await authApi.SignInWithGoogle(user);
+            await GoogleSignin.revokeAccess();
 
-      await CookieManager.get(
-        `${process.env.REACT_APP_API_URL}/auth/social-login`
-      ).then((cookie) => {
-        useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
-        useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
-        setIsLoading(false);
+            const user = userInfo.user;
+            const res = await authApi.SignInWithGoogle(user);
 
-        dispatch(
-          addAuth({
-            email: res.data.data.email,
-            accessToken: cookie.accesstoken.value,
-          })
-        );
-      });
-    } catch (error) {
-      console.log("error while signin:", error, error.code);
-      setIsLoading(false);
-    }
-  };
+            await CookieManager.get(
+                `${process.env.REACT_APP_API_URL}/auth/social-login`
+            ).then((cookie) => {
+                useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
+                useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
+                setIsLoading(false);
 
-  const handleFacebookLogin = async () => {
-    try {
-      const result = await LoginManager.logInWithPermissions([
-        "public_profile",
-      ]);
-
-      if (result.isCancelled) {
-        console.log("Login Cancelled");
-      } else {
-        const profile = await Profile.getCurrentProfile();
-
-        if (profile) {
-          const user = {
-            name: profile.name,
-            photo: profile.imageURL,
-            email: profile.userID,
-          };
-          const res = await authApi.SignInWithGoogle(user);
-
-          await CookieManager.get(
-            `${process.env.REACT_APP_API_URL}/auth/social-login`
-          ).then((cookie) => {
-            console.log(cookie);
-
-            useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
-            useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
-            dispatch(
-              addAuth({
-                email: res.data.data.email,
-                accessToken: cookie.accesstoken.value,
-              })
-            );
+                dispatch(
+                    addAuth({
+                        email: res.data.data.email,
+                        accessToken: cookie.accesstoken.value,
+                    })
+                );
+            });
+        } catch (error: any) {
+            console.log("error while signin:", error, error.code);
             setIsLoading(false);
-          });
         }
-      }
+    };
+
+    const handleFacebookLogin = async () => {
+        try {
+            const result = await LoginManager.logInWithPermissions([
+                "public_profile",
+            ]);
+
+            if (result.isCancelled) {
+                console.log("Login Cancelled");
+            } else {
+                const profile = await Profile.getCurrentProfile();
+
+                if (profile) {
+                    const user = {
+                        name: profile.name,
+                        photo: profile.imageURL,
+                        email: profile.userID,
+                    };
+                    const res = await authApi.SignInWithGoogle(user);
+
+                    await CookieManager.get(
+                        `${process.env.REACT_APP_API_URL}/auth/social-login`
+                    ).then((cookie) => {
+                        console.log(cookie);
+
+                        useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
+                        useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
+                        dispatch(
+                            addAuth({
+                                email: res.data.data.email,
+                                accessToken: cookie.accesstoken.value,
+                            })
+                        );
+                        setIsLoading(false);
+                    });
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+   }
     } catch (error) {
       console.log(error);
     }
@@ -133,6 +140,7 @@ const SocialLogin = ({ navigation }: any) => {
       <LoadingModal visible={isLoading} />
     </SectionComponent>
   );
+
 };
 
 export default SocialLogin;

@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import TabNavigator from "./TabNavigator.tsx";
 import CreateFamilyScreen from "../screens/Family/CreateFamilyScreen.tsx";
+
 import messaging, {
   FirebaseMessagingTypes,
 } from "@react-native-firebase/messaging";
@@ -41,4 +42,5 @@ export default function MainNavigator() {
       />
     </>
   );
+
 }

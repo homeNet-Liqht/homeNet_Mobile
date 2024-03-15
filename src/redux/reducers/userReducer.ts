@@ -8,6 +8,7 @@ const userSlice = createSlice({
       birthday: "",
       email: "",
       name: "",
+      photo:""
       fcmToken: [],
     },
   },
@@ -19,7 +20,9 @@ const userSlice = createSlice({
       state.userData = action.payload
     },
     removeUser: state => {
+
       state.userData = { birthday: "", email: "", name: "", fcmToken: [] };
+
     },
   },
 });

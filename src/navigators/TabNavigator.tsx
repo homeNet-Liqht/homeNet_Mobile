@@ -14,6 +14,7 @@ import {
 } from "iconsax-react-native";
 import CalendarScreen from "../screens/Calendar/CalendarScreen.tsx";
 import TaskNavigator from "./TaskNavigator.tsx";
+import DrawerNavigator from "./DrawerNavigator.tsx";
 
 export default function TabNavigator() {
   const Tab = createBottomTabNavigator();
