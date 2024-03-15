@@ -1,65 +1,150 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
 import {
+  ButtonComponent,
   ContainerComponent,
-  InputComponent,
+  RowComponent,
   SectionComponent,
+  SpaceComponent,
   TextComponent,
 } from "../../components";
+import { appColors } from "../../constants/appColors";
+import { ScrollView, StyleSheet, Button } from "react-native";
+import { appInfo } from "../../constants/appInfo";
+import Task from "./component/Task";
+import { taskApi } from "../../apis";
+import { LoadingModal } from "../../modals";
 
-const initialValue = {
-  title: "",
-  description: "",
-  location: {
-    title: "",
-    address: "",
-  },
-  photo: [""],
-  assignees: [""],
-  assigner: [],
-  startAt: "",
-  endAt: "",
-};
+interface TaskData {
+  _id: string;
+  title: string;
+  status: string;
+  assigner: {
+    photo: string;
+  };
+}
 
-function TaskScreen() {
-  const [Task, setTask] = useState(initialValue);
-  const handleChange = (key: string, value: string) => {
-    const items = { ...Task };
-    items[`${key}`] = value;
-    setTask(items);
+export default function TaskScreen() {
+  const [taskData, setTaskData] = useState<TaskData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [noMoreData, setNoMoreData] = useState(false);
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    setIsLoading(true);
+    try {
+      const res = await taskApi.getTasks(page);
+      if (res.data.data.length === 0) {
+        setNoMoreData(true);
+      } else {
+        setTaskData((prevData) => [...prevData, ...res.data.data]);
+        setPage(page + 1); // Increment page directly
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setIsLoading(false);
+    }
   };
 
-  const handleAddTask = async () => {
-    console.log(Task);
+  const loadMoreTasks = () => {
+    if (!isLoading && !noMoreData) {
+      // Ensure loading is not in progress and there's more data to load
+      fetchTasks();
+    }
   };
 
   return (
-    <ContainerComponent isScroll title="Add new Task">
+    <ContainerComponent>
       <SectionComponent>
-        <TextComponent text="Add new" size={18} />
-      </SectionComponent>
-      <SectionComponent>
-        <InputComponent
-          placeHolder="Title"
-          value={Task.title}
-          onChange={(val) => handleChange("title", val)}
-          isPassword={false}
-          allowClear
-        />
-        <InputComponent
-          placeHolder="Description"
-          value={Task.title}
-          onChange={(val) => handleChange("description", val)}
-          multiline
-          numberOfLine={4}
-          isPassword={false}
-          allowClear
-          
+        <TextComponent
+          text="Task Status"
+          size={22}
+          styles={{ fontWeight: "bold" }}
         />
       </SectionComponent>
+      <SectionComponent>
+        <SectionComponent styles={styles.barBorder}>
+          <RowComponent styles={styles.barWrapper}>
+            <TextComponent
+              text="Task"
+              size={13}
+              styles={{ fontWeight: "300" }}
+              color={appColors.gray}
+            />
+            <RowComponent styles={styles.barItemWrapper}>
+              <TextComponent
+                text="Status"
+                size={13}
+                styles={{ fontWeight: "300" }}
+                color={appColors.gray}
+              />
+              <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
+              <TextComponent
+                text="Owner"
+                size={13}
+                styles={{ fontWeight: "300" }}
+                color={appColors.gray}
+              />
+            </RowComponent>
+          </RowComponent>
+        </SectionComponent>
+        <ScrollView style={styles.scrollWrapper}>
+          {taskData.map((task) => (
+            <Task
+              key={task._id}
+              title={task.title}
+              status={task.status}
+              photo={task.assigner.photo}
+            />
+          ))}
+          {noMoreData && (
+            <SectionComponent>
+              <RowComponent>
+                <TextComponent
+                  text="No more data to see"
+                  size={11}
+                  color={appColors.gray}
+                />
+              </RowComponent>
+            </SectionComponent>
+          )}
+        </ScrollView>
+        {!noMoreData && (
+          <ButtonComponent
+            text={isLoading ? "Loading..." : "Load More"}
+            onPress={loadMoreTasks}
+            disable={isLoading}
+            type="primary"
+          />
+        )}
+      </SectionComponent>
+      <LoadingModal visible={isLoading} />
     </ContainerComponent>
   );
 }
 
-export default TaskScreen;
+const styles = StyleSheet.create({
+  scrollWrapper: {
+    maxHeight: appInfo.size.HEIGHT * 0.3,
+  },
+  barBorder: {
+    borderTopWidth: 1,
+    justifyContent: "center",
+    height: appInfo.size.HEIGHT * 0.08,
+    borderColor: appColors.gray,
+  },
+  barWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  barItemWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+});

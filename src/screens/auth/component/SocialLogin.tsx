@@ -25,18 +25,22 @@ GoogleSignin.configure({
 
 Settings.setAppID("427623953051055");
 
-const SocialLogin = ({navigation}: any) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const dispatch = useDispatch();
-    const handleGoogleLogin = async () => {
-        await GoogleSignin.hasPlayServices({
-            showPlayServicesUpdateDialog: true,
-        });
-        setIsLoading(true);
-        try {
-            await GoogleSignin.hasPlayServices();
+const SocialLogin = ({ navigation }: any) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
-            const userInfo = await GoogleSignin.signIn();
+  const handleGoogleLogin = async () => {
+    await GoogleSignin.hasPlayServices({
+      showPlayServicesUpdateDialog: true,
+    });
+    setIsLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices();
+
+      const userInfo = await GoogleSignin.signIn();
+      
+      await GoogleSignin.revokeAccess();
+
 
             await GoogleSignin.revokeAccess();
 
@@ -102,36 +106,41 @@ const SocialLogin = ({navigation}: any) => {
         } catch (error) {
             console.log(error);
         }
-    };
-    return (
-        <SectionComponent>
-            <RowComponent styles={{paddingHorizontal: 20}}>
-                <ButtonComponent
-                    styles={{width: appInfo.size.WIDTH * 0.5, borderRadius: 30}}
-                    text={"Google"}
-                    type={"primary"}
-                    color={appColors.white}
-                    textColor={"black"}
-                    iconFlex={"left"}
-                    icon={<Google/>}
-                    onPress={() => handleGoogleLogin()}
-                />
-            </RowComponent>
-            <RowComponent styles={{paddingHorizontal: 20}}>
-                <ButtonComponent
-                    styles={{width: appInfo.size.WIDTH * 0.5, borderRadius: 30}}
-                    text={"Facebook"}
-                    type={"primary"}
-                    color={appColors.white}
-                    textColor={"black"}
-                    iconFlex={"left"}
-                    icon={<Facebook/>}
-                    onPress={() => handleFacebookLogin()}
-                />
-            </RowComponent>
-            <LoadingModal visible={isLoading}/>
-        </SectionComponent>
-    );
+   }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <SectionComponent>
+      <RowComponent styles={{ paddingHorizontal: 20 }}>
+        <ButtonComponent
+          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          text={"Google"}
+          type={"primary"}
+          color={appColors.white}
+          textColor={"black"}
+          iconFlex={"left"}
+          icon={<Google />}
+          onPress={() => handleGoogleLogin()}
+        />
+      </RowComponent>
+      <RowComponent styles={{ paddingHorizontal: 20 }}>
+        <ButtonComponent
+          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          text={"Facebook"}
+          type={"primary"}
+          color={appColors.white}
+          textColor={"black"}
+          iconFlex={"left"}
+          icon={<Facebook />}
+          onPress={() => handleFacebookLogin}
+        />
+      </RowComponent>
+      <LoadingModal visible={isLoading} />
+    </SectionComponent>
+  );
+
 };
 
 export default SocialLogin;

@@ -40,10 +40,10 @@ export class NotificationServices {
         await this.Update(auth._id, fcmToken);
       }
     }
-  }
+  };
   static Update = async (id: string, token: string[]) => {
     try {
-      const apiRes = await userApi.updateFCMToken(id, token);
+      await userApi.updateFCMToken(id, token);
     } catch (error) {
       console.log(error);
     }

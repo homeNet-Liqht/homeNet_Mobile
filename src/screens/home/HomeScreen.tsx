@@ -47,18 +47,15 @@ function HomeScreen({navigation}: any) {
         }
     }
 
+  }, [dispatch]);
 
-
-
-
-
-    const getCurrentUser = async () => {
-        const currentUser = await userApi.currentUser()
-        if (currentUser) {
-            dispatch(addUser(currentUser.data))
-            setUserData(currentUser.data)
-        }
-        setIsLoading(false)
+  const getCurrentUser = async () => {
+    const currentUser = await userApi.currentUser();
+    if (currentUser) {
+      const user = currentUser.data;
+      dispatch(addUser(user));
+      setUserData(user);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
 
     }
 

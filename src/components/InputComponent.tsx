@@ -53,7 +53,6 @@ const InputComponent = (props: Props) => {
           styles,
           {
             paddingHorizontal: affix || suffix ? 14 : 0,
-            alignItems: "flex-start",
           },
         ]}
       >
