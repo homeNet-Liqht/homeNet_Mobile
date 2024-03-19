@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  ButtonComponent,
   ContainerComponent,
   RowComponent,
   SectionComponent,
@@ -8,30 +7,82 @@ import {
   TextComponent,
 } from "../../components";
 import { appColors } from "../../constants/appColors";
-import { ScrollView, StyleSheet, Button } from "react-native";
+import { ScrollView, StyleSheet, Platform } from "react-native";
 import { appInfo } from "../../constants/appInfo";
 import Task from "./component/Task";
 import { taskApi } from "../../apis";
 import { LoadingModal } from "../../modals";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Add, ArrowCircleDown } from "iconsax-react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { addTask, taskSelector } from "../../redux/reducers/taskReducer";
+import Detail from "./component/Detail";
+import { userSelector } from "../../redux/reducers/userReducer";
 
 interface TaskData {
   _id: string;
   title: string;
   status: string;
   assigner: {
+    _id: string;
     photo: string;
   };
 }
 
-export default function TaskScreen() {
+const initDetailData = {
+  _id: "",
+  assignees: [{ _id: "", name: "", photo: "" }],
+  assigner: {
+    _id: "",
+    name: "",
+    photo: "",
+  },
+  task: {
+    _id: "",
+    startTime: "",
+    endTime: "",
+    description: "",
+    photo: [],
+    location: [],
+    status: "",
+    title: "",
+  },
+};
+
+export default function TaskScreen({ navigation }: any) {
   const [taskData, setTaskData] = useState<TaskData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
   const [noMoreData, setNoMoreData] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [detailData, setDetailData] = useState(initDetailData);
+  const dispatch = useDispatch();
+  const refreshTask = useSelector(taskSelector);
+  const userData = useSelector(userSelector);
+
+  const isAssigner = detailData.assigner._id == userData._id;
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (refreshTask.refresh) {
+      setTaskData([]);
+      setPage(0);
+      fetchTasks();
+      dispatch(addTask());
+    }
+  }, [refreshTask.refresh]);
+
+  const getTaskDetail = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const res = await taskApi.getSingleTask(id);
+      console.log(res.data.data);
+      setDetailData(res.data.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
 
   const fetchTasks = async () => {
     setIsLoading(true);
@@ -41,7 +92,7 @@ export default function TaskScreen() {
         setNoMoreData(true);
       } else {
         setTaskData((prevData) => [...prevData, ...res.data.data]);
-        setPage(page + 1); // Increment page directly
+        setPage(res.data.lastDataIndex);
       }
       setIsLoading(false);
     } catch (error) {
@@ -49,10 +100,12 @@ export default function TaskScreen() {
       setIsLoading(false);
     }
   };
+  const handleCloseModal = () => {
+    setIsVisible(false);
+  };
 
   const loadMoreTasks = () => {
     if (!isLoading && !noMoreData) {
-      // Ensure loading is not in progress and there's more data to load
       fetchTasks();
     }
   };
@@ -94,12 +147,19 @@ export default function TaskScreen() {
         </SectionComponent>
         <ScrollView style={styles.scrollWrapper}>
           {taskData.map((task) => (
-            <Task
+            <TouchableOpacity
               key={task._id}
-              title={task.title}
-              status={task.status}
-              photo={task.assigner.photo}
-            />
+              onPress={() => {
+                getTaskDetail(task._id);
+                setIsVisible(!isVisible);
+              }}
+            >
+              <Task
+                title={task.title}
+                status={task.status}
+                photo={task.assigner.photo}
+              />
+            </TouchableOpacity>
           ))}
           {noMoreData && (
             <SectionComponent>
@@ -112,16 +172,42 @@ export default function TaskScreen() {
               </RowComponent>
             </SectionComponent>
           )}
+          {!noMoreData && (
+            <RowComponent>
+              <TouchableOpacity onPress={loadMoreTasks} disabled={isLoading}>
+                <ArrowCircleDown size={25} color={appColors.gray} />
+              </TouchableOpacity>
+            </RowComponent>
+          )}
         </ScrollView>
-        {!noMoreData && (
-          <ButtonComponent
-            text={isLoading ? "Loading..." : "Load More"}
-            onPress={loadMoreTasks}
-            disable={isLoading}
-            type="primary"
-          />
-        )}
       </SectionComponent>
+
+      <SectionComponent styles={styles.plus}>
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(addTask());
+            navigation.navigate("AddNewTask");
+          }}
+          style={styles.plusWrapper}
+        >
+          <Add size={25} color={appColors.white} />
+        </TouchableOpacity>
+      </SectionComponent>
+      <Detail
+        visible={isVisible}
+        id={detailData.task._id}
+        status={detailData.task.status}
+        ownerName={detailData.assigner.name}
+        ownerPhoto={detailData.assigner.photo}
+        title={detailData.task.title}
+        description={detailData.task.description}
+        startTime={detailData.task.startTime}
+        endTime={detailData.task.endTime}
+        assignees={detailData.assignees}
+        taskPhoto={detailData.task.photo}
+        onClose={() => handleCloseModal()}
+        isAssigner={isAssigner}
+      />
       <LoadingModal visible={isLoading} />
     </ContainerComponent>
   );
@@ -129,7 +215,7 @@ export default function TaskScreen() {
 
 const styles = StyleSheet.create({
   scrollWrapper: {
-    maxHeight: appInfo.size.HEIGHT * 0.3,
+    maxHeight: appInfo.size.HEIGHT * 0.7,
   },
   barBorder: {
     borderTopWidth: 1,
@@ -146,5 +232,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  plus: {
+    position: "absolute",
+    bottom: appInfo.size.HEIGHT * 0.005,
+    right: appInfo.size.WIDTH * 0.01,
+  },
+  plusWrapper: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+    backgroundColor: appColors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    ...Platform.select({
+      android: {
+        elevation: 1.5,
+      },
+    }),
   },
 });
