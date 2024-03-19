@@ -9,7 +9,7 @@ import {
 import React, {ReactNode, useCallback, useRef,} from 'react';
 
 import {useNavigation} from '@react-navigation/native';
-import { RowComponent, TextComponent} from '.';
+import {RowComponent, TextComponent} from '.';
 import {ArrowLeft, Edit} from 'iconsax-react-native';
 import {appColors} from '../constants/appColors';
 import {appInfo} from "../constants/appInfo.ts";
@@ -27,15 +27,17 @@ interface Props {
 
     moreAction?: {
         moreActionIcon: ReactNode,
-        dataBottomSheet:  {
+        dataBottomSheet: {
             key: string,
             title: string,
             icon: ReactNode
         }[],
-        titleBottomSheet:string
-
-
+        titleBottomSheet: string
     },
+    confirmAction?: {
+        icon: ReactNode,
+        action: () => void
+    }
 
 
 }
@@ -49,7 +51,8 @@ const ContainerComponent = (props: Props) => {
         back,
         color,
         backgroundNumber,
-        moreAction
+        moreAction,
+        confirmAction
     } = props;
 
     const navigation: any = useNavigation();
@@ -85,9 +88,17 @@ const ContainerComponent = (props: Props) => {
                             <TouchableOpacity onPress={handlePresentModalPress}>
                                 {moreAction.moreActionIcon}
                             </TouchableOpacity>
-
-
-                            : <></>}
+                            : <>
+                                {
+                                    confirmAction ?
+                                        <TouchableOpacity onPress={confirmAction.action}>
+                                            {confirmAction.icon}
+                                        </TouchableOpacity>
+                                        :
+                                        <></>
+                                }
+                            </>
+                        }
                     </RowComponent>
                 )}
                 {returnContainer}
@@ -117,15 +128,16 @@ const ContainerComponent = (props: Props) => {
             style={{flex: 1}}
             imageStyle={{flex: 1}}>
             <SafeAreaView style={{flex: 1}}>{headerComponent()}</SafeAreaView>
-            {moreAction && <CustomBottomSheet titleBottomSheet={moreAction.titleBottomSheet} navigation={navigation} ref={bottomSheetModalRef} dataBottomSheet={moreAction.dataBottomSheet}/>}
-
+            {moreAction && <CustomBottomSheet titleBottomSheet={moreAction.titleBottomSheet} navigation={navigation}
+                                              ref={bottomSheetModalRef} dataBottomSheet={moreAction.dataBottomSheet}/>}
 
 
         </ImageBackground>
     ) : (
         <SafeAreaView style={containerStyle}>
             <View style={{flex: 1}}>{headerComponent()}</View>
-            {moreAction && <CustomBottomSheet titleBottomSheet={moreAction.titleBottomSheet} navigation={navigation} ref={bottomSheetModalRef} dataBottomSheet={moreAction.dataBottomSheet}/>}
+            {moreAction && <CustomBottomSheet titleBottomSheet={moreAction.titleBottomSheet} navigation={navigation}
+                                              ref={bottomSheetModalRef} dataBottomSheet={moreAction.dataBottomSheet}/>}
         </SafeAreaView>
     );
 };

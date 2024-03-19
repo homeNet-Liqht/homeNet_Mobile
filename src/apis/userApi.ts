@@ -9,11 +9,15 @@ const userApi = {
     const url = `/user/update-info/${id}`;
     return axiosClient.put(url, { name: name, birthday: birthday })
   },
+    updateFCMToken: (uid: string, token: string[]) => {
+        const url = `/user/update-fcmtoken/${uid}`;
+        return axiosClient.put(url, { token })
+    },
 
-  updateFCMToken: (uid: string, token: string[]) => {
-    const url = `/user/update-fcmtoken/${uid}`;
-    return axiosClient.put(url, { token })
-  }
+    updateImage: (FormData: FormData,id: string) => {
+        const url = `/user/profile-image/${id}`
+        return axiosClient.put(url, FormData, {headers: {"Content-Type" : "multipart/form-data"}})
+    }
 };
 
 export default userApi;

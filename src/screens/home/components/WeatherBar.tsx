@@ -50,7 +50,7 @@ export default function WeatherBar() {
     fetchWeather();
   }, [currentPosition]);
 
-  const temperatureConvert = (temp: any) => Math.floor(temp - 273.15) + "°";
+  const temperatureConvert = (temp: any) => Math.floor(temp - 273.15).toFixed(2) + "°";
 
   return (
     <SectionComponent styles={{ padding: 0, margin:0 }}>

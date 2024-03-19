@@ -3,7 +3,7 @@ import * as React from 'react';
 import {StyleSheet, View} from "react-native";
 import {RowComponent, TextComponent} from "./index.ts";
 import {forwardRef, ReactNode, useCallback, useMemo} from "react";
-import {BottomSheetBackdrop, BottomSheetFlatList, BottomSheetModal} from "@gorhom/bottom-sheet";
+import {BottomSheetBackdrop, BottomSheetFlatList, BottomSheetModal, useBottomSheetModal} from "@gorhom/bottom-sheet";
 import {appColors} from "../constants/appColors.ts";
 import {appInfo} from "../constants/appInfo.ts";
 
@@ -33,6 +33,7 @@ const CustomBottomSheet = forwardRef<Ref, Props>((props, ref) => {
             <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props}/>
         , []
     )
+    const { dismiss, dismissAll } = useBottomSheetModal();
 
     return (
         <BottomSheetModal
@@ -55,7 +56,9 @@ const CustomBottomSheet = forwardRef<Ref, Props>((props, ref) => {
                             justifyContent: "flex-start",
                             alignItems: "center"
                         }}
-                        onPress={() => {props.navigation.navigate(`${item.key}`)
+                        onPress={() => {
+                            dismiss()
+                            props.navigation.navigate(`${item.key}`)
                         }}
                     >
                         {item.icon}

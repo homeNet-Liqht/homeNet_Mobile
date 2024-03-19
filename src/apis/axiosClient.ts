@@ -34,7 +34,9 @@ axiosClient.interceptors.response.use((response) => {
         } catch (e) {
 
         }
+    }else {
+        return Promise.reject(error.response); // No need to refresh tokens, reject with original error response
     }
-    return Promise.reject(error.response)
+
 });
 export default axiosClient;
