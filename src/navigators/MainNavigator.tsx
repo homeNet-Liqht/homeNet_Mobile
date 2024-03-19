@@ -10,6 +10,7 @@ import { Platform } from "react-native";
 import { useEffect, useRef } from "react";
 import NotificationPopup from "react-native-push-notification-popup";
 import PopupComponent from "../components/PopupComponent.tsx";
+import DrawerNavigator from "./DrawerNavigator.tsx";
 export default function MainNavigator() {
   const notificationPopupRef = useRef<NotificationPopup | null>(null);
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function MainNavigator() {
   return (
     <>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name={"Main"} component={TabNavigator} />
+      <Stack.Screen name={'Main'} component={DrawerNavigator} />
         <Stack.Screen
           name={"CreateFamilyScreen"}
           component={CreateFamilyScreen}
