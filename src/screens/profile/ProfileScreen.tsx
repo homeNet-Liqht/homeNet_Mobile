@@ -7,6 +7,7 @@ import {
     SpaceComponent,
     TextComponent,
 } from "../../components";
+
 import {appInfo} from "../../constants/appInfo";
 import {appColors} from "../../constants/appColors";
 import {useSelector} from "react-redux";
@@ -22,6 +23,7 @@ export default function ProfileScreen({navigation}: any) {
 
     const size = 20;
     const color = appColors.gray
+
 
     const bottomSheetFlatList = [
         {
@@ -105,9 +107,11 @@ export default function ProfileScreen({navigation}: any) {
                     </View>
                 </RowComponent>
 
+
                 <LoadingModal visible={isLoading}/>
             </ContainerComponent>
         </>
 
     );
+
 }

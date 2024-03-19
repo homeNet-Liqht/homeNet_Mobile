@@ -4,11 +4,12 @@ import { createSlice } from '@reduxjs/toolkit';
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    userData:  {
+    userData: {
       birthday: "",
       email: "",
       name: "",
-      photo:""
+      photo:"",
+      fcmToken: [],
     },
   },
   reducers: {
@@ -19,7 +20,9 @@ const userSlice = createSlice({
       state.userData = action.payload
     },
     removeUser: state => {
-      state.userData = {birthday: "",email: "",name: "",photo: ""};
+
+      state.userData = { birthday: "", email: "", name: "", fcmToken: [] };
+
     },
   },
 });
