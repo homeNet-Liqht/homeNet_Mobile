@@ -8,7 +8,7 @@ const userSlice = createSlice({
       birthday: "",
       email: "",
       name: "",
-      photo:"",
+      photo: "",
       fcmToken: [],
     },
   },
@@ -21,7 +21,7 @@ const userSlice = createSlice({
     },
     removeUser: state => {
 
-      state.userData = { birthday: "", email: "", name: "", fcmToken: [] };
+      state.userData = { birthday: "", email: "", name: "", photo: "", fcmToken: [] };
 
     },
   },

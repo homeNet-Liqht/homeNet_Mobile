@@ -8,6 +8,7 @@ import {
 import { appInfo } from "../../../constants/appInfo";
 import { Image, Platform, StyleSheet } from "react-native";
 import capitalizedText from "../../../utils/capitalizedText";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface TaskProps {
   title: string;
@@ -62,7 +63,7 @@ const styles = StyleSheet.create({
     paddingTop: 15,
     ...Platform.select({
       android: {
-        elevation: 1,
+        elevation: 1.5,
       },
     }),
   },
