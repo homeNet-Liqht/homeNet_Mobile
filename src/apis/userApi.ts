@@ -5,9 +5,9 @@ const userApi = {
     const url = `/user/current-user/`
     return axiosClient.get(url)
   },
-  editUser: (id: string, name: string, birthday: Date | null) => {
+  editUser: (id: string, name: string, birthday: Date | null, phone: string) => {
     const url = `/user/update-info/${id}`;
-    return axiosClient.put(url, { name: name, birthday: birthday })
+    return axiosClient.put(url, { name: name, birthday: birthday , phone: phone})
   },
     updateFCMToken: (uid: string, token: string[]) => {
         const url = `/user/update-fcmtoken/${uid}`;
