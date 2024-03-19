@@ -7,21 +7,25 @@ import {
 } from "../../components";
 import {appInfo} from "../../constants/appInfo";
 import {appColors} from "../../constants/appColors";
-import {useSelector} from "react-redux";
-import {userSelector,} from "../../redux/reducers/userReducer";
+import {useDispatch, useSelector} from "react-redux";
+import {addUser, userSelector,} from "../../redux/reducers/userReducer";
 import {LoadingModal} from "../../modals";
-import {Camera, Check, Edit} from "iconsax-react-native";
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import DatePicker from "react-native-date-picker";
 import {userApi} from "../../apis";
-import Entypo from "react-native-vector-icons/Entypo";
+import {selectFile} from "../../utils/photoLibraryAction.tsx";
+import {DocumentPickerResponse} from "react-native-document-picker";
+import Feather from "react-native-vector-icons/Feather"
+
 
 
 export default function EditProfileScreen({navigation}: any) {
+    const dispatch =useDispatch()
     const user = useSelector(userSelector);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState<any>(null);
-    const [photo, setPhoto] = useState();
+    const [photo, setPhoto] = useState<DocumentPickerResponse>();
+
+    const [isChangePhoto, setIsChangePhoto] = useState(false)
 
     const [date, setDate] = useState(new Date(user.birthday))
     const [name, setName] = useState(user.name)
@@ -30,56 +34,61 @@ export default function EditProfileScreen({navigation}: any) {
     const formData = new FormData();
 
 
-    const handleCancel = () => {
-        setSelectedImage(null)
-        console.log("cancel")
+
+    const openImagePicker = async ({navigation} : any) =>{
+        const res =  await selectFile()
+        if (res){
+            setPhoto(res[0])
+            setSelectedImage(res[0].uri)
+            setIsChangePhoto(true)
+        }
     }
+
+
 
     const handleChangeImage = async () => {
         setIsLoading(true)
         formData.append('image', photo);
         try {
             await userApi.updateImage(formData, user._id)
+            await getCurrentUser()
+            setIsChangePhoto(false)
             setIsLoading(false)
         }catch (e:any) {
-            console.log(e)
             setIsLoading(false)
         }
-
-
     }
 
-    const openImagePicker = () => {
-        const options = {
-            mediaType: 'photo',
-            includeBase64: false,
-            maxHeight: 2000,
-            maxWidth: 2000,
-        };
-
-        // @ts-ignore
-        launchImageLibrary(options, (response:any) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.error) {
-                console.log('Image picker error: ', response.error);
-            } else {
-                let imageUri = response.uri || response.assets?.[0]?.uri;
-                setPhoto(response.assets[0])
-                setSelectedImage(imageUri);
-            }
-        });
+    const getCurrentUser = async () => {
+        const currentUser = await userApi.currentUser();
+        if (currentUser) {
+            dispatch(addUser(currentUser.data));
+        }
     };
 
-    const handleConfirm  = () =>{
-        console.log("hhw")
+    const handleCancel = () => {
+        setIsChangePhoto(false)
+    }
+
+    const handleConfirm  = async () =>{
+        try {
+            setIsLoading(true)
+            const res = await userApi.editUser(user._id,name,date,phone)
+            await getCurrentUser()
+            setIsLoading(false)
+            navigation.navigate("ProfileScreen")
+        }catch (e) {
+            setIsLoading(false)
+        }
     }
 
     const confirmAction = {
-        icon: <Check  color={appColors.primary} size={20}/>,
+        icon: <Feather name={"check"}  color={appColors.primary} size={24}/>,
         action: () =>handleConfirm()
 
     }
+
+
 
     return (
         <>
@@ -114,12 +123,7 @@ export default function EditProfileScreen({navigation}: any) {
                                 text={user.name[0]}/>
                         </View>}
                     {
-                        !selectedImage ? <TouchableOpacity style={{
-                            padding: 5,
-                            borderRadius: 100
-                        }} onPress={openImagePicker}>
-                            <TextComponent text={"change your photo"} color={appColors.primary}/>
-                        </TouchableOpacity>:
+                        isChangePhoto ?
                             <RowComponent justify={"space-around"} styles={{width: appInfo.size.WIDTH * 0.5, paddingTop: 10}}>
                                 <TouchableOpacity onPress={handleCancel}>
                                     <TextComponent text={"cancel"} color={appColors.primary}  />
@@ -127,7 +131,12 @@ export default function EditProfileScreen({navigation}: any) {
                                 <TouchableOpacity onPress={() => {handleChangeImage()}}>
                                     <TextComponent text={"Save"} color={appColors.primary} />
                                 </TouchableOpacity>
-                            </RowComponent>
+                            </RowComponent>:<TouchableOpacity style={{
+                                padding: 5,
+                                borderRadius: 100
+                            }} onPress={openImagePicker}>
+                                <TextComponent text={"change your photo"} color={appColors.primary}/>
+                            </TouchableOpacity>
                     }
                 </RowComponent>
                 <SectionComponent>
