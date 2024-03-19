@@ -13,7 +13,6 @@ const axiosClient = axios.create({
 axiosClient.interceptors.request.use(async (config) => {
     // Modify the request configuration
     config.headers['Authorization'] = ``;
-    config.headers['content-type'] = "application/json";
     return config;
 
 })
@@ -37,7 +36,9 @@ axiosClient.interceptors.response.use((response) => {
         } catch (e) {
 
         }
+    }else {
+        return Promise.reject(error.response); // No need to refresh tokens, reject with original error response
     }
-    return Promise.reject(error.response)
+
 });
 export default axiosClient;

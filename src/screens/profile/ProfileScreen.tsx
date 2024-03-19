@@ -25,7 +25,7 @@ export default function ProfileScreen({navigation}: any) {
 
     const bottomSheetFlatList = [
         {
-            key: "HomeScreen",
+            key: "EditProfileScreen",
             title: "Edit profile",
             icon: <Edit size={size} color={color}/>
         },

@@ -15,12 +15,12 @@ import {DocumentPickerResponse} from 'react-native-document-picker';
 import {selectFile} from '../../utils/photoLibraryAction';
 import {appColors} from '../../constants/appColors';
 import {ArrowLeft} from "iconsax-react-native";
+import {userSelector} from "../../redux/reducers/userReducer.ts";
 
 export default function CreateFamilyScreen({navigation}: any) {
     const [familyName, setFamilyName] = useState('');
     const [fileResponse, setFileResponse] =
         useState<DocumentPickerResponse | any>(null);
-
     const handleOnChange = (value: any) => setFamilyName(value);
     const handlePhotoPicker = async () => {
         const response = await selectFile();
@@ -97,4 +97,3 @@ export default function CreateFamilyScreen({navigation}: any) {
         </SafeAreaView>
     );
 }
-const styles = StyleSheet.create({});
