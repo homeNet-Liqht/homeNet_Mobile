@@ -1,4 +1,4 @@
-import {View, Text, TextInput, StyleSheet} from 'react-native';
+import {View, TextInput, StyleSheet} from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {
     ButtonComponent,
@@ -11,9 +11,7 @@ import {
 import {ArrowRight} from 'iconsax-react-native';
 import {appColors} from '../../constants/appColors';
 import {LoadingModal} from '../../modals';
-import {useDispatch} from 'react-redux';
 import {globalStyles} from "../styles/globalStyles.ts";
-import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import {authApi} from "../../apis";
 import {ALERT_TYPE, Dialog} from "react-native-alert-notification";
 
@@ -31,8 +29,6 @@ const Verification = ({navigation,route}: any) => {
     const ref2 = useRef<any>();
     const ref3 = useRef<any>();
     const ref4 = useRef<any>();
-
-    const dispatch = useDispatch();
 
     const SendEmailVerification = async () => {
         const email = route.params.email
@@ -67,21 +63,13 @@ const Verification = ({navigation,route}: any) => {
         setCodeValues(data);
     };
 
-    const handleResendVerification = async () => {
-        setCodeValues(['', '', '', '']);
-        setNewCode('');
 
-        const api = `/verification`;
-        setIsLoading(true);
-        //call api
-
-    };
 
     const handleVerification = async () => {
         try {
             setIsLoading(true);
 
-            const res = await authApi.SendOtpConfirmation({
+            await authApi.SendOtpConfirmation({
                 email: email,
                 otp: newCode,
                 type: `${route.params.type}`
@@ -211,7 +199,6 @@ const Verification = ({navigation,route}: any) => {
                         <ButtonComponent
                             type="link"
                             text="Resend email verification"
-                            onPress={handleResendVerification}
                         />
                     </RowComponent>
                 )}

@@ -4,7 +4,7 @@ import {
     ImageBackground,
     ScrollView,
     SafeAreaView,
-    TouchableOpacity,
+    TouchableOpacity, StyleProp, ViewStyle, TextStyle,
 } from 'react-native';
 import React, {ReactNode, useCallback, useRef,} from 'react';
 
@@ -37,7 +37,10 @@ interface Props {
     confirmAction?: {
         icon: ReactNode,
         action: () => void
-    }
+    },
+    styleTitle?: StyleProp<TextStyle>,
+    arrowStyle?: string,
+    Style?: StyleProp<ViewStyle>,
 
 
 }
@@ -52,7 +55,10 @@ const ContainerComponent = (props: Props) => {
         color,
         backgroundNumber,
         moreAction,
-        confirmAction
+        confirmAction,
+        styleTitle,
+        arrowStyle,
+        Style
     } = props;
 
     const navigation: any = useNavigation();
@@ -66,7 +72,7 @@ const ContainerComponent = (props: Props) => {
 
     const headerComponent = () => {
         return (
-            <View style={{flex: 1, paddingTop: appInfo.size.HEIGHT * 0.025}}>
+            <View style={[{flex: 1, paddingTop: appInfo.size.HEIGHT * 0.025}, Style]}>
                 {(title || back) && (
                     <RowComponent
                         styles={{
@@ -80,10 +86,10 @@ const ContainerComponent = (props: Props) => {
                             <TouchableOpacity
                                 onPress={() => navigation.goBack()}
                                 style={{marginRight: 12}}>
-                                <ArrowLeft size={24} color={appColors.text}/>
+                                <ArrowLeft size={24} color={arrowStyle? arrowStyle : appColors.text}/>
                             </TouchableOpacity>
                         )}
-                        {title ? <TextComponent text={title} size={16} flex={1}/> : <></>}
+                        {title ? <TextComponent styles={styleTitle} text={title} size={16} flex={1}/> : <></>}
                         {moreAction ?
                             <TouchableOpacity onPress={handlePresentModalPress}>
                                 {moreAction.moreActionIcon}

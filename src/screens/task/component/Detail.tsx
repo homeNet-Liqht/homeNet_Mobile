@@ -135,7 +135,7 @@ export default function Detail({
               }}
             >
               {assignees && assignees.length > 0 ? (
-                assignees.map((assignee) =>
+                assignees.map((assignee:any) =>
                   assignee.photo ? (
                     <Image
                       key={assignee._id}
@@ -178,7 +178,7 @@ export default function Detail({
                   color={appColors.gray}
                 />
                 <SectionComponent styles={styles.imagesWrapper}>
-                  {taskPhoto.map((photo, index) => (
+                  {taskPhoto.map((photo :any, index:any) => (
                     <TouchableOpacity key={index}>
                       <Image source={{ uri: photo }} style={styles.taskImage} />
                     </TouchableOpacity>

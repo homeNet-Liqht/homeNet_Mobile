@@ -160,7 +160,7 @@ export default function EditProfileScreen({navigation}: any) {
                     </View>
                     <SpaceComponent height={20}/>
                     <View>
-                        <TextComponent styles={{fontWeight:"bold"}} size={16} text={"Birth Day"}/>
+                        <TextComponent styles={{fontWeight:"bold"}} size={16} text={"Birthday"}/>
                         <DatePicker mode={"date"} date={date} maximumDate = { new Date()} onDateChange={val => {setDate(val)}} />
                     </View>
 
@@ -172,7 +172,3 @@ export default function EditProfileScreen({navigation}: any) {
     );
 }
 
-const styles = StyleSheet.create({
-
-
-});
