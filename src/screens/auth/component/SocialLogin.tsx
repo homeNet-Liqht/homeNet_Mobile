@@ -25,7 +25,7 @@ GoogleSignin.configure({
 
 Settings.setAppID("427623953051055");
 
-const SocialLogin = ({ navigation }: any) => {
+const SocialLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
@@ -38,8 +38,6 @@ const SocialLogin = ({ navigation }: any) => {
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-
-      await GoogleSignin.revokeAccess();
 
       await GoogleSignin.revokeAccess();
 
