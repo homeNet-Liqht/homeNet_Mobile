@@ -1,99 +1,124 @@
 import React, {useState} from 'react';
 import {
-    Image, SafeAreaView,
-    StyleSheet,
-    TouchableOpacity,
+    Image, KeyboardAvoidingView, Platform,
+    StyleSheet, TouchableOpacity, View,
+
 } from 'react-native';
 import {
     ButtonComponent,
-    InputComponent,
-    RowComponent, TextComponent,
+    ContainerComponent, InputComponent, RowComponent,
 } from '../../components';
 import {appInfo} from '../../constants/appInfo';
-import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {DocumentPickerResponse} from 'react-native-document-picker';
-import {selectFile} from '../../utils/photoLibraryAction';
 import {appColors} from '../../constants/appColors';
-import {ArrowLeft} from "iconsax-react-native";
-import {userSelector} from "../../redux/reducers/userReducer.ts";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import {selectFile} from "../../utils/photoLibraryAction.tsx";
+import {Camera} from "iconsax-react-native";
+import {familyApi} from "../../apis";
+import {LoadingModal} from "../../modals";
+
 
 export default function CreateFamilyScreen({navigation}: any) {
-    const [familyName, setFamilyName] = useState('');
-    const [fileResponse, setFileResponse] =
-        useState<DocumentPickerResponse | any>(null);
-    const handleOnChange = (value: any) => setFamilyName(value);
-    const handlePhotoPicker = async () => {
-        const response = await selectFile();
-        if (response) {
-            setFileResponse(response);
+
+    const [familyName, setFamilyName] = useState("")
+    const [photo, setPhoto] = useState<DocumentPickerResponse>();
+    const formData = new FormData();
+    const [isLoading,setIsLoading] = useState(false)
+    const openImagePicker = async () => {
+        const res = await selectFile()
+        res && setPhoto(res[0])
+    }
+    console.log(photo)
+    const handleCreateFamily = async () =>{
+        formData.append('image', photo);
+        formData.append('familyName',familyName);
+        setIsLoading(true)
+        try {
+            const res = await familyApi.create(formData)
+            setIsLoading(false)
+        }catch (e:any) {
+            setIsLoading(false)
         }
-    };
+    }
+
     return (
-        <SafeAreaView
-            style={{
-                flex: 1,
-                justifyContent: "space-around",
-                alignItems: "center",
-            }}
+
+        <ContainerComponent
+            title={"Create Family"}
+            back
         >
-            <RowComponent
-                styles={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 10,
-                    minWidth: 48,
-                    minHeight: 48,
-                    justifyContent: 'flex-start',
-                }}>
 
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={{marginRight: 12}}>
-                    <ArrowLeft size={24} color={appColors.text}/>
-                </TouchableOpacity>
-                <TextComponent text={"My Family"} size={16} flex={1}/>
-            </RowComponent>
+            <Image style={{
+                width: appInfo.size.WIDTH,
+                height: appInfo.size.HEIGHT * 0.4,
+                bottom: appInfo.size.HEIGHT * 0.2,
 
-            {fileResponse ? (
+                resizeMode: "contain",
+                justifyContent: 'center',
+                alignItems: "center",
+                position: "absolute"
+            }} source={require("../../assets/imgs/cr-famlily.png")}/>
+            <KeyboardAvoidingView
+                style={{
+                    flex: 1,
+                    height: appInfo.size.HEIGHT
+                }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+
+                keyboardVerticalOffset={60}
+
+            >
+
                 <RowComponent>
-                    <Image
-                        style={{
-                            backgroundColor: appColors.gray,
-                            width: appInfo.size.HEIGHT * 0.2,
-                            height: appInfo.size.HEIGHT * 0.2,
-                            borderRadius: 100
-                        }}
-                        source={{uri: fileResponse[0].uri}}/>
-
-                    <TouchableOpacity
-                        style={{
-                            backgroundColor: appColors.primary,
-                            position: "absolute",
-                            top: 10,
-                            width: 40,
-                            height: 40
-                        }}
-                        onPress={() => setFileResponse(null)}>
-                        <EvilIcons name="close" size={35} color={appColors.white}/>
-                    </TouchableOpacity>
-
+                    {
+                        photo ?
+                            <TouchableOpacity onPress={() => openImagePicker()}>
+                                <Image source={{uri: photo.uri}} style={[styles.imgContainer]}/>
+                            </TouchableOpacity>
+                            :
+                            <>
+                                <TouchableOpacity
+                                    style={[styles.imgContainer, {
+                                        backgroundColor: appColors.gray,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }]}
+                                    onPress={() =>openImagePicker()}
+                                >
+                                    <FontAwesome name={"image"} size={32} color={"white"}/>
+                                </TouchableOpacity>
+                            </>
+                    }
                 </RowComponent>
-            ) : (
-                <TouchableOpacity style={{
-                    backgroundColor: appColors.gray,
-                    width: appInfo.size.HEIGHT * 0.2,
-                    height: appInfo.size.HEIGHT * 0.2,
-                    borderRadius: 100
+                <RowComponent styles={{
+                    flex: 1,
+                    alignItems: "flex-end"
 
-                }} onPress={handlePhotoPicker}>
-                    <EvilIcons style={{position: "absolute", right: "23%", top: "30%"}} name="image" size={85}/>
-                </TouchableOpacity>
-            )}
+                }}>
+                    <InputComponent styles={{
+                        width: appInfo.size.WIDTH * 0.9,
+                        backgroundColor: "white"
 
-
-            <RowComponent styles={{flexDirection: "column"}}>
-                <InputComponent value={familyName} onChange={val => setFamilyName(val)} isPassword={false}/>
-                <ButtonComponent text={"Create"} color={appColors.primary} type={"primary"}/>
-            </RowComponent>
-        </SafeAreaView>
+                    }} value={familyName} onChange={val => {
+                        setFamilyName(val)
+                    }} placeHolder={"Family name"} isPassword={false}/>
+                </RowComponent>
+            </KeyboardAvoidingView>
+            <ButtonComponent text={"Create"} styles={{
+                borderRadius: 100,
+            }} type={"primary"} onPress={() => handleCreateFamily()}/>
+            <LoadingModal visible={isLoading}/>
+        </ContainerComponent>
     );
 }
+
+const styles = StyleSheet.create({
+    imgContainer: {
+        borderRadius: 15,
+        width: appInfo.size.WIDTH * 0.9,
+        height: appInfo.size.HEIGHT * 0.3,
+        resizeMode: "cover",
+    },
+
+
+})

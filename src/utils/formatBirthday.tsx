@@ -1,4 +1,4 @@
-export const formatBirthday = (dateString) => {
+export const formatBirthday = (dateString:any) => {
   const date = new Date(dateString);
 
   const year = date.getFullYear();

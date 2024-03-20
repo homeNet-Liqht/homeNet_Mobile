@@ -25,7 +25,7 @@ GoogleSignin.configure({
 
 Settings.setAppID("427623953051055");
 
-const SocialLogin = ({ navigation }: any) => {
+const SocialLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
@@ -38,8 +38,6 @@ const SocialLogin = ({ navigation }: any) => {
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-
-      await GoogleSignin.revokeAccess();
 
       await GoogleSignin.revokeAccess();
 
@@ -60,8 +58,8 @@ const SocialLogin = ({ navigation }: any) => {
           })
         );
       });
-    } catch (error) {
-      console.log("error while signin:", error, error.code);
+    } catch (error:any) {
+      console.log("error while sign in:", error, error.code);
       setIsLoading(false);
     }
   };
@@ -110,7 +108,7 @@ const SocialLogin = ({ navigation }: any) => {
     <SectionComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
         <ButtonComponent
-          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
           text={"Google"}
           type={"primary"}
           color={appColors.white}
@@ -122,14 +120,14 @@ const SocialLogin = ({ navigation }: any) => {
       </RowComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
         <ButtonComponent
-          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
           text={"Facebook"}
           type={"primary"}
           color={appColors.white}
           textColor={"black"}
           iconFlex={"left"}
           icon={<Facebook />}
-          onPress={() => handleFacebookLogin}
+          onPress={() => handleFacebookLogin()}
         />
       </RowComponent>
       <LoadingModal visible={isLoading} />
