@@ -1,16 +1,47 @@
-import React, { useState } from "react";
-import {
-  ButtonComponent,
-  SectionComponent,
-  TextComponent,
-} from "../../../components";
-import ImageViewer from "react-native-image-zoom-viewer";
-import { Image, StyleSheet, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { SectionComponent } from "../../../components";
+import { StyleSheet } from "react-native";
 import { appColors } from "../../../constants/appColors";
 import Modal from "react-native-modal";
-import { appInfo } from "../../../constants/appInfo";
 import { ScrollView } from "react-native-gesture-handler";
-import { TouchableOpacity } from "@gorhom/bottom-sheet";
+import Member from "./Member";
+import { familyApi, taskApi } from "../../../apis";
+import TitlePart from "./parts/titlePart";
+import { isOwner } from "./parts/buttonStatus";
+import Description from "./parts/descriptionPart";
+import TimePart from "./parts/timePart";
+import AssigneesPart from "./parts/assigneesPart";
+import ImagesPart from "./parts/imagePart";
+import {
+  requestExternalReadPermission,
+  requestExternalWritePermission,
+} from "../../../utils/requestDevices";
+import { selectFiles } from "../../../utils/photoLibraryAction";
+import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
+import { useDispatch, useSelector } from "react-redux";
+import { userSelector } from "../../../redux/reducers/userReducer";
+import { LoadingModal } from "../../../modals";
+import { refreshTask } from "../../../redux/reducers/taskReducer";
+
+interface Member {
+  _id: string;
+  name: string;
+  photo: string;
+}
+
+interface Props {
+  id: string;
+  ownerPhoto: string;
+  ownerName: string;
+  title: string;
+  description: string;
+  startTime: Date;
+  endTime: Date;
+  assignees: Member[];
+  taskPhoto: string[];
+  status: string;
+}
+
 export default function Detail({
   id,
   ownerPhoto,
@@ -19,178 +50,274 @@ export default function Detail({
   description,
   startTime,
   endTime,
-  visible,
   assignees,
   taskPhoto,
   status,
+  visible,
   onClose,
   isAssigner,
 }: any) {
   const handleClose = () => {
     onClose();
   };
-  const isAccepting = (status: string) => {
-    const [imageGalleryVisible, setImageGalleryVisible] = useState(false);
-    return status === "accepting" ? (
-      <SectionComponent styles={styles.buttonWrapper}>
-        <ButtonComponent text="Accepting" type="primary" />
-        <ButtonComponent
-          text="Close"
-          type="primary"
-          onPress={() => handleClose()}
-        />
-      </SectionComponent>
-    ) : (
-      <SectionComponent styles={styles.buttonWrapper}>
-        <ButtonComponent text="Mark as Done" type="primary" />
-        <ButtonComponent
-          text="Close"
-          type="primary"
-          onPress={() => handleClose()}
-        />
-      </SectionComponent>
-    );
+  const user = useSelector(userSelector);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [taskDetail, setTaskDetail] = useState<Props>({
+    id: "",
+    ownerPhoto: "",
+    ownerName: "",
+    title: "",
+    description: "",
+    startTime: new Date(),
+    endTime: new Date(),
+    assignees: [],
+    taskPhoto: [],
+    status: "",
+  });
+  const dispatch = useDispatch();
+  const fetchMember = async () => {
+    try {
+      const res = await familyApi.getFamily();
+      setMembers(res.data.data.members);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const isOwner = (isAssigner: boolean, status: string) => {
-    return isAssigner ? (
-      <SectionComponent styles={styles.buttonWrapper}>
-        <ButtonComponent text="Edit" type="primary" />
-        <ButtonComponent text="Delete" type="primary" />
-        <ButtonComponent
-          text="Close"
-          type="primary"
-          onPress={() => handleClose()}
-        />
-      </SectionComponent>
-    ) : (
-      isAccepting(status)
-    );
+  useEffect(() => {
+    if (isEdit) {
+      setTaskDetail({
+        id,
+        ownerPhoto,
+        ownerName,
+        title,
+        description,
+        startTime,
+        endTime,
+        assignees,
+        taskPhoto,
+        status,
+      });
+      fetchMember();
+    }
+  }, [isEdit]);
+
+  const handleEditTask = async () => {
+    try {
+      if (taskDetail) {
+        setIsLoading(true);
+        const assigneesId = taskDetail.assignees.map(
+          (assignee) => assignee._id
+        );
+
+        if (taskDetail.assignees.length < 1) {
+          Dialog.show({
+            type: ALERT_TYPE.WARNING,
+            title: "Assignees were missing",
+            textBody: "You need to choose at least one person to do this task",
+            button: "Got it!",
+          });
+          setIsLoading(false);
+          return;
+        }
+        if (new Date(taskDetail.startTime) < new Date()) {
+          Dialog.show({
+            type: ALERT_TYPE.WARNING,
+            title: "Time Error",
+            textBody: "You cannot pick the time from the past",
+            button: "Got it!",
+          });
+          setIsLoading(false);
+          return;
+        }
+        console.log("Pre Upload");
+        try {
+          const res = await taskApi.updateTask(
+            assigneesId,
+            taskDetail.title,
+            taskDetail.startTime,
+            taskDetail.endTime,
+            taskDetail.description,
+            taskDetail.taskPhoto,
+            user._id,
+            id
+          );
+          if (res.data.code === 200) {
+            setIsLoading(false);
+            Dialog.show({
+              type: ALERT_TYPE.SUCCESS,
+              title: "Updated Task",
+              textBody: res.data.data,
+              button: "Close",
+              onHide: () => {
+                setIsEdit(false)
+                onClose();
+                dispatch(refreshTask());
+
+              },
+            });
+          } else {
+            setIsLoading(false);
+            Dialog.show({
+              type: ALERT_TYPE.WARNING,
+              title: "Fail",
+              textBody: res.data.data,
+              button: "Close",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDocumentSelection = async () => {
+    const isReadStoragePermit = await requestExternalReadPermission();
+    const isWriteStoragePermit = await requestExternalWritePermission();
+    if (isReadStoragePermit && isWriteStoragePermit) {
+      const response = await selectFiles();
+      if (!response) return null;
+      try {
+        const formData = new FormData();
+        response.map((file) => formData.append("image", file));
+        console.log(formData.getParts());
+
+        const res = await taskApi.uploadEditImage(formData);
+
+        const fileResponse = res.data.data;
+        console.log(fileResponse);
+
+        setTaskDetail((prevTask) => ({
+          ...prevTask,
+          taskPhoto: [...prevTask.taskPhoto, ...fileResponse],
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const removePicture = (indexToRemove: number) => {
+    setTaskDetail((prevTask) => {
+      const updatedTaskPhoto = [...prevTask.taskPhoto];
+      updatedTaskPhoto.splice(indexToRemove, 1);
+      return { ...prevTask, taskPhoto: updatedTaskPhoto };
+    });
+  };
+
+  const handleMemberPress = (id: string) => {
+    setTaskDetail((prevTask) => {
+      if (!prevTask) {
+        return prevTask;
+      }
+
+      const index = prevTask.assignees.findIndex(
+        (assignee) => assignee._id === id
+      );
+      if (index === -1) {
+        const member = members.find((member) => member._id === id);
+        if (member) {
+          return {
+            ...prevTask,
+            assignees: [...prevTask.assignees, member],
+          };
+        }
+      } else {
+        const updatedAssignees = prevTask.assignees.filter(
+          (assignee) => assignee._id !== id
+        );
+
+        return {
+          ...prevTask,
+          assignees: updatedAssignees,
+        };
+      }
+
+      return prevTask;
+    });
+  };
+
+  const handleChange = (key: string, value: Date | any) => {
+    let newValue: Date | string;
+    console.log(value);
+
+    if (key === "startAt") {
+      const newStartAt: Date = value as Date;
+      const endTime = new Date(newStartAt.getTime() + 2 * 60 * 60 * 1000);
+      setTaskDetail((prevTask) => ({
+        ...prevTask,
+        startTime: newStartAt,
+        endTime: endTime,
+      }));
+    } else {
+      newValue = value;
+      setTaskDetail((prevTask) => ({
+        ...prevTask,
+        [key]: newValue,
+      }));
+    }
   };
 
   return (
     <Modal style={styles.wrapper} isVisible={visible}>
-      <SectionComponent styles={styles.titleWrapper}>
-        <SectionComponent>
-          <TextComponent
-            text={title}
-            size={16}
-            styles={{ fontWeight: "700" }}
-          />
-        </SectionComponent>
-        <SectionComponent styles={styles.ownerWrapper}>
-          <TextComponent text="Owner" size={10} color={appColors.gray} />
-          {ownerPhoto ? (
-            <Image source={{ uri: ownerPhoto }} style={styles.ownerProfile} />
-          ) : (
-            <View
-              style={{
-                width: 35,
-                height: 35,
-                backgroundColor: appColors.primary,
-                borderRadius: 100,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <TextComponent
-                color={appColors.white}
-                size={appInfo.size.WIDTH * 0.02}
-                styles={{ fontWeight: "bold" }}
-                text={ownerName[0]}
-              />
-            </View>
-          )}
-        </SectionComponent>
-      </SectionComponent>
+      <TitlePart
+        data={{ ownerName, ownerPhoto, title }}
+        editData={taskDetail}
+        isEdit={isEdit}
+        handleChange={(val) => handleChange("title", val)}
+      />
       <ScrollView showsHorizontalScrollIndicator={false}>
         <SectionComponent>
-          <SectionComponent styles={styles.infoWrapper}>
-            <TextComponent
-              text="Description"
-              size={12}
-              styles={styles.subTitle}
-              color={appColors.gray}
-            />
-            <TextComponent text={description} />
-          </SectionComponent>
-          <SectionComponent styles={styles.infoWrapper}>
-            <TextComponent text="Due date" size={12} color={appColors.gray} />
-            <TextComponent text={endTime} />
-          </SectionComponent>
-          <SectionComponent styles={styles.infoWrapper}>
-            <TextComponent
-              text="Assignees"
-              size={12}
-              styles={styles.subTitle}
-              color={appColors.gray}
-            />
-            <SectionComponent
-              styles={{
-                marginTop: 5,
-                marginLeft: -15,
-                flexDirection: "row",
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              {assignees && assignees.length > 0 ? (
-                assignees.map((assignee:any) =>
-                  assignee.photo ? (
-                    <Image
-                      key={assignee._id}
-                      source={{ uri: assignee.photo }}
-                      style={[styles.ownerProfile, { marginLeft: -8 }]}
-                    />
-                  ) : (
-                    <View
-                      key={assignee._id}
-                      style={{
-                        width: 35,
-                        height: 35,
-                        backgroundColor: appColors.primary,
-                        borderRadius: 100,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <TextComponent
-                        color={appColors.white}
-                        size={appInfo.size.WIDTH * 0.04}
-                        styles={{ fontWeight: "bold" }}
-                        text={assignee.name[0]}
-                      />
-                    </View>
-                  )
-                )
-              ) : (
-                <TextComponent text="Loading..." />
-              )}
-            </SectionComponent>
-          </SectionComponent>
-          <SectionComponent styles={styles.infoWrapper}>
-            {taskPhoto && taskPhoto.length > 0 && (
-              <>
-                <TextComponent
-                  text="Images"
-                  size={12}
-                  styles={styles.subTitle}
-                  color={appColors.gray}
-                />
-                <SectionComponent styles={styles.imagesWrapper}>
-                  {taskPhoto.map((photo :any, index:any) => (
-                    <TouchableOpacity key={index}>
-                      <Image source={{ uri: photo }} style={styles.taskImage} />
-                    </TouchableOpacity>
-                  ))}
-                </SectionComponent>
-              </>
-            )}
-          </SectionComponent>
+          <Description
+            data={{ description }}
+            editData={taskDetail}
+            isEdit={isEdit}
+            handleChange={(val) => handleChange("description", val)}
+          />
+          <TimePart
+            data={{ endTime }}
+            editData={taskDetail}
+            isEdit={isEdit}
+            handleChangeStartAt={(val) => handleChange("startAt", val)}
+            handleChangeEndAt={(val) => handleChange("endAt", val)}
+          />
+
+          <AssigneesPart
+            data={{ assignees }}
+            editData={taskDetail}
+            members={members}
+            handleChange={(id) => handleMemberPress(id)}
+            isEdit={isEdit}
+          />
+          <ImagesPart
+            data={{ taskPhoto }}
+            isEdit={isEdit}
+            editData={taskDetail}
+            handleChange={() => handleDocumentSelection()}
+            removePicture={(index) => removePicture(index)}
+          />
         </SectionComponent>
-        <ImageViewer imageUrls={taskPhoto} enableImageZoom  />
-        <SectionComponent>{isOwner(isAssigner, status)}</SectionComponent>
+
+        <SectionComponent>
+
+          {isOwner({
+            isAssigner,
+            status,
+            isEdit,
+            setIsEdit,
+            onClose,
+            handleEditTask,
+          })}
+
+        </SectionComponent>
       </ScrollView>
+      <LoadingModal visible={isLoading} />
     </Modal>
   );
 }
@@ -204,40 +331,5 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     marginBottom: 5,
-  },
-  infoWrapper: {
-    justifyContent: "flex-start",
-  },
-  titleWrapper: {
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  buttonWrapper: {
-    justifyContent: "center",
-  },
-  ownerWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  ownerProfile: {
-    marginLeft: 10,
-    width: 35,
-    height: 35,
-    borderRadius: 20,
-  },
-  taskImage: {
-    marginTop: 5,
-    width: 80,
-    height: 80,
-    borderRadius: 12,
-    marginRight: 5,
-    resizeMode: "cover",
-  },
-  imagesWrapper: {
-    marginLeft: -15,
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
   },
 });

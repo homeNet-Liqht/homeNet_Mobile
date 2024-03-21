@@ -63,10 +63,14 @@ export default function TaskScreen({ navigation }: any) {
   const isAssigner = detailData.assigner._id == userData._id;
 
   useEffect(() => {
+    fetchTasks(page); // Fetch tasks when the component mounts
+  }, []);
+  
+  useEffect(() => {
     if (refreshTask.refresh) {
       setTaskData([]);
       setPage(0);
-      fetchTasks();
+      fetchTasks(0); // Fetch tasks when refreshTask.refresh changes
       dispatch(addTask());
     }
   }, [refreshTask.refresh]);
@@ -83,11 +87,10 @@ export default function TaskScreen({ navigation }: any) {
       setIsLoading(false);
     }
   };
-
-  const fetchTasks = async () => {
+  const fetchTasks = async (pageNumber: number) => {
     setIsLoading(true);
     try {
-      const res = await taskApi.getTasks(page);
+      const res = await taskApi.getTasks(pageNumber);
       if (res.data.data.length === 0) {
         setNoMoreData(true);
       } else {
@@ -106,7 +109,8 @@ export default function TaskScreen({ navigation }: any) {
 
   const loadMoreTasks = () => {
     if (!isLoading && !noMoreData) {
-      fetchTasks();
+      const nextPage = page + 1;
+      fetchTasks(nextPage); 
     }
   };
 
@@ -174,7 +178,10 @@ export default function TaskScreen({ navigation }: any) {
           )}
           {!noMoreData && (
             <RowComponent>
-              <TouchableOpacity onPress={loadMoreTasks} disabled={isLoading}>
+              <TouchableOpacity
+                onPress={() => loadMoreTasks()}
+                disabled={isLoading}
+              >
                 <ArrowCircleDown size={25} color={appColors.gray} />
               </TouchableOpacity>
             </RowComponent>
