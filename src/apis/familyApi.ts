@@ -8,6 +8,10 @@ const familyApi = {
     create: (FormData: FormData) =>{
         const url = "/family/create";
         return axiosClient.post(url, FormData, {headers: {"Content-Type" : "multipart/form-data"}})
+    },
+    getFamilyLink: () => {
+        const url="/family/generate";
+        return axiosClient.post(url)
     }
 }
 

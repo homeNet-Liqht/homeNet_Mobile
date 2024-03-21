@@ -1,47 +1,49 @@
 import React, {useState} from 'react';
-import {View, Text, Image} from 'react-native';
+import {View, Text, Image, KeyboardAvoidingView, Platform} from 'react-native';
 import {
-  ButtonComponent,
-  ContainerComponent,
-  InputComponent,
-  RowComponent,
-  TextComponent,
+    ButtonComponent,
+    ContainerComponent,
+    InputComponent,
+    RowComponent, SectionComponent,
+    TextComponent,
 } from '../../components';
+import {appInfo} from "../../constants/appInfo.ts";
 
 export default function JoinFamilyScreen() {
-  const [invitedLink, setInvitedLink] = useState('');
-  const handleOnChange = (value : any) => {
-    setInvitedLink(value);
-  };
-  return (
-    <ContainerComponent back title="Join a Family">
-      <RowComponent>
-        <Image
-          source={require('../../assets/imgs/join-family.png')}
-          width={200}
-          height={200}
-          style={{marginVertical: '5%'}}
-        />
-      </RowComponent>
-      <RowComponent>
-        <TextComponent
-          text="Welcome to the fam"
-          size={38}
-          styles={{fontWeight: '700'}}
-        />
-      </RowComponent>
-      <RowComponent styles={{marginVertical: "3%"}}>
-        <InputComponent
-          value="join-link"
-          isPassword={false}
-          onChange={handleOnChange}
-        />
-      </RowComponent>
-      <ButtonComponent
-        text="Accept Invitation"
-        type="primary"
-        styles={{borderRadius: 25}}
-      />
-    </ContainerComponent>
-  );
+    const [invitedLink, setInvitedLink] = useState('');
+    const handleOnChange = (value: any) => {
+        setInvitedLink(value);
+    };
+    return (
+        <ContainerComponent isScroll back title="Join a Family">
+            <KeyboardAvoidingView
+                style={{
+                    flex:1,
+                    alignItems: "center",
+                }}  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+
+                keyboardVerticalOffset={60}>
+
+
+
+              <SectionComponent styles={{
+                  justifyContent: "flex-end",
+              }}>
+                  <InputComponent
+                      value={invitedLink}
+                      placeHolder={"Link"}
+                      styles={{
+                          width: appInfo.size.WIDTH * 0.9
+
+                      }}
+                      isPassword={false}
+                      onChange={(val) => setInvitedLink(val)}
+                  />
+              </SectionComponent>
+
+
+            </KeyboardAvoidingView>
+
+        </ContainerComponent>
+    );
 }

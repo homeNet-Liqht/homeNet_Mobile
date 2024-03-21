@@ -22,20 +22,20 @@ import Timeline from 'react-native-timeline-flatlist';
 export default function ProfileScreen({navigation}: any) {
     const user = useSelector(userSelector);
     const [isLoading, setIsLoading] = useState(false);
-    const [family, setFamily]= useState<any>(1)
+    const [family, setFamily] = useState<any>(1)
 
     useEffect(() => {
         GetFamily()
     }, []);
 
 
-    const GetFamily = async () =>{
+    const GetFamily = async () => {
         try {
             setIsLoading(true)
             const res = await familyApi.getFamily()
-            res ? setFamily(res.data.data): setFamily(null)
+            res ? setFamily(res.data.data) : setFamily(null)
             setIsLoading(false)
-        }catch (e){
+        } catch (e) {
             setIsLoading(false)
         }
     }
@@ -67,11 +67,11 @@ export default function ProfileScreen({navigation}: any) {
         dataBottomSheet: bottomSheetFlatList,
     }
     const events = [
-        { time: '09:00', title: 'Sự kiện 1', description: 'Mô tả sự kiện 1' },
-        { time: '10:00', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
-        { time: '11:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
-        { time: '1:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
-        { time: '11:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
+        {time: '09:00', title: 'Sự kiện 1', description: 'Mô tả sự kiện 1'},
+        {time: '10:00', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2'},
+        {time: '11:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2'},
+        {time: '1:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2'},
+        {time: '11:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2'},
     ];
 
 
@@ -82,10 +82,7 @@ export default function ProfileScreen({navigation}: any) {
                 title={"My Profile"}
                 isScroll={false}
                 color={"#fff"}
-                moreAction={moreAction}
-
-
-            >
+                moreAction={moreAction}>
 
                 <RowComponent styles={{flexDirection: "column", paddingTop: appInfo.size.HEIGHT * 0.03}}>
                     {user.photo
@@ -117,11 +114,10 @@ export default function ProfileScreen({navigation}: any) {
                 </RowComponent>
                 <SpaceComponent height={20}/>
                 {
-                    !family ?
-
+                    family ?
                         <>
                             <SectionComponent styles={{
-                                justifyContent:"center",
+                                justifyContent: "center",
                                 alignItems: "center",
                             }}>
 
@@ -131,15 +127,15 @@ export default function ProfileScreen({navigation}: any) {
                                     borderRadius: 20,
                                     padding: 5,
                                     flexDirection: "row",
-                                    alignItems:"center",
+                                    alignItems: "center",
                                     justifyContent: "space-between"
                                 }}>
                                     <SectionComponent styles={{
                                         flex: 1,
-                                        height: appInfo.size.HEIGHT *0.15,
+                                        height: appInfo.size.HEIGHT * 0.15,
                                         flexDirection: "column",
                                         justifyContent: "space-between",
-                                        }} >
+                                    }}>
                                         <TextComponent size={14}
                                                        color={appColors.white}
                                                        styles={{fontWeight: "bold"}}
@@ -149,7 +145,7 @@ export default function ProfileScreen({navigation}: any) {
                                             paddingHorizontal: 5,
                                             paddingVertical: 5,
                                             minHeight: 10,
-                                            marginBottom:0,
+                                            marginBottom: 0,
                                             justifyContent: "center",
                                             alignItems: "center",
                                             backgroundColor: appColors.red,
@@ -161,79 +157,88 @@ export default function ProfileScreen({navigation}: any) {
                                                          type={"primary"}
                                                          textStyles={{fontWeight: "bold"}}
                                                          textColor={appColors.white}
-                                                         color ={appColors.white}/>
-                                        <ButtonComponent  styles={{
+                                                         color={appColors.white}/>
+                                        <ButtonComponent styles={{
                                             borderRadius: 30,
                                             paddingHorizontal: 5,
                                             paddingVertical: 5,
                                             minHeight: 10,
-                                            marginBottom:0,
+                                            marginBottom: 0,
                                             backgroundColor: appColors.orange,
 
-                                        }}  text={"Join"} textStyles={{fontWeight: "bold"}} type={"primary"} textColor={appColors.white} color={appColors.white}/>
+                                        }} text={"Join"}    onPress={() => {
+                                            navigation.navigate("JoinFamilyScreen")
+                                        }} textStyles={{fontWeight: "bold"}} type={"primary"}
+                                                         textColor={appColors.white} color={appColors.white}/>
                                     </SectionComponent>
-                                    <SectionComponent styles={{flex: 1  }} >
+                                    <SectionComponent styles={{flex: 1}}>
                                         <Image source={require("../../assets/imgs/family-draw.png")} style={{
                                             width: appInfo.size.WIDTH * 0.4,
                                             resizeMode: "stretch",
-                                            height: appInfo.size.HEIGHT *0.133}} />
+                                            height: appInfo.size.HEIGHT * 0.133
+                                        }}/>
 
                                     </SectionComponent>
-
                                 </RowComponent>
-
-
                             </SectionComponent>
-                        </>:
-                        <RowComponent>
-                            <View style={{
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flex: 1
-                            }}>
-                                <TouchableOpacity onPress={() => navigation.navigate("FamilyScreen")}>
 
+
+                        </>
+                        :
+                        <>
+                            <RowComponent>
+                                <View style={{
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flex: 1
+                                }}>
+                                    <TouchableOpacity onPress={() => navigation.navigate("FamilyScreen")}>
+
+                                        <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}}
+                                                       text={family.familyName}/>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{
+                                    borderLeftColor: appColors.gray,
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    flex: 1
+                                }}>
                                     <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}}
-                                                   text={family.familyName}/>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={{
-                                borderLeftColor: appColors.gray,
-                                alignItems: "center",
-                                justifyContent: "center",
-                                flex: 1
+                                                   text={"0 Task"}/>
+                                </View>
+                            </RowComponent>
+                            <SectionComponent styles={{
+                                width: appInfo.size.WIDTH,
+                                height: appInfo.size.HEIGHT
                             }}>
-                                <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}} text={"0 Task"}/>
-                            </View>
-                        </RowComponent>
+                                <Timeline
+                                    data={events}
+                                    circleSize={20}
+                                    circleColor='rgb(45,156,219)'
+                                    lineColor='rgb(45,156,219)'
+                                    timeStyle={{
+                                        textAlign: 'center',
+                                        backgroundColor: '#ff9797',
+                                        color: 'white',
+                                        padding: 5,
+                                        borderRadius: 13,
+
+                                    }}
+                                    descriptionStyle={{color: 'gray'}}
+
+                                    style={{
+                                        padding: 15,
+                                        justifyContent: "center",
+                                    }}
+                                    isUsingFlatlist={true}
+                                />
+                            </SectionComponent>
+
+                        </>
                 }
 
-               <SectionComponent styles={{
-                   width: appInfo.size.WIDTH,
-                   height: appInfo.size.HEIGHT
-               }}>
-                   <Timeline
-                       data={events}
-                       circleSize={20}
-                       circleColor='rgb(45,156,219)'
-                       lineColor='rgb(45,156,219)'
-                       timeStyle={{
-                           textAlign: 'center',
-                           backgroundColor:'#ff9797',
-                           color:'white',
-                           padding:5,
-                           borderRadius:13,
 
-                       }}
-                       descriptionStyle={{color:'gray'}}
-
-                       style={{
-                           padding: 15,
-                           justifyContent: "center",
-                       }}
-                       isUsingFlatlist={true}
-                   />
-               </SectionComponent>
                 <LoadingModal visible={isLoading}/>
             </ContainerComponent>
         </>
