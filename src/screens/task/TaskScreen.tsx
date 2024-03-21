@@ -63,14 +63,14 @@ export default function TaskScreen({ navigation }: any) {
   const isAssigner = detailData.assigner._id == userData._id;
 
   useEffect(() => {
-    fetchTasks(page); // Fetch tasks when the component mounts
+    fetchTasks(page);
   }, []);
-  
+
   useEffect(() => {
     if (refreshTask.refresh) {
       setTaskData([]);
       setPage(0);
-      fetchTasks(0); // Fetch tasks when refreshTask.refresh changes
+      fetchTasks(0); 
       dispatch(addTask());
     }
   }, [refreshTask.refresh]);
@@ -87,6 +87,7 @@ export default function TaskScreen({ navigation }: any) {
       setIsLoading(false);
     }
   };
+  
   const fetchTasks = async (pageNumber: number) => {
     setIsLoading(true);
     try {
@@ -110,7 +111,7 @@ export default function TaskScreen({ navigation }: any) {
   const loadMoreTasks = () => {
     if (!isLoading && !noMoreData) {
       const nextPage = page + 1;
-      fetchTasks(nextPage); 
+      fetchTasks(nextPage);
     }
   };
 
