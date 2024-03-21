@@ -18,9 +18,10 @@ import {
 } from "../../../utils/requestDevices";
 import { selectFiles } from "../../../utils/photoLibraryAction";
 import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { userSelector } from "../../../redux/reducers/userReducer";
 import { LoadingModal } from "../../../modals";
+import { refreshTask } from "../../../redux/reducers/taskReducer";
 
 interface Member {
   _id: string;
@@ -75,7 +76,7 @@ export default function Detail({
     taskPhoto: [],
     status: "",
   });
-
+  const dispatch = useDispatch();
   const fetchMember = async () => {
     try {
       const res = await familyApi.getFamily();
@@ -105,20 +106,12 @@ export default function Detail({
 
   const handleEditTask = async () => {
     try {
-      const formData = new FormData();
       if (taskDetail) {
         setIsLoading(true);
-        formData.append("title", taskDetail.title);
-        formData.append("description", taskDetail.description);
-        formData.append("startTime", taskDetail.startTime.toISOString());
-        formData.append("endTime", taskDetail.endTime.toISOString());
         const assigneesId = taskDetail.assignees.map(
           (assignee) => assignee._id
         );
 
-        formData.append("assignees", assigneesId);
-
-        console.log("Pre Upload");
         if (taskDetail.assignees.length < 1) {
           Dialog.show({
             type: ALERT_TYPE.WARNING,
@@ -126,7 +119,20 @@ export default function Detail({
             textBody: "You need to choose at least one person to do this task",
             button: "Got it!",
           });
+          setIsLoading(false);
+          return;
         }
+        if (new Date(taskDetail.startTime) < new Date()) {
+          Dialog.show({
+            type: ALERT_TYPE.WARNING,
+            title: "Time Error",
+            textBody: "You cannot pick the time from the past",
+            button: "Got it!",
+          });
+          setIsLoading(false);
+          return;
+        }
+        console.log("Pre Upload");
         try {
           const res = await taskApi.updateTask(
             assigneesId,
@@ -135,14 +141,35 @@ export default function Detail({
             taskDetail.endTime,
             taskDetail.description,
             taskDetail.taskPhoto,
-            id,
-            user._id
+            user._id,
+            id
           );
-          setIsLoading(false);
-          console.log(res);
+          if (res.data.code === 200) {
+            setIsLoading(false);
+            Dialog.show({
+              type: ALERT_TYPE.SUCCESS,
+              title: "Updated Task",
+              textBody: res.data.data,
+              button: "Close",
+              onHide: () => {
+                setIsEdit(false)
+                onClose();
+                dispatch(refreshTask());
+
+              },
+            });
+          } else {
+            setIsLoading(false);
+            Dialog.show({
+              type: ALERT_TYPE.WARNING,
+              title: "Fail",
+              textBody: res.data.data,
+              button: "Close",
+            });
+          }
         } catch (error) {
-          setIsLoading(true);
           console.log(error);
+          setIsLoading(false);
         }
       }
     } catch (error) {
@@ -156,7 +183,6 @@ export default function Detail({
     if (isReadStoragePermit && isWriteStoragePermit) {
       const response = await selectFiles();
       if (!response) return null;
-      console.log(response);
       try {
         const formData = new FormData();
         response.map((file) => formData.append("image", file));
@@ -166,7 +192,7 @@ export default function Detail({
 
         const fileResponse = res.data.data;
         console.log(fileResponse);
-        
+
         setTaskDetail((prevTask) => ({
           ...prevTask,
           taskPhoto: [...prevTask.taskPhoto, ...fileResponse],

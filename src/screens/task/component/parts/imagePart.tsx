@@ -79,6 +79,37 @@ export default function ImagesPart({
           </SectionComponent>
         </>
       )}
+
+      {data.taskPhoto.length == 0 && isEdit && (
+        <>
+          <TextComponent
+            text="New Images?"
+            size={12}
+            styles={styles.subTitle}
+            color={appColors.gray}
+          />
+          <SectionComponent styles={styles.imagesWrapper}>
+            {editData.taskPhoto.map((photo: string, index: number) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleRemovePicture(index)}
+              >
+                <ImageBackground
+                  borderRadius={12}
+                  source={{ uri: photo }}
+                  style={[styles.taskImage, styles.wrapperPicker]}
+                >
+                  <EvilIcons name="trash" size={55} color={appColors.white} />
+                </ImageBackground>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity style={styles.imagePicker} onPress={handleChange}>
+              <EvilIcons name={"image"} size={50} />
+            </TouchableOpacity>
+          </SectionComponent>
+        </>
+      )}
+
       <ImageView
         images={taskPhotoObjects}
         visible={imageGalleryVisible}
@@ -108,6 +139,7 @@ const styles = StyleSheet.create({
   imagesWrapper: {
     marginLeft: -15,
     flexDirection: "row",
+    rowGap: 10,
     alignItems: "center",
     flexWrap: "wrap",
   },

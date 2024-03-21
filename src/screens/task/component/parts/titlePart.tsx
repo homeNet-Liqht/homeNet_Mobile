@@ -21,7 +21,7 @@ export default function TitlePart({
           <InputComponent
             isPassword={false}
             value={editData.title}
-            onChange={(val) => handleChange("title", val)}
+            onChange={handleChange}
           />
         ) : (
           <TextComponent

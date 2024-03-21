@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, StyleSheet, View, TouchableOpacity } from "react-native";
 import { RowComponent, TextComponent } from "../../../components";
 import { appColors } from "../../../constants/appColors";
@@ -21,48 +21,32 @@ const Member: React.FC<MemberProps> = ({
 }) => {
   const [isClicked, setIsClicked] = useState(false);
 
+  useEffect(() => {
+    if (isPick) {
+      setIsClicked(true);
+    }
+  }, [isPick]);
+
   const handlePress = () => {
     onPress(_id);
     setIsClicked(!isClicked);
   };
 
   const memberWrapperStyle = {
-    backgroundColor: isClicked ? appColors.primary : appColors.gray,
+    backgroundColor: isPick || isClicked ? appColors.primary : appColors.gray,
   };
 
   const initialsContainerStyle = {
     backgroundColor: isClicked ? appColors.white : appColors.primary,
   };
 
-  const isPickBackgroundMemberWrapper = {
-    backgroundColor: isPick ? appColors.primary : appColors.gray,
-  };
-
-  const isPickContainerBackground = {
-    backgroundColor: isPick ? appColors.white : appColors.primary,
-  };
-
   return (
     <TouchableOpacity onPress={handlePress}>
-      <RowComponent
-        styles={[
-          styles.memberWrapper,
-          isPick
-            ? isPickBackgroundMemberWrapper
-            : memberWrapperStyle,
-        ]}
-      >
+      <RowComponent styles={[styles.memberWrapper, memberWrapperStyle]}>
         {photo ? (
           <Image source={{ uri: photo }} style={styles.image} />
         ) : (
-          <View
-            style={[
-              styles.initialsContainer,
-              isPick
-                ? isPickContainerBackground
-                : initialsContainerStyle,
-            ]}
-          >
+          <View style={[styles.initialsContainer, initialsContainerStyle]}>
             <TextComponent
               color={isClicked ? appColors.gray : appColors.white}
               size={appInfo.size.WIDTH * 0.03}

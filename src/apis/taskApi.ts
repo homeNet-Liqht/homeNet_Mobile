@@ -25,7 +25,9 @@ const taskApi = {
         return axiosClient.post(url, formData, { headers: { "Content-Type": "multipart/form-data" } })
     },
     getTasks: (lastIndex?: number) => {
+        console.log(lastIndex);
         const url = `/task/tasks${lastIndex ? `?lastDataIndex=${lastIndex}` : ''}`;
+        
         return axiosClient.get(url);
     }
 }

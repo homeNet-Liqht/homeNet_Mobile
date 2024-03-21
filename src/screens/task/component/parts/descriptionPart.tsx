@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import {
   SectionComponent,
   InputComponent,
@@ -24,7 +24,7 @@ export default function Description({
       {isEdit ? (
         <InputComponent
           isPassword={false}
-          value={editData.title}
+          value={editData.description}
           onChange={handleChange}
         />
       ) : (

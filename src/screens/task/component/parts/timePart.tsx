@@ -23,8 +23,15 @@ export default function TimePart({
   );
 
   const handleStartDateTimeChange = (date: Date) => {
+    const currentTime = new Date();
+    if (date < currentTime) {
+      date = currentTime;
+    }
+    const newEndDateTime = new Date(date.getTime() + 2 * 60 * 60 * 1000);
     setStartDateTime(date);
+    setEndDateTime(newEndDateTime);
     handleChangeStartAt(date);
+    handleChangeEndAt(newEndDateTime);
   };
 
   const handleEndDateTimeChange = (date: Date) => {
@@ -63,14 +70,19 @@ export default function TimePart({
   } else {
     content = (
       <SectionComponent>
-        <TextComponent text={formatBirthday(data.endTime)} styles={{marginLeft: -15}}/>
+        <TextComponent
+          text={formatBirthday(data.endTime)}
+          styles={{ marginLeft: -15 }}
+        />
       </SectionComponent>
     );
   }
 
   return (
     <SectionComponent styles={styles.infoWrapper}>
-      <TextComponent text="Due date" size={12} color={appColors.gray} />
+      {!isEdit && (
+        <TextComponent text="Due date" size={12} color={appColors.gray} />
+      )}
       {content}
     </SectionComponent>
   );
@@ -87,6 +99,6 @@ const styles = StyleSheet.create({
   },
   time: {
     width: appInfo.size.WIDTH * 0.3,
-    height: appInfo.size.HEIGHT * 0.05,
+    height: appInfo.size.HEIGHT * 0.1,
   },
 });
