@@ -4,7 +4,7 @@ const taskSlice = createSlice({
     name: 'task',
     initialState: {
         taskRefresh: {
-            refresh: true
+            refresh: false
 
         }
     },
