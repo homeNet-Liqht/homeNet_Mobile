@@ -77,6 +77,7 @@ export default function Detail({
     status: "",
   });
   const dispatch = useDispatch();
+
   const fetchMember = async () => {
     try {
       const res = await familyApi.getFamily();
@@ -152,10 +153,9 @@ export default function Detail({
               textBody: res.data.data,
               button: "Close",
               onHide: () => {
-                setIsEdit(false)
+                setIsEdit(false);
                 onClose();
                 dispatch(refreshTask());
-
               },
             });
           } else {
@@ -264,6 +264,41 @@ export default function Detail({
     }
   };
 
+  const handleDeleteTask = async (id: string) => {
+    console.log(id);
+    console.log(user._id);
+
+    try {
+      setIsLoading(true);
+      const res = await taskApi.delete(user._id, id);
+      console.log(res.data);
+      if (res.data.code === 200) {
+        Dialog.show({
+          type: ALERT_TYPE.SUCCESS,
+          title: "Delete Task",
+          textBody: res.data.data,
+          button: "Return now!",
+          onHide: () => {
+            setIsEdit(false);
+            onClose();
+            dispatch(refreshTask());
+          },
+        });
+      } else {
+        Dialog.show({
+          type: ALERT_TYPE.WARNING,
+          title: "Delete Task",
+          textBody: res.data.data,
+          button: "I Got It",
+        });
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Modal style={styles.wrapper} isVisible={visible}>
       <TitlePart
@@ -305,16 +340,16 @@ export default function Detail({
         </SectionComponent>
 
         <SectionComponent>
-
           {isOwner({
+            id,
             isAssigner,
             status,
             isEdit,
             setIsEdit,
             onClose,
             handleEditTask,
+            handleDeleteTask,
           })}
-
         </SectionComponent>
       </ScrollView>
       <LoadingModal visible={isLoading} />

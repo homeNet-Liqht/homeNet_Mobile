@@ -140,21 +140,22 @@ function HomeScreen({ navigation }: any) {
               )}
             </SectionComponent>
           ) : null}
-
-          <CircleComponent color={"#524CE0"} size={36}>
-            <Notification size={24} color={appColors.white} />
-            <View
-              style={{
-                backgroundColor: "coral",
-                width: 10,
-                height: 10,
-                borderRadius: 100,
-                position: "absolute",
-                right: 8,
-                top: 5,
-              }}
-            />
-          </CircleComponent>
+          <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+            <CircleComponent color={"#524CE0"} size={36}>
+              <Notification size={24} color={appColors.white} />
+              <View
+                style={{
+                  backgroundColor: "coral",
+                  width: 10,
+                  height: 10,
+                  borderRadius: 100,
+                  position: "absolute",
+                  right: 8,
+                  top: 5,
+                }}
+              />
+            </CircleComponent>
+          </TouchableOpacity>
         </RowComponent>
         <RowComponent
           styles={{

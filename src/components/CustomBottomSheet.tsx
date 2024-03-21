@@ -14,7 +14,7 @@ interface Props {
         title: string,
         icon: ReactNode
     }[],
-    navigation: any
+    navigation?: any
 }
 
 type Ref = BottomSheetModal

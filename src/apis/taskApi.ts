@@ -20,6 +20,12 @@ const taskApi = {
             photo: photo
         })
     },
+
+    delete: (uid: string, tid: string) => {
+        const url = `/task/del/${uid}/${tid}`;
+        return axiosClient.delete(url);
+    },
+
     uploadEditImage: (formData: FormData) => {
         const url = `/task/upload-edit-image`
         return axiosClient.post(url, formData, { headers: { "Content-Type": "multipart/form-data" } })
@@ -27,7 +33,7 @@ const taskApi = {
     getTasks: (lastIndex?: number) => {
         console.log(lastIndex);
         const url = `/task/tasks${lastIndex ? `?lastDataIndex=${lastIndex}` : ''}`;
-        
+
         return axiosClient.get(url);
     }
 }
