@@ -58,8 +58,8 @@ const SocialLogin = () => {
           })
         );
       });
-    } catch (error) {
-      console.log("error while signin:", error, error.code);
+    } catch (error:any) {
+      console.log("error while sign in:", error, error.code);
       setIsLoading(false);
     }
   };
@@ -108,7 +108,7 @@ const SocialLogin = () => {
     <SectionComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
         <ButtonComponent
-          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
           text={"Google"}
           type={"primary"}
           color={appColors.white}
@@ -120,14 +120,14 @@ const SocialLogin = () => {
       </RowComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
         <ButtonComponent
-          styles={{ inlineSize: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
+          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
           text={"Facebook"}
           type={"primary"}
           color={appColors.white}
           textColor={"black"}
           iconFlex={"left"}
           icon={<Facebook />}
-          onPress={() => handleFacebookLogin}
+          onPress={() => handleFacebookLogin()}
         />
       </RowComponent>
       <LoadingModal visible={isLoading} />

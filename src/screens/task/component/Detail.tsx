@@ -305,6 +305,7 @@ export default function Detail({
         </SectionComponent>
 
         <SectionComponent>
+
           {isOwner({
             isAssigner,
             status,
@@ -313,6 +314,7 @@ export default function Detail({
             onClose,
             handleEditTask,
           })}
+
         </SectionComponent>
       </ScrollView>
       <LoadingModal visible={isLoading} />

@@ -1,6 +1,7 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {View, Image, FlatList} from "react-native";
 import {
+    ButtonComponent,
     ContainerComponent,
     RowComponent, SectionComponent,
 
@@ -15,11 +16,28 @@ import {userSelector,} from "../../redux/reducers/userReducer";
 import {LoadingModal} from "../../modals";
 import Entypo from "react-native-vector-icons/Entypo";
 import {Edit, Lock, Logout} from "iconsax-react-native";
+import {familyApi} from "../../apis";
 
 export default function ProfileScreen({navigation}: any) {
     const user = useSelector(userSelector);
     const [isLoading, setIsLoading] = useState(false);
+    const [family, setFamily]= useState<any>(1)
 
+    useEffect(() => {
+        GetFamily()
+    }, []);
+
+
+    const GetFamily = async () =>{
+        try {
+            setIsLoading(true)
+            const res = await familyApi.getFamily()
+            res ? setFamily(res.data.data): setFamily(null)
+            setIsLoading(false)
+        }catch (e){
+            setIsLoading(false)
+        }
+    }
 
     const size = 20;
     const color = appColors.gray
@@ -87,25 +105,97 @@ export default function ProfileScreen({navigation}: any) {
                                    text={user.name}/>
                 </RowComponent>
                 <SpaceComponent height={20}/>
-                <RowComponent>
-                    <View style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flex: 1
-                    }}>
-                        <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}}
-                                       text={"Thai hoang family"}/>
-                    </View>
-                    <View style={{
-                        borderLeftWidth: 1,
-                        borderLeftColor: appColors.gray,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flex: 1
-                    }}>
-                        <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}} text={"0 Task"}/>
-                    </View>
-                </RowComponent>
+                {
+                    !family ?
+
+                        <>
+                            <SectionComponent styles={{
+                                justifyContent:"center",
+                                alignItems: "center",
+                            }}>
+
+                                <RowComponent styles={{
+                                    width: appInfo.size.WIDTH * 0.9,
+                                    backgroundColor: appColors.primary,
+                                    borderRadius: 20,
+                                    padding: 5,
+                                    flexDirection: "row",
+                                    alignItems:"center",
+                                    justifyContent: "space-between"
+                                }}>
+                                    <SectionComponent styles={{
+                                        flex: 1,
+                                        height: appInfo.size.HEIGHT *0.15,
+                                        flexDirection: "column",
+                                        justifyContent: "space-between",
+                                        }} >
+                                        <TextComponent size={14}
+                                                       color={appColors.white}
+                                                       styles={{fontWeight: "bold"}}
+                                                       text={"Create Family now!!"}/>
+                                        <ButtonComponent styles={{
+                                            borderRadius: 30,
+                                            paddingHorizontal: 5,
+                                            paddingVertical: 5,
+                                            minHeight: 10,
+                                            marginBottom:0,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            backgroundColor: appColors.red,
+                                        }}
+                                                         text={"Create"}
+                                                         onPress={() => {
+                                                             navigation.navigate("CreateFamilyScreen")
+                                                         }}
+                                                         type={"primary"}
+                                                         textStyles={{fontWeight: "bold"}}
+                                                         textColor={appColors.white}
+                                                         color ={appColors.white}/>
+
+
+
+                                        <ButtonComponent  styles={{
+                                            borderRadius: 30,
+                                            paddingHorizontal: 5,
+                                            paddingVertical: 5,
+                                            minHeight: 10,
+                                            marginBottom:0,
+                                            backgroundColor: appColors.orange,
+
+                                        }}  text={"Join"} textStyles={{fontWeight: "bold"}} type={"primary"} textColor={appColors.white} color={appColors.white}/>
+                                    </SectionComponent>
+                                    <SectionComponent styles={{flex: 1  }} >
+                                        <Image source={require("../../assets/imgs/family-draw.png")} style={{
+                                            width: appInfo.size.WIDTH * 0.4,
+                                            resizeMode: "stretch",
+                                            height: appInfo.size.HEIGHT *0.133}} />
+
+                                    </SectionComponent>
+
+                                </RowComponent>
+
+
+                            </SectionComponent>
+                        </>:
+                        <RowComponent>
+                            <View style={{
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flex: 1
+                            }}>
+                                <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}}
+                                               text={family.familyName}/>
+                            </View>
+                            <View style={{
+                                borderLeftColor: appColors.gray,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flex: 1
+                            }}>
+                                <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}} text={"0 Task"}/>
+                            </View>
+                        </RowComponent>
+                }
 
 
                 <LoadingModal visible={isLoading}/>

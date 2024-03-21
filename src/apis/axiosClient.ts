@@ -24,10 +24,7 @@ axiosClient.interceptors.response.use((response) => {
     const status = response?.status;
     if (status === 401 || status === 403) {
         try {
-            handleRefreshToken().then((cookies: any) => {
-                useAsyncStorage("accessToken").setItem(cookies.accesstoken.value)
-                useAsyncStorage("refreshToken").setItem(cookies.refreshtoken.value)
-            })
+            handleRefreshToken()
             const retryConfig = { ...config };
             return axiosClient(retryConfig);
 

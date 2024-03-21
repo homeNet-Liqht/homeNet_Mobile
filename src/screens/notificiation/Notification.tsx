@@ -27,7 +27,7 @@ export default function MyComponent() {
         navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
-        initialLayout={layout}
+        // initialLayout={layout}
         renderTabBar={(props) => (
           <TabBar
             {...props}

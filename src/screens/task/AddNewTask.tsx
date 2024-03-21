@@ -180,7 +180,7 @@ function AddNewTask({ navigation }: any) {
           button: "Close",
         });
       }
-    } catch (error) {
+    } catch (error:any) {
       console.log(error);
 
       setIsLoading(false);
@@ -212,7 +212,8 @@ function AddNewTask({ navigation }: any) {
         <TextComponent text="Members" size={18} styles={styles.title} />
         <View style={styles.memberWrapper}>
           {members ? (
-            members.map((member) => (
+            members.map((member:any
+            ) => (
               <Member
                 key={member._id}
                 _id={member._id}
