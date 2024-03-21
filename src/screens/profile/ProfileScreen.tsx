@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {View, Image, FlatList} from "react-native";
+import {View, Image, Text, TouchableOpacity,} from "react-native";
 import {
     ButtonComponent,
     ContainerComponent,
@@ -17,6 +17,7 @@ import {LoadingModal} from "../../modals";
 import Entypo from "react-native-vector-icons/Entypo";
 import {Edit, Lock, Logout} from "iconsax-react-native";
 import {familyApi} from "../../apis";
+import Timeline from 'react-native-timeline-flatlist';
 
 export default function ProfileScreen({navigation}: any) {
     const user = useSelector(userSelector);
@@ -65,12 +66,22 @@ export default function ProfileScreen({navigation}: any) {
         titleBottomSheet: 'Settings',
         dataBottomSheet: bottomSheetFlatList,
     }
+    const events = [
+        { time: '09:00', title: 'Sự kiện 1', description: 'Mô tả sự kiện 1' },
+        { time: '10:00', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
+        { time: '11:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
+        { time: '1:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
+        { time: '11:30', title: 'Sự kiện 2', description: 'Mô tả sự kiện 2' },
+    ];
+
+
     return (
         <>
             <ContainerComponent
                 back
                 title={"My Profile"}
-                isScroll color={"#fff"}
+                isScroll={false}
+                color={"#fff"}
                 moreAction={moreAction}
 
 
@@ -151,9 +162,6 @@ export default function ProfileScreen({navigation}: any) {
                                                          textStyles={{fontWeight: "bold"}}
                                                          textColor={appColors.white}
                                                          color ={appColors.white}/>
-
-
-
                                         <ButtonComponent  styles={{
                                             borderRadius: 30,
                                             paddingHorizontal: 5,
@@ -183,8 +191,11 @@ export default function ProfileScreen({navigation}: any) {
                                 justifyContent: "center",
                                 flex: 1
                             }}>
-                                <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}}
-                                               text={family.familyName}/>
+                                <TouchableOpacity onPress={() => navigation.navigate("FamilyScreen")}>
+
+                                    <TextComponent color={appColors.primary} styles={{fontWeight: "bold"}}
+                                                   text={family.familyName}/>
+                                </TouchableOpacity>
                             </View>
                             <View style={{
                                 borderLeftColor: appColors.gray,
@@ -197,7 +208,32 @@ export default function ProfileScreen({navigation}: any) {
                         </RowComponent>
                 }
 
+               <SectionComponent styles={{
+                   width: appInfo.size.WIDTH,
+                   height: appInfo.size.HEIGHT
+               }}>
+                   <Timeline
+                       data={events}
+                       circleSize={20}
+                       circleColor='rgb(45,156,219)'
+                       lineColor='rgb(45,156,219)'
+                       timeStyle={{
+                           textAlign: 'center',
+                           backgroundColor:'#ff9797',
+                           color:'white',
+                           padding:5,
+                           borderRadius:13,
 
+                       }}
+                       descriptionStyle={{color:'gray'}}
+
+                       style={{
+                           padding: 15,
+                           justifyContent: "center",
+                       }}
+                       isUsingFlatlist={true}
+                   />
+               </SectionComponent>
                 <LoadingModal visible={isLoading}/>
             </ContainerComponent>
         </>
