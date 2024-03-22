@@ -140,7 +140,9 @@ function HomeScreen({ navigation }: any) {
               )}
             </SectionComponent>
           ) : null}
-          <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Notifications")}
+          >
             <CircleComponent color={"#524CE0"} size={36}>
               <Notification size={24} color={appColors.white} />
               <View
