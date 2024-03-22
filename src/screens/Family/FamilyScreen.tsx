@@ -99,6 +99,7 @@ export default function FamilyScreen({navigation}: any) {
                                 padding: appInfo.size.HEIGHT * 0.01,
                                 flexDirection: "row",
                                 alignItems: "center",
+                                marginBottom: 15
                             }}>
                                 <Image style={{
                                     width: appInfo.size.HEIGHT * 0.08,

@@ -12,6 +12,10 @@ const familyApi = {
     getFamilyLink: () => {
         const url="/family/generate";
         return axiosClient.post(url)
+    },
+    join: (id: string) => {
+        const url = `/family/join`;
+        return axiosClient.post(url,{groupId: id})
     }
 }
 

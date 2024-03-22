@@ -35,7 +35,16 @@ const taskApi = {
         const url = `/task/tasks${lastIndex ? `?lastDataIndex=${lastIndex}` : ''}`;
 
         return axiosClient.get(url);
+    },
+
+    getOwnTask : () =>{
+        const url = "task/current-user-tasks"
+        return axiosClient.get(url)
     }
+
+
+
+
 }
 
 
