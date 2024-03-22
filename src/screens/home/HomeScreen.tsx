@@ -123,7 +123,7 @@ function HomeScreen({ navigation }: any) {
                     currentWeather.temp &&
                     " " +
                       temperatureConvert(currentWeather.temp).toString() +
-                      "°C"
+                      "C"
                   }
                 />
               </RowComponent>
