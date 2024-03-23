@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">homeNet_Mobile</string>
+    <string name="app_name">homeNet</string>
+    <string name="facebook_app_id">427623953051055</string>
+    <string name="facebook_client_token">a56a94b13091bc926ef675592567c3dd</string>
+    <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
+    <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ALWAYS_SEND</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">2e9192d7-550e-4c4a-a68f-6f21eea1b191</string>
 </resources>
