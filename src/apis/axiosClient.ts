@@ -1,7 +1,7 @@
 import axios from 'axios';
 import queryString from "query-string";
 
-import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import {useAsyncStorage} from "@react-native-async-storage/async-storage";
 import handleRefreshToken from "../utils/refreshToken.ts";
 
 
@@ -20,20 +20,21 @@ axiosClient.interceptors.response.use((response) => {
     }
     return response;
 }, (error) => {
-    const { response, config } = error;
+    const {response, config} = error;
     const status = response?.status;
+
     if (status === 401 || status === 403) {
         try {
             handleRefreshToken()
-            const retryConfig = { ...config };
+
+            const retryConfig = {...config};
             return axiosClient(retryConfig);
 
-        } catch (e) {
 
+        } catch (e) {
         }
-    }else {
+    } else {
         return Promise.reject(error.response); // No need to refresh tokens, reject with original error response
     }
-
 });
 export default axiosClient;

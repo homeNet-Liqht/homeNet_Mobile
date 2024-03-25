@@ -28,15 +28,16 @@ export default function CreateFamilyScreen({navigation}: any) {
         const res = await selectFile()
         res && setPhoto(res[0])
     }
-    console.log(photo)
     const handleCreateFamily = async () =>{
         formData.append('image', photo);
         formData.append('familyName',familyName);
         setIsLoading(true)
         try {
             const res = await familyApi.create(formData)
+            navigation.negative("ProfileScreen")
             setIsLoading(false)
         }catch (e:any) {
+            console.log(e.error)
             setIsLoading(false)
         }
     }
@@ -58,13 +59,14 @@ export default function CreateFamilyScreen({navigation}: any) {
                 alignItems: "center",
                 position: "absolute"
             }} source={require("../../assets/imgs/cr-famlily.png")}/>
+
+
             <KeyboardAvoidingView
                 style={{
                     flex: 1,
                     height: appInfo.size.HEIGHT
                 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-
                 keyboardVerticalOffset={60}
 
             >
