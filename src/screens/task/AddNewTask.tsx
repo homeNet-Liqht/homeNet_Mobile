@@ -20,7 +20,7 @@ import {
   requestExternalReadPermission,
   requestExternalWritePermission,
 } from "../../utils/requestDevices";
-import { familyApi, notificationApi, taskApi } from "../../apis/index";
+import { familyApi, taskApi } from "../../apis/index";
 import { LoadingModal } from "../../modals";
 
 import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
@@ -161,7 +161,7 @@ function AddNewTask({ navigation }: any) {
       console.log("send noti");
 
       const res = await taskApi.createTask(formData);
-      
+
       if (res.data.code === 200) {
         await taskApi.send(Task.assignees, "task");
         setIsLoading(false);

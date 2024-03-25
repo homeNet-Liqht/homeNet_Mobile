@@ -39,15 +39,23 @@ const taskApi = {
 
     send: (receivers: string[], type: string, task_id?: string) => {
         console.log("aaaa");
-        
+
         const url = `/notification/send`
-        return axiosClient.post(url, { receivers: receivers, type: type, task_id: task_id })
+        return axiosClient.post(url, {receivers: receivers, type: type, task_id: task_id})
 
-
+    },
     getOwnTask : () =>{
         const url = "task/current-user-tasks"
         return axiosClient.get(url)
+    },
 
+    getTaskById : (id: string) =>{
+        const url = `task/user-task/${id}`
+        return axiosClient.get(url)
+    },
+    getAllTaskInFamily: (day: string) => {
+        const url = `/task/user-tasks-in-day`
+        return axiosClient.post(url,{day: day})
     }
 
 

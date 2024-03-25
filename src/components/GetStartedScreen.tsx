@@ -1,5 +1,5 @@
 import React from "react";
-import {Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, ImageBackground, StatusBar, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {globalStyles} from "../screens/styles/globalStyles.ts";
 import {appInfo} from "../constants/appInfo.ts";
 import {transform} from "@babel/core";
@@ -12,7 +12,11 @@ const GetStartedScreen = ({navigation}:any) => {
     const dispatch = useDispatch();
 
     return (
-        <View style={[globalStyles.container]}>
+        <View style={{
+            paddingTop: StatusBar.currentHeight,
+            height: appInfo.size.HEIGHT,
+            flex: 1
+        }}>
             <ImageBackground source={require("../assets/imgs/Onboarding4.png")} style={[styles.ImgBg]}>
                 <TouchableOpacity style={[styles.btn]} onPress={() => {
                     setItem("true")

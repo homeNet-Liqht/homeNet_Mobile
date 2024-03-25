@@ -1,76 +1,111 @@
-import React from 'react';
-import {View, SafeAreaView, Text, StatusBar} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Alert, StatusBar} from 'react-native'; // Thêm Alert từ react-native
+import {appColors} from "../../constants/appColors.ts";
 import {
-    ExpandableCalendar,
-    AgendaList,
     CalendarProvider,
-} from 'react-native-calendars';
-import moment from 'moment';
+    ExpandableCalendar,
+    TimelineList,
+} from "react-native-calendars";
+import TaskApi from "../../apis/taskApi.ts";
+
+const INITIAL_TIME = {hour: 10, minutes: 0};
 
 const CalendarScreen = () => {
-    const currentDay = moment();
+    const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
+
+    const [eventData, setEventData] = useState()
 
 
-    const [selectedDay, setSelectedDay] = React.useState(
-        currentDay.format('YYYY-MM-DD'),
-    );
 
-    const data = [
 
-        {
-            title: '2022-12-31',
-            data: [
-                {
-                    date: '2022-12-31T06:00:00.000Z',
-                },
-            ],
-        },
-    ];
+    useEffect(() => {
+        getEvent()
+    }, []);
 
-    const selectDay = (value:any) => {
-        setSelectedDay(value);
+    const getEvent = async () => {
+        try {
+            const res = await TaskApi.getAllTaskInFamily(currentDate)
+            console.log(res)
+
+        }catch (e){
+            console.log(e)
+        }
+    }
+
+    // const eventData = {
+    //     "2024-03-26": [
+    //         {
+    //             id: "1",
+    //             start: "2024-03-26 09:20:00",
+    //             end: "2024-03-26 12:00:00",
+    //             title: 'Merge Request to React Native Calendars',
+    //             summary: 'Merge Timeline Calendar to React Native Calendars',
+    //             color: '#e6add8'
+    //         },
+    //         {
+    //             id: "2",
+    //             start: "2024-03-26 09:20:00",
+    //             end: "2024-03-26 12:00:00",
+    //             title: 'Merge Request to React Native Calendars',
+    //             summary: 'Merge Timeline Calendar to React Native Calendars',
+    //             color: '#fff'
+    //         }
+    //     ],
+    // };
+
+    const onDateChanged = (date: any) => {
+        setCurrentDate(date);
     };
 
-
-
-    const renderItem = (item:any) => {
-        const index = moment(item.item.date).format('YYYY-MM-DD');
-        return (
-            <View
-                key={index}
-                style={{margin: 30, height: 150, backgroundColor: 'red'}}>
-                <Text style={{fontSize: 50}}>{index}</Text>
-            </View>
-        );
+    const onMonthChange = (month: any, updateSource: any) => {
+        console.log('TimelineCalendarScreen onMonthChange: ', month, updateSource);
     };
 
-    console.log(selectedDay)
+    const timelineProps = {
+        format24h: true,
+
+        unavailableHours: [{start: 6, end: 13}, {start: 22, end: 24}],
+        overlapEventsSpacing: 8,
+        rightEdgeSpacing: 24,
+    };
 
     return (
-        <SafeAreaView style={{flex: 1,
-            paddingTop: StatusBar.currentHeight
-        }}>
-            <CalendarProvider
-                date={selectedDay}
-                onDateChanged={selectDay}
-                disabledOpacity={1}>
-                <ExpandableCalendar
-                    minDate={moment()
-                        .subtract(2, 'M')
-                        .startOf('month')
-                        .format('YYYY-MM-DD')}
-                    maxDate={moment().format('YYYY-MM-DD')}
-                    disableWeekScroll={false}
-                    firstDay={1}
-                    pastScrollRange={2}
-                    futureScrollRange={2}
-                    markingType={'custom'}
-                    calendarHeight={374}
-                />
-                <AgendaList sections={data} renderItem={renderItem} />
-            </CalendarProvider>
-        </SafeAreaView>
+        <CalendarProvider
+            style={{
+                paddingTop: StatusBar.currentHeight,
+                backgroundColor: appColors.white
+            }}
+            theme={{
+                todayTextColor: appColors.primary,
+            }}
+            date={currentDate}
+            disabledOpacity={0.6}
+            onMonthChange={onMonthChange}
+            onDateChanged={onDateChanged}
+            showTodayButton>
+            <ExpandableCalendar
+                minDate={'2023-01-01'}
+                maxDate={'2025-12-31'}
+                theme={{
+                    todayTextColor: appColors.primary,
+                }}
+                onDayPress={(date) => {
+                    setCurrentDate(date.dateString)
+                }}/>
+
+            {/*<TimelineList*/}
+            {/*    events={eventData}*/}
+            {/*    showNowIndicator*/}
+            {/*    timelineProps={timelineProps}*/}
+            {/*    scrollToNow*/}
+            {/*    scrollToFirst*/}
+            {/*/>*/}
+        </CalendarProvider>
     );
 };
 
-export default CalendarScreen;
+const styles = StyleSheet.create({
+
+});
+
+export default CalendarScreen
