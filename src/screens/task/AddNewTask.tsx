@@ -20,7 +20,7 @@ import {
   requestExternalReadPermission,
   requestExternalWritePermission,
 } from "../../utils/requestDevices";
-import { familyApi, taskApi } from "../../apis/index";
+import { familyApi, notificationApi, taskApi } from "../../apis/index";
 import { LoadingModal } from "../../modals";
 
 import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
@@ -60,7 +60,6 @@ function AddNewTask({ navigation }: any) {
   );
   const [members, setMembers] = useState([]);
   const dispatch = useDispatch();
-  
 
   const handleMemberPress = (id: string) => {
     const index = Task.assignees.indexOf(id);
@@ -74,7 +73,6 @@ function AddNewTask({ navigation }: any) {
   };
 
   useEffect(() => {
-
     fetchMembers();
   }, []);
 
@@ -160,8 +158,12 @@ function AddNewTask({ navigation }: any) {
         });
         return setIsLoading(false);
       }
+      console.log("send noti");
+
       const res = await taskApi.createTask(formData);
+      
       if (res.data.code === 200) {
+        await taskApi.send(Task.assignees, "task");
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
@@ -217,9 +219,8 @@ function AddNewTask({ navigation }: any) {
         <View style={styles.memberWrapper}>
           {members ? (
             members.map((member) => {
-              
               const isChosen = Task.assignees.includes(member._id);
-              
+
               return (
                 <Member
                   key={member._id}
