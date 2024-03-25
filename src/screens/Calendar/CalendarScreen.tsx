@@ -1,57 +1,61 @@
 import React, {useEffect, useState} from 'react';
-import {StyleSheet, Alert, StatusBar} from 'react-native'; // Thêm Alert từ react-native
+import {StyleSheet, Alert, StatusBar, View} from 'react-native'; // Thêm Alert từ react-native
 import {appColors} from "../../constants/appColors.ts";
 import {
     CalendarProvider,
+    CalendarUtils,
     ExpandableCalendar,
     TimelineList,
 } from "react-native-calendars";
 import TaskApi from "../../apis/taskApi.ts";
-
-const INITIAL_TIME = {hour: 10, minutes: 0};
+import task from "../task/component/Task.tsx";
 
 const CalendarScreen = () => {
+
     const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
 
-    const [eventData, setEventData] = useState()
+    const [eventData, setEventData] = useState({
+        [currentDate]: []
+    })
 
-
-
+    const markedDates = {};
 
     useEffect(() => {
-        getEvent()
-    }, []);
+        getEvent();
+    }, [currentDate]);
+
 
     const getEvent = async () => {
         try {
-            const res = await TaskApi.getAllTaskInFamily(currentDate)
-            console.log(res)
+            const res = await TaskApi.getAllTaskInFamily(currentDate);
+            const tasks = res.data.data;
+            console.log("eeee",tasks)
+            const newTasks:any = [];
+            tasks && tasks.forEach((item: any, index: any) => {
+                const startTime = new Date(new Date(item.startTime).getTime() + (7 * 60 * 60 * 1000));
+                const endDate = new Date(new Date(item.endTime).getTime() + (7 * 60 * 60 * 1000));
+                const newTask = {
+                    id: index,
+                    start: `${currentDate} ${startTime.toISOString().split('T')[1].split('.')[0]}`,
+                    end: `${currentDate} ${endDate.toISOString().split('T')[1].split('.')[0]}`,
+                    title: item.title,
+                    summary: item.description,
+                    color: '#e6add8',
 
-        }catch (e){
-            console.log(e)
+
+                }
+                newTasks.push(newTask);
+            })
+
+
+
+            setEventData({[currentDate]: newTasks})
+
+        } catch (error) {
+            console.log(error);
         }
-    }
+    };
 
-    // const eventData = {
-    //     "2024-03-26": [
-    //         {
-    //             id: "1",
-    //             start: "2024-03-26 09:20:00",
-    //             end: "2024-03-26 12:00:00",
-    //             title: 'Merge Request to React Native Calendars',
-    //             summary: 'Merge Timeline Calendar to React Native Calendars',
-    //             color: '#e6add8'
-    //         },
-    //         {
-    //             id: "2",
-    //             start: "2024-03-26 09:20:00",
-    //             end: "2024-03-26 12:00:00",
-    //             title: 'Merge Request to React Native Calendars',
-    //             summary: 'Merge Timeline Calendar to React Native Calendars',
-    //             color: '#fff'
-    //         }
-    //     ],
-    // };
 
     const onDateChanged = (date: any) => {
         setCurrentDate(date);
@@ -63,7 +67,6 @@ const CalendarScreen = () => {
 
     const timelineProps = {
         format24h: true,
-
         unavailableHours: [{start: 6, end: 13}, {start: 22, end: 24}],
         overlapEventsSpacing: 8,
         rightEdgeSpacing: 24,
@@ -88,24 +91,25 @@ const CalendarScreen = () => {
                 maxDate={'2025-12-31'}
                 theme={{
                     todayTextColor: appColors.primary,
+
                 }}
                 onDayPress={(date) => {
                     setCurrentDate(date.dateString)
-                }}/>
+                }}
 
-            {/*<TimelineList*/}
-            {/*    events={eventData}*/}
-            {/*    showNowIndicator*/}
-            {/*    timelineProps={timelineProps}*/}
-            {/*    scrollToNow*/}
-            {/*    scrollToFirst*/}
-            {/*/>*/}
+            />
+
+            <TimelineList
+                events={eventData}
+                showNowIndicator
+                timelineProps={timelineProps}
+                scrollToNow
+                scrollToFirst
+            />
         </CalendarProvider>
     );
 };
 
-const styles = StyleSheet.create({
-
-});
+const styles = StyleSheet.create({});
 
 export default CalendarScreen

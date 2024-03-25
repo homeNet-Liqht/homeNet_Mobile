@@ -56,7 +56,7 @@ function AddNewTask({ navigation }: any) {
   const [Task, setTask] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(false);
   const [filesResponse, setFilesResponse] = useState<DocumentPickerResponse[]>(
-    []
+      []
   );
   const [members, setMembers] = useState([]);
   const dispatch = useDispatch();
@@ -200,103 +200,109 @@ function AddNewTask({ navigation }: any) {
   };
 
   return (
-    <ContainerComponent isScroll title="Add new Task" back>
-      <SectionComponent>
-        <TextComponent text="Select the date" size={18} styles={styles.title} />
-      </SectionComponent>
-      <SectionComponent>
-        <TextComponent text="Title" size={18} styles={styles.title} />
-        <InputComponent
-          placeHolder="Title"
-          value={Task.title}
-          onChange={(val) => handleChange("title", val)}
-          isPassword={false}
-          allowClear
-        />
-      </SectionComponent>
-      <SectionComponent>
-        <TextComponent text="Members" size={18} styles={styles.title} />
-        <View style={styles.memberWrapper}>
-          {members ? (
-            members.map((member) => {
-              const isChosen = Task.assignees.includes(member._id);
-
-              return (
-                <Member
-                  key={member._id}
-                  _id={member._id}
-                  name={member.name}
-                  photo={member.photo}
-                  onPress={(id) => handleMemberPress(id)}
-                  isPick={isChosen}
-                />
-              );
-            })
-          ) : (
-            <TextComponent text="Loading..." />
-          )}
-        </View>
-      </SectionComponent>
-      <SectionComponent>
-        <TextComponent text="Select time" size={18} styles={styles.title} />
-        <RowComponent styles={styles.timeWrapper}>
-          <SectionComponent>
-            <TextComponent text="From" size={16} color={appColors.gray} />
-            <DatePicker
-              mode="time"
-              date={new Date(Task.startAt)}
-              onDateChange={(val) => handleChange("startAt", val)}
-              style={styles.time}
-            />
-          </SectionComponent>
-          <TextComponent text=">" size={25} styles={{ fontWeight: "600" }} />
-          <SectionComponent>
-            <TextComponent text="To" size={16} color={appColors.gray} />
-            <DatePicker
-              mode="time"
-              date={new Date(Task.endAt)}
-              onDateChange={(val) => handleChange("endAt", val)}
-              style={styles.time}
-            />
-          </SectionComponent>
-        </RowComponent>
-      </SectionComponent>
-      <SectionComponent>
-        <TextComponent text="Description" size={18} styles={styles.title} />
-        <InputComponent
-          placeHolder="Description"
-          value={Task.description}
-          onChange={(val) => handleChange("description", val)}
-          multiline
-          numberOfLine={4}
-          isPassword={false}
-          allowClear
-        />
-      </SectionComponent>
-      <SectionComponent>
-        <TextComponent text="Image(s)" size={18} styles={styles.title} />
-        <SectionComponent styles={styles.imageResponseWrapper}>
-          {filesResponse &&
-            filesResponse.map((file, index) => {
-              return (
-                <Image
-                  key={index}
-                  source={{ uri: file.uri }}
-                  style={styles.imageResponse}
-                />
-              );
-            })}
-          <TouchableOpacity
-            style={styles.imagePicker}
-            onPress={handleDocumentSelection}
-          >
-            <EvilIcons name={"image"} size={50} />
-          </TouchableOpacity>
+      <ContainerComponent isScroll title="Add new Task" back>
+        <SectionComponent>
+          <TextComponent text="Select the date" size={18} styles={styles.title} />
         </SectionComponent>
-      </SectionComponent>
-      <ButtonComponent text="Save" type="primary" onPress={handleAddTask} />
-      <LoadingModal visible={isLoading} />
-    </ContainerComponent>
+        <SectionComponent>
+          <TextComponent text="Title" size={18} styles={styles.title} />
+          <InputComponent
+              placeHolder="Title"
+              value={Task.title}
+              onChange={(val) => handleChange("title", val)}
+              isPassword={false}
+              allowClear
+          />
+        </SectionComponent>
+        <SectionComponent>
+          <TextComponent text="Members" size={18} styles={styles.title} />
+          <View style={styles.memberWrapper}>
+            {members ? (
+                members.map((member) => {
+                  const isChosen = Task.assignees.includes(member._id);
+
+                  return (
+                      <Member
+                          key={member._id}
+                          _id={member._id}
+                          name={member.name}
+                          photo={member.photo}
+                          onPress={(id) => handleMemberPress(id)}
+                          isPick={isChosen}
+                      />
+                  );
+                })
+            ) : (
+                <TextComponent text="Loading..." />
+            )}
+          </View>
+        </SectionComponent>
+        <SectionComponent>
+          <TextComponent text="Select time" size={18} styles={styles.title} />
+          <RowComponent styles={styles.timeWrapper}>
+            <SectionComponent>
+              <TextComponent text="From" size={16} color={appColors.gray} />
+              <DatePicker
+                  mode="time"
+                  textColor={
+                    appColors.gray
+                  }
+                  date={new Date(Task.startAt)}
+                  onDateChange={(val) => handleChange("startAt", val)}
+                  style={styles.time}
+              />
+            </SectionComponent>
+            <TextComponent text=">" size={25} styles={{ fontWeight: "600" }} />
+            <SectionComponent>
+              <TextComponent text="To" size={16} color={appColors.gray} />
+              <DatePicker
+                  mode="time"
+                  textColor={
+                     appColors.gray
+                  }
+                  date={new Date(Task.endAt)}
+                  onDateChange={(val) => handleChange("endAt", val)}
+                  style={styles.time}
+              />
+            </SectionComponent>
+          </RowComponent>
+        </SectionComponent>
+        <SectionComponent>
+          <TextComponent text="Description" size={18} styles={styles.title} />
+          <InputComponent
+              placeHolder="Description"
+              value={Task.description}
+              onChange={(val) => handleChange("description", val)}
+              multiline
+              numberOfLine={4}
+              isPassword={false}
+              allowClear
+          />
+        </SectionComponent>
+        <SectionComponent>
+          <TextComponent text="Image(s)" size={18} styles={styles.title} />
+          <SectionComponent styles={styles.imageResponseWrapper}>
+            {filesResponse &&
+                filesResponse.map((file, index) => {
+                  return (
+                      <Image
+                          key={index}
+                          source={{ uri: file.uri }}
+                          style={styles.imageResponse}
+                      />
+                  );
+                })}
+            <TouchableOpacity
+                style={styles.imagePicker}
+                onPress={handleDocumentSelection}
+            >
+              <EvilIcons name={"image"} size={50} />
+            </TouchableOpacity>
+          </SectionComponent>
+        </SectionComponent>
+        <ButtonComponent text="Save" type="primary" onPress={handleAddTask} />
+        <LoadingModal visible={isLoading} />
+      </ContainerComponent>
   );
 }
 const styles = StyleSheet.create({
@@ -310,12 +316,15 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "space-between",
     marginVertical: 12,
+
   },
   time: {
+
     width: appInfo.size.WIDTH * 0.4,
-    height: appInfo.size.HEIGHT * 0.1,
+    height: appInfo.size.HEIGHT * 0.3,
   },
   title: {
+
     fontWeight: "700",
     marginBottom: 12,
   },
@@ -337,10 +346,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 12,
     backgroundColor: "white",
+
   },
 });
 
 export default AddNewTask;
-function taskRefresh(arg0: boolean): any {
-  throw new Error("Function not implemented.");
-}
