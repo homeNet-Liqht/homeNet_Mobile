@@ -6,5 +6,5 @@ export {
     authApi,
     userApi,
     taskApi,
-    familyApi
+    familyApi,
 }

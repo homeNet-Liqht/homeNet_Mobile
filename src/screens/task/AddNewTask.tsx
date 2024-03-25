@@ -20,7 +20,7 @@ import {
   requestExternalReadPermission,
   requestExternalWritePermission,
 } from "../../utils/requestDevices";
-import { familyApi, taskApi } from "../../apis/index";
+import { familyApi, notificationApi, taskApi } from "../../apis/index";
 import { LoadingModal } from "../../modals";
 
 import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
@@ -58,9 +58,9 @@ function AddNewTask({ navigation }: any) {
   const [filesResponse, setFilesResponse] = useState<DocumentPickerResponse[]>(
     []
   );
-
   const [members, setMembers] = useState([]);
   const dispatch = useDispatch();
+
   const handleMemberPress = (id: string) => {
     const index = Task.assignees.indexOf(id);
 
@@ -69,6 +69,7 @@ function AddNewTask({ navigation }: any) {
     } else {
       Task.assignees.splice(index, 1);
     }
+    console.log(Task.assignees);
   };
 
   useEffect(() => {
@@ -157,8 +158,12 @@ function AddNewTask({ navigation }: any) {
         });
         return setIsLoading(false);
       }
+      console.log("send noti");
+
       const res = await taskApi.createTask(formData);
+      
       if (res.data.code === 200) {
+        await taskApi.send(Task.assignees, "task");
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
@@ -166,6 +171,7 @@ function AddNewTask({ navigation }: any) {
           textBody: res.data.data,
           button: "Close",
           onHide: () => {
+            setTask(initialValue);
             dispatch(refreshTask());
 
             navigation.navigate("TaskScreen");
@@ -180,7 +186,7 @@ function AddNewTask({ navigation }: any) {
           button: "Close",
         });
       }
-    } catch (error:any) {
+    } catch (error) {
       console.log(error);
 
       setIsLoading(false);
@@ -212,16 +218,20 @@ function AddNewTask({ navigation }: any) {
         <TextComponent text="Members" size={18} styles={styles.title} />
         <View style={styles.memberWrapper}>
           {members ? (
-            members.map((member:any
-            ) => (
-              <Member
-                key={member._id}
-                _id={member._id}
-                name={member.name}
-                photo={member.photo}
-                onPress={(id) => handleMemberPress(id)}
-              />
-            ))
+            members.map((member) => {
+              const isChosen = Task.assignees.includes(member._id);
+
+              return (
+                <Member
+                  key={member._id}
+                  _id={member._id}
+                  name={member.name}
+                  photo={member.photo}
+                  onPress={(id) => handleMemberPress(id)}
+                  isPick={isChosen}
+                />
+              );
+            })
           ) : (
             <TextComponent text="Loading..." />
           )}
