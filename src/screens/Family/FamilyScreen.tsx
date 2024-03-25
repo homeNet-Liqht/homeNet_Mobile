@@ -149,6 +149,7 @@ export default function FamilyScreen({ navigation }: any) {
                     />
                   </TouchableOpacity>
                 </RowComponent>
+
               ))}
             <SpaceComponent height={10} />
 
