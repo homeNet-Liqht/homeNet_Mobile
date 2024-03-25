@@ -47,7 +47,7 @@
     "react-native-calendars": "^1.1304.1",
     "react-native-code-push": "^8.2.1",
     "react-native-dash-2": "^0.2.3",
-    "react-native-date-picker": "^4.4.1-alpha.0",
+    "react-native-date-picker": "^4.4.2",
     "react-native-document-picker": "^9.1.1",
     "react-native-dotenv": "^3.4.10",
     "react-native-extra-dimensions-android": "^1.2.5",
