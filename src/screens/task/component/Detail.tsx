@@ -105,6 +105,27 @@ export default function Detail({
     }
   }, [isEdit]);
 
+  const acceptRequest = async (id: string) => {
+    try {
+      setIsLoading(true);
+      const res = await taskApi.acceptRequest(id);
+      console.log(res.data);
+      if (res.data.code === 200) {
+        
+            setIsEdit(false);
+
+            dispatch(refreshTask());
+
+            onClose();
+        }
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
   const handleEditTask = async () => {
     try {
       if (taskDetail) {
@@ -349,6 +370,7 @@ export default function Detail({
             onClose,
             handleEditTask,
             handleDeleteTask,
+            acceptRequest,
           })}
         </SectionComponent>
       </ScrollView>

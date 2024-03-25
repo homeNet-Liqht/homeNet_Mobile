@@ -22,7 +22,7 @@ import Timeline from 'react-native-timeline-flatlist';
 export default function ProfileScreen({navigation}: any) {
     const user = useSelector(userSelector);
     const [isLoading, setIsLoading] = useState(false);
-    const [family, setFamily] = useState<any>(1)
+    const [family, setFamily] = useState<any>()
     const [task, setTask] = useState<any>(1)
 
     useEffect(() => {
@@ -44,6 +44,8 @@ export default function ProfileScreen({navigation}: any) {
             setIsLoading(true)
             const res = await familyApi.getFamily()
             res ? setFamily(res.data.data) : setFamily(null)
+            console.log(family);
+            
             setIsLoading(false)
         } catch (e) {
             setIsLoading(false)
@@ -93,7 +95,7 @@ export default function ProfileScreen({navigation}: any) {
             <ContainerComponent
                 back
                 title={"My Profile"}
-                isScroll={false}
+   isScroll={false}
                 color={"#fff"}
                 moreAction={moreAction}>
 
@@ -195,7 +197,7 @@ export default function ProfileScreen({navigation}: any) {
                     </SectionComponent>
                 }
                 {
-                    family.familyName && <>
+                    family && family.familyName && <>
                         <RowComponent>
                             <View style={{
                                 alignItems: "center",

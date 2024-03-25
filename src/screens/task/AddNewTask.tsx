@@ -158,11 +158,12 @@ function AddNewTask({ navigation }: any) {
         });
         return setIsLoading(false);
       }
-      console.log("send noti");
 
       const res = await taskApi.createTask(formData);
 
       if (res.data.code === 200) {
+      console.log("send noti");
+
         await taskApi.send(Task.assignees, "task");
         setIsLoading(false);
         Dialog.show({
