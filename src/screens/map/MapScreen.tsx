@@ -1,11 +1,6 @@
 import React from 'react';
 import {View, Text, StyleSheet} from "react-native";
-import {ButtonComponent} from "../../components";
 import {useDispatch} from "react-redux";
-import {removeAuth} from "../../redux/reducers/authReducer.ts";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { LoginManager } from 'react-native-fbsdk-next';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import {appInfo} from "../../constants/appInfo.ts"; // remove PROVIDER_GOOGLE import if not using Google Maps
 const styles = StyleSheet.create({

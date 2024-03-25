@@ -119,7 +119,7 @@ export default function FamilyScreen({navigation}: any) {
 
                 <RowComponent>
                     <TouchableOpacity onPress={() => handleShowInvitation()}>
-                        <AntDesign size={20} name={"pluscircleo"}/>
+                        <AntDesign size={20} color={appColors.gray} name={"pluscircleo"}/>
                     </TouchableOpacity>
                 </RowComponent>
 
