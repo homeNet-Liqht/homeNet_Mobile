@@ -17,6 +17,7 @@ import CookieManager from "@react-native-cookies/cookies";
 import { Settings, LoginManager, Profile } from "react-native-fbsdk-next";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { appInfo } from "../../../constants/appInfo.ts";
+import { addUser } from "../../../redux/reducers/userReducer.ts";
 
 GoogleSignin.configure({
   webClientId:
@@ -57,53 +58,14 @@ const SocialLogin = () => {
             accessToken: cookie.accesstoken.value,
           })
         );
+        dispatch(addUser(res.data.data));
       });
-    } catch (error:any) {
+    } catch (error : any) {
       console.log("error while sign in:", error, error.code);
       setIsLoading(false);
     }
   };
 
-  const handleFacebookLogin = async () => {
-    try {
-      const result = await LoginManager.logInWithPermissions([
-        "public_profile",
-      ]);
-
-      if (result.isCancelled) {
-        console.log("Login Cancelled");
-      } else {
-        const profile = await Profile.getCurrentProfile();
-
-        if (profile) {
-          const user = {
-            name: profile.name,
-            photo: profile.imageURL,
-            email: profile.userID,
-          };
-          const res = await authApi.SignInWithGoogle(user);
-
-          await CookieManager.get(
-            `${process.env.REACT_APP_API_URL}/auth/social-login`
-          ).then((cookie) => {
-            console.log(cookie);
-
-            useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
-            useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
-            dispatch(
-              addAuth({
-                email: res.data.data.email,
-                accessToken: cookie.accesstoken.value,
-              })
-            );
-            setIsLoading(false);
-          });
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <SectionComponent>
       <RowComponent styles={{ paddingHorizontal: 20 }}>
@@ -116,18 +78,6 @@ const SocialLogin = () => {
           iconFlex={"left"}
           icon={<Google />}
           onPress={() => handleGoogleLogin()}
-        />
-      </RowComponent>
-      <RowComponent styles={{ paddingHorizontal: 20 }}>
-        <ButtonComponent
-          styles={{ width: appInfo.size.WIDTH * 0.5, borderRadius: 30 }}
-          text={"Facebook"}
-          type={"primary"}
-          color={appColors.white}
-          textColor={"black"}
-          iconFlex={"left"}
-          icon={<Facebook />}
-          onPress={() => handleFacebookLogin()}
         />
       </RowComponent>
       <LoadingModal visible={isLoading} />

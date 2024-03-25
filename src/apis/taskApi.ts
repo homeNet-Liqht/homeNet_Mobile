@@ -56,6 +56,10 @@ const taskApi = {
     getAllTaskInFamily: (day: string) => {
         const url = `/task/user-tasks-in-day`
         return axiosClient.post(url,{day: day})
+    },
+    acceptRequest : (id: string) => {
+        const url = `task/finish/${id}`
+        return axiosClient.put(url);
     }
 
 

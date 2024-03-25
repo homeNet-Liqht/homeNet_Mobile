@@ -5,5 +5,6 @@ export const appColors = {
     gray: "#898A8D",
     orange: "#F59762",
     red: "#F0635A",
-    blue: "#DAF2F8"
+    blue: "#DAF2F8",
+    green: "#6cff3b"
 }

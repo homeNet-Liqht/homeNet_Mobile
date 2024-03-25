@@ -43,6 +43,7 @@ export default function TitlePart({
             style={{
               width: 35,
               height: 35,
+              marginLeft: 12,
               backgroundColor: appColors.primary,
               borderRadius: 100,
               justifyContent: "center",

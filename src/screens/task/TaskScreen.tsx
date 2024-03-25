@@ -26,6 +26,7 @@ interface TaskData {
   assigner: {
     _id: string;
     photo: string;
+    name: string;
   };
 }
 
@@ -79,11 +80,9 @@ export default function TaskScreen({ navigation }: any) {
     setIsLoading(true);
     try {
       const res = await taskApi.getSingleTask(id);
-      console.log(res.data.data);
       setDetailData(res.data.data);
       setIsLoading(false);
     } catch (error) {
-      console.log(error);
       setIsLoading(false);
     }
   };
@@ -163,6 +162,7 @@ export default function TaskScreen({ navigation }: any) {
                 title={task.title}
                 status={task.status}
                 photo={task.assigner.photo}
+                name={task.assigner.name}
               />
             </TouchableOpacity>
           ))}
