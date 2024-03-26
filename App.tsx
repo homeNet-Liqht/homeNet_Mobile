@@ -13,10 +13,6 @@ import { NotificationServices } from "./src/utils/notificationService.tsx";
 
 function App(): React.JSX.Element {
 
-    useEffect(() =>{
-        NotificationServices.checkNotificationPerson();
-
-    }, [])
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>

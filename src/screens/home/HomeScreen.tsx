@@ -115,6 +115,7 @@ function HomeScreen({ navigation }: any) {
       setIsLoading(true);
       getCurrentUser();
     }
+
   }, [dispatch]);
 
   useEffect(() => {
@@ -145,6 +146,8 @@ function HomeScreen({ navigation }: any) {
   };
 
   const getCurrentUser = async () => {
+    setIsLoading(false);
+
     const currentUser = await userApi.currentUser();
     if (currentUser) {
       const user = currentUser.data;

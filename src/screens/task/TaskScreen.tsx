@@ -175,6 +175,7 @@ export default function TaskScreen({ navigation }: any) {
       <Detail
         visible={isVisible}
         id={detailData.task._id}
+        ownerId={detailData.assigner._id}
         status={detailData.task.status}
         ownerName={detailData.assigner.name}
         ownerPhoto={detailData.assigner.photo}
