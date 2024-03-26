@@ -111,14 +111,13 @@ export default function Detail({
       const res = await taskApi.acceptRequest(id);
       console.log(res.data);
       if (res.data.code === 200) {
-        
-            setIsEdit(false);
+        setIsEdit(false);
 
-            dispatch(refreshTask());
+        dispatch(refreshTask());
 
-            onClose();
-        }
-      
+        onClose();
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.log(error);

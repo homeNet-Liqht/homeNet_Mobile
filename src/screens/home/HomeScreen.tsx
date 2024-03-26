@@ -119,6 +119,7 @@ function HomeScreen({ navigation }: any) {
 
   useEffect(() => {
     getWeatherInCurrentPosition();
+    NotificationServices.checkNotificationPerson();
   }, []);
 
   const getWeatherInCurrentPosition = async () => {
@@ -151,7 +152,6 @@ function HomeScreen({ navigation }: any) {
       setUserData(user);
       await AsyncStorage.setItem("user", JSON.stringify(user));
     }
-
     setIsLoading(false);
   };
 

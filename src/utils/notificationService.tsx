@@ -32,7 +32,6 @@ export class NotificationServices {
 
   static updateTokenForUser = async (token: string) => {
     const res = await AsyncStorage.getItem("user");
-    console.log(res);
 
     if (res) {
       const auth = JSON.parse(res);
@@ -49,11 +48,11 @@ export class NotificationServices {
   };
 
   static Update = async (id: string, token: string[]) => {
+    console.log(id, token);
     
     try {
       const res = await userApi.updateFCMToken(id, token);
-      console.log(res.data);
-      
+      console.log("updated", res.data)
     } catch (error) {
       console.log(error);
     }

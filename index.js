@@ -8,10 +8,7 @@ import { name as appName } from "./app.json";
 import messaging from "@react-native-firebase/messaging";
 import RNFetchBlob from 'rn-fetch-blob';
 
-RNFetchBlob.config({
-  fileCache: true,
-  trusty: true
-});
+
 messaging().setBackgroundMessageHandler(async mess => {
 
 })

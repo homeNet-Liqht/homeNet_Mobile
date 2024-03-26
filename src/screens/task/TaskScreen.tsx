@@ -54,7 +54,6 @@ export default function TaskScreen({ navigation }: any) {
   const [taskData, setTaskData] = useState<TaskData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
-  const [noMoreData, setNoMoreData] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [detailData, setDetailData] = useState(initDetailData);
   const dispatch = useDispatch();
@@ -71,7 +70,7 @@ export default function TaskScreen({ navigation }: any) {
     if (refreshTask.refresh) {
       setTaskData([]);
       setPage(0);
-      fetchTasks(0); 
+      fetchTasks(0);
       dispatch(addTask());
     }
   }, [refreshTask.refresh]);
@@ -86,17 +85,13 @@ export default function TaskScreen({ navigation }: any) {
       setIsLoading(false);
     }
   };
-  
+
   const fetchTasks = async (pageNumber: number) => {
     setIsLoading(true);
     try {
-      const res = await taskApi.getTasks(pageNumber);
-      if (res.data.data.length === 0) {
-        setNoMoreData(true);
-      } else {
-        setTaskData((prevData) => [...prevData, ...res.data.data]);
-        setPage(res.data.lastDataIndex);
-      }
+      const res = await taskApi.getTasks();
+
+      setTaskData(res.data.data);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -106,90 +101,66 @@ export default function TaskScreen({ navigation }: any) {
   const handleCloseModal = () => {
     setIsVisible(false);
   };
-
-  const loadMoreTasks = () => {
-    if (!isLoading && !noMoreData) {
-      const nextPage = page + 1;
-      fetchTasks(nextPage);
-    }
-  };
-
   return (
     <ContainerComponent>
-      <SectionComponent>
-        <TextComponent
-          text="Task Status"
-          size={22}
-          styles={{ fontWeight: "bold" }}
-        />
-      </SectionComponent>
-      <SectionComponent>
-        <SectionComponent styles={styles.barBorder}>
-          <RowComponent styles={styles.barWrapper}>
-            <TextComponent
-              text="Task"
-              size={13}
-              styles={{ fontWeight: "300" }}
-              color={appColors.gray}
-            />
-            <RowComponent styles={styles.barItemWrapper}>
-              <TextComponent
-                text="Status"
-                size={13}
-                styles={{ fontWeight: "300" }}
-                color={appColors.gray}
-              />
-              <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
-              <TextComponent
-                text="Owner"
-                size={13}
-                styles={{ fontWeight: "300" }}
-                color={appColors.gray}
-              />
-            </RowComponent>
-          </RowComponent>
+      {taskData ? (
+        <SectionComponent>
+          <TextComponent
+            text="Task Status"
+            size={22}
+            styles={{ fontWeight: "bold" }}
+          />
         </SectionComponent>
-        <ScrollView style={styles.scrollWrapper}>
-          {taskData.map((task) => (
-            <TouchableOpacity
-              key={task._id}
-              onPress={() => {
-                getTaskDetail(task._id);
-                setIsVisible(!isVisible);
-              }}
-            >
-              <Task
-                title={task.title}
-                status={task.status}
-                photo={task.assigner.photo}
-                name={task.assigner.name}
+      ) : null}
+  
+      {taskData ? (
+        <SectionComponent>
+          <SectionComponent styles={styles.barBorder}>
+            <RowComponent styles={styles.barWrapper}>
+              <TextComponent
+                text="Task"
+                size={13}
+                styles={{ fontWeight: "300" }}
+                color={appColors.gray}
               />
-            </TouchableOpacity>
-          ))}
-          {noMoreData && (
-            <SectionComponent>
-              <RowComponent>
+              <RowComponent styles={styles.barItemWrapper}>
                 <TextComponent
-                  text="No more data to see"
-                  size={11}
+                  text="Status"
+                  size={13}
+                  styles={{ fontWeight: "300" }}
+                  color={appColors.gray}
+                />
+                <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
+                <TextComponent
+                  text="Owner"
+                  size={13}
+                  styles={{ fontWeight: "300" }}
                   color={appColors.gray}
                 />
               </RowComponent>
-            </SectionComponent>
-          )}
-          {!noMoreData && (
-            <RowComponent>
-              <TouchableOpacity
-                onPress={() => loadMoreTasks()}
-                disabled={isLoading}
-              >
-                <ArrowCircleDown size={25} color={appColors.gray} />
-              </TouchableOpacity>
             </RowComponent>
-          )}
-        </ScrollView>
-      </SectionComponent>
-
+          </SectionComponent>
+          <ScrollView style={styles.scrollWrapper}>
+            {taskData.map((task) => (
+              <TouchableOpacity
+                key={task._id}
+                onPress={() => {
+                  getTaskDetail(task._id);
+                  setIsVisible(!isVisible);
+                }}
+              >
+                <Task
+                  title={task.title}
+                  status={task.status}
+                  photo={task.assigner.photo}
+                  name={task.assigner.name}
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </SectionComponent>
+      ) : <TextComponent text="Loading..."/>}
+  
       <SectionComponent styles={styles.plus}>
         <TouchableOpacity
           onPress={() => {

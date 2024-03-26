@@ -15,6 +15,7 @@ function App(): React.JSX.Element {
 
     useEffect(() =>{
         NotificationServices.checkNotificationPerson();
+
     }, [])
   return (
     <>
