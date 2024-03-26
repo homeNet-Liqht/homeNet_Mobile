@@ -76,7 +76,7 @@ export default function TaskScreen({navigation}: any) {
             assigner: {
                 _id: "6600e01d9479d68008ff71fe",
                 photo: '',
-                name: "Thang Nguyen"
+                name: "Thasng Nguyen"
             },
             title: "Tomorrow task title ",
             description: "Tomorrow task description 1",

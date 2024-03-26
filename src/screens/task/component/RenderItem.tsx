@@ -1,12 +1,12 @@
 import {View} from "react-native";
-import {ContainerComponent, TextComponent} from "../../../components";
+import {ContainerComponent, RowComponent, SectionComponent, TextComponent} from "../../../components";
 import {useState} from "react";
 import { useSelector} from "react-redux";
 import {userSelector} from "../../../redux/reducers/userReducer.ts";
 import {taskApi} from "../../../apis";
 import {appInfo} from "../../../constants/appInfo.ts";
 import {appColors} from "../../../constants/appColors.ts";
-
+import Entypo from "react-native-vector-icons/Entypo";
 const initDetailData = {
     _id: "",
     assignees: [{_id: "", name: "", photo: ""}],
@@ -72,20 +72,35 @@ const RenderItem = (Data: TaskData[]) => {
 
     return(
        <ContainerComponent>
+           <SectionComponent >
+
            {
                Data.map((item: any, index: any)=>(
                    <>
-                       <View style={{
-                           width: appInfo.size.WIDTH,
-                           height: appInfo.size.HEIGHT * 0.3,
-                           backgroundColor: appColors.primary
+                       <View key={index} style={{
+                           width: appInfo.size.WIDTH * 0.9,
+                           height: appInfo.size.HEIGHT * 0.1,
+                           backgroundColor: appColors.primary,
+                           marginBottom: 15,
+                           borderRadius: 20,
+                           padding:10
                        }}>
-                           <TextComponent text={item.description}/>
+                           <RowComponent>
+                               <View style={{
+
+                               }}>
+                                   <Entypo size={appInfo.size.HEIGHT * 0.07} name={"calendar"}/>
+                               </View>
+                               <TextComponent color={appColors.white} text={item.description}/>
+
+                           </RowComponent>
                        </View>
                    </>
                ))
            }
+           </SectionComponent>
        </ContainerComponent>
+
     )
 }
 
