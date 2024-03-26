@@ -15,11 +15,9 @@ export class NotificationServices {
 
   static getFCMToken = async () => {
     const fcmToken = await AsyncStorage.getItem("fcmToken");
-    console.log(fcmToken);
-    
+
     if (!fcmToken) {
       const token = await messaging().getToken();
-      console.log("create", token);
 
       if (token) {
         await AsyncStorage.setItem("fcmToken", token);
@@ -36,23 +34,20 @@ export class NotificationServices {
     if (res) {
       const auth = JSON.parse(res);
       const { fcmToken } = auth;
-      
+
       if (!fcmToken.includes(token)) {
         fcmToken.push(token);
-        
+
         await this.Update(auth._id, fcmToken);
-        console.log(res);
-        
+
       }
     }
   };
 
   static Update = async (id: string, token: string[]) => {
-    console.log(id, token);
-    
+
     try {
       const res = await userApi.updateFCMToken(id, token);
-      console.log("updated", res.data)
     } catch (error) {
       console.log(error);
     }
