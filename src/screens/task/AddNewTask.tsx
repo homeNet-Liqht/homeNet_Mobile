@@ -162,9 +162,7 @@ function AddNewTask({ navigation }: any) {
       const res = await taskApi.createTask(formData);
 
       if (res.data.code === 200) {
-      console.log("send noti");
-
-        await taskApi.send(Task.assignees, "task");
+        await taskApi.send(Task.assignees, "task", res.data.data._id );
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
@@ -174,7 +172,6 @@ function AddNewTask({ navigation }: any) {
           onHide: () => {
             setTask(initialValue);
             dispatch(refreshTask());
-
             navigation.navigate("TaskScreen");
           },
         });

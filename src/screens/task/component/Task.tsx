@@ -20,16 +20,16 @@ interface TaskProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "accepting":
-      return "green";
     case "pending":
-      return "orange";
+      return appColors.primary;
+    case "time":
+      return appColors.orange;
     case "finished":
-      return "blue";
+      return appColors.green;
     case "missing":
-      return "red";
+      return appColors.red;
     default:
-      return "black";
+      return appColors.text;
   }
 };
 
@@ -49,7 +49,7 @@ const Task: React.FC<TaskProps> = ({ title, status, photo, name }) => {
           }}
         />
         <RowComponent styles={styles.taskShow}>
-          <TextComponent text={capitalizedStatus} size={13} color={color} />
+          <TextComponent text={status === "time" ? "Your time has come" : capitalizedStatus} size={13} color={color} styles={{fontWeight: "700"}}/>
           <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
           {photo ? (
             <Image
