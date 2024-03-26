@@ -1,13 +1,18 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 
 import {
-    ContainerComponent,
+    ContainerComponent, SectionComponent,
 } from "../../components";
 
 import {appColors} from "../../constants/appColors";
 import {appInfo} from "../../constants/appInfo";
 import {SceneMap, TabBar, TabView} from "react-native-tab-view";
 import RenderItem from "./component/RenderItem.tsx";
+import {Platform, StyleSheet, TouchableOpacity} from "react-native";
+import {Add} from "iconsax-react-native";
+import {taskApi} from "../../apis";
+import {useSelector} from "react-redux";
+import {userSelector} from "../../redux/reducers/userReducer.ts";
 
 interface TaskData {
     _id: string;
@@ -26,86 +31,51 @@ interface TaskData {
 
 export default function TaskScreen({navigation}: any) {
     const [index, setIndex] = React.useState(1);
-
-    const Today : TaskData[] = [
-        {
-            _id: "660234427b6ff89455d3bcdc",
-            assigner: {
-                _id: "6600e01d9479d68008ff71fe",
-                photo: '',
-                name: "Thang Nguyen"
-            },
-            title: "Today task title",
-            description: "Today task description",
-            startTime: "2024-03-26T06:30:00.000Z",
-            endTime: "2024-03-26T08:34:00.000Z",
-            status: "finished",
-        },
-    ]
-    const Yesterday : TaskData[] = [
-        {
-            _id: "660234427b6ff89455d3bcdc",
-            assigner: {
-                _id: "6600e01d9479d68008ff71fe",
-                photo: '',
-                name: "Thang Nguyen"
-            },
-            title: "Yesterday task title",
-            description: "Yesterday task description",
-            startTime: "2024-03-26T06:30:00.000Z",
-            endTime: "2024-03-26T08:34:00.000Z",
-            status: "finished",
-        },
-        {
-            _id: "660234427b6ff89455d3bcdc",
-            assigner: {
-                _id: "6600e01d9479d68008ff71fe",
-                photo: '',
-                name: "Thang Nguyen"
-            },
-            title: "Yesterday task title 1",
-            description: "Yesterday task description 1",
-            startTime: "2024-03-26T06:30:00.000Z",
-            endTime: "2024-03-26T08:34:00.000Z",
-            status: "finished",
-        },
-    ]
-    const Tomorrow : TaskData[] = [
-        {
-            _id: "660234427b6ff89455d3bcdc",
-            assigner: {
-                _id: "6600e01d9479d68008ff71fe",
-                photo: '',
-                name: "Thasng Nguyen"
-            },
-            title: "Tomorrow task title ",
-            description: "Tomorrow task description 1",
-            startTime: "2024-03-26T06:30:00.000Z",
-            endTime: "2024-03-26T08:34:00.000Z",
-            status: "finished",
-        },  {
-            _id: "66023df8a479125df9f27372",
-            assigner: {
-                _id: "65e96dd38679eff77eb806ab",
-                name: "Thang Tran",
-                photo: "https://lh3.googleusercontent.com/a/ACg8ocLNTz1HlQqq6jayNR8r2-IF9KWwykLj6G5c4BHumrfhV2k=s96-c"
-            },
-            title: "Tomorrow task title 2",
-            description: "Tomorrow task description 2",
-            startTime: "2024-03-26T04:39:00.000Z",
-            endTime: "2024-03-26T06:39:00.000Z",
-            status: "accepting",
-
-        },
-    ]
+    const [todayTask,setTodayTask,] = useState<TaskData[]>([])
+    const [pastTask,setPastTask,] = useState<TaskData[]>([])
+    const [futureTask,setFutureTask,] = useState<TaskData[]>([])
 
 
 
-    const renderScene = SceneMap({
-        Yesterday:() => RenderItem(Yesterday),
-        Today:() => RenderItem(Today),
-        Tomorrow:() => RenderItem(Tomorrow),
-    });
+    const userData = useSelector(userSelector);
+
+
+    useEffect(() => {
+        handleFetchTodayTask()
+        handleFetchYesterdayTask()
+        handleFetchTomorrowTask()
+    }, []);
+
+    const handleFetchTodayTask = async () => {
+        try {
+            const res = await taskApi.getTaskById( userData._id, "present")
+            setTodayTask(res.data.data)
+        }catch (e) {
+            console.log(e)
+        }
+    }
+    const handleFetchYesterdayTask = async () => {
+        try {
+            const res = await taskApi.getTaskById(userData._id, "past")
+            setPastTask(res.data.data)
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+     const handleFetchTomorrowTask = async () => {
+        try {
+            const res = await taskApi.getTaskById( userData._id, "future")
+            setFutureTask(res.data.data)
+
+        }catch (e) {
+            console.log(e)
+        }
+    }
+
+
+
+
 
 
     const [routes] = React.useState([
@@ -113,6 +83,13 @@ export default function TaskScreen({navigation}: any) {
         {key: 'Today', title: 'Today'},
         {key: 'Tomorrow', title: 'Tomorrow'},
     ]);
+
+    const renderScene = SceneMap({
+        Yesterday:() => RenderItem(pastTask),
+        Today:() => RenderItem(todayTask),
+        Tomorrow:() => RenderItem(futureTask),
+    });
+
 
     const renderTabBar = (props:any) => (
         <TabBar
@@ -138,9 +115,42 @@ export default function TaskScreen({navigation}: any) {
                 initialLayout={{width: appInfo.size.WIDTH}}
             />
 
+            <SectionComponent styles={styles.plus}>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("AddNewTask");
+                    }}
+                    style={styles.plusWrapper}
+                >
+                    <Add size={25} color={appColors.white} />
+                </TouchableOpacity>
+            </SectionComponent>
+
+
 
         </ContainerComponent>
     );
 }
 
 
+
+const styles = StyleSheet.create({
+    plus: {
+        position: "absolute",
+        bottom: appInfo.size.HEIGHT * 0.005,
+        right: appInfo.size.WIDTH * 0.01,
+    },
+    plusWrapper: {
+        height: 40,
+        width: 40,
+        borderRadius: 40,
+        backgroundColor: appColors.primary,
+        justifyContent: "center",
+        alignItems: "center",
+        ...Platform.select({
+            android: {
+                elevation: 1.5,
+            },
+        }),
+    },
+});

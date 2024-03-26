@@ -63,7 +63,6 @@ const CalendarScreen = () => {
         try {
             const res = await taskApi.getSingleTask(id);
             setDetailData(res.data.data);
-            console.log("erea",res.data.data)
             setIsLoading(false);
         } catch (error) {
             setIsLoading(false);

@@ -3,7 +3,7 @@ import axiosClient from "./axiosClient";
 const taskApi = {
     createTask: (formData: FormData) => {
         const url = `/task/create`;
-        return axiosClient.post(url, formData, { headers: { "Content-Type": "multipart/form-data" } });
+        return axiosClient.post(url, formData, {headers: {"Content-Type": "multipart/form-data"}});
     },
     getSingleTask: (tid: string) => {
         const url = `/task/single/${tid}`
@@ -28,7 +28,7 @@ const taskApi = {
 
     uploadEditImage: (formData: FormData) => {
         const url = `/task/upload-edit-image`
-        return axiosClient.post(url, formData, { headers: { "Content-Type": "multipart/form-data" } })
+        return axiosClient.post(url, formData, {headers: {"Content-Type": "multipart/form-data"}})
     },
     getTasks: () => {
 
@@ -44,25 +44,23 @@ const taskApi = {
         return axiosClient.post(url, {receivers: receivers, type: type, task_id: task_id})
 
     },
-    getOwnTask : () =>{
+    getOwnTask: () => {
         const url = "task/current-user-tasks"
         return axiosClient.get(url)
     },
 
-    getTaskById : (id: string) =>{
+    getTaskById: (id: string, type: string) => {
         const url = `task/user-task/${id}`
-        return axiosClient.get(url)
+        return axiosClient.post(url, {type: type})
     },
     getAllTaskInFamily: (day: string) => {
         const url = `/task/user-tasks-in-day`
-        return axiosClient.post(url,{day: day})
+        return axiosClient.post(url, {day: day})
     },
-    acceptRequest : (id: string) => {
+    acceptRequest: (id: string) => {
         const url = `task/finish/${id}`
         return axiosClient.put(url);
     }
-
-
 
 
 }

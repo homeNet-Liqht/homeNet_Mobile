@@ -33,7 +33,6 @@ export default function ProfileScreen({ navigation }: any) {
   const GetTask = async () => {
     try {
       const res = await taskApi.getOwnTask();
-      console.log(res.data.data);
     } catch (e) {
       console.log(e);
     }
@@ -44,7 +43,6 @@ export default function ProfileScreen({ navigation }: any) {
       setIsLoading(true);
       const res = await familyApi.getFamily();
       res ? setFamily(res.data.data) : setFamily(null);
-      console.log(family);
 
       setIsLoading(false);
     } catch (e) {
