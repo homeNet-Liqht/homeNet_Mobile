@@ -17,10 +17,9 @@ export default function Notification() {
 
     try {
       const res = await notifyApi.show();
-      console.log(res.data.data);
       setNotifications(res.data.data);
       setIsLoading(false);
-    } catch (error : any) {
+    } catch (error) {
       console.log(error);
       setMessage(error.data.data);
       setIsLoading(false);

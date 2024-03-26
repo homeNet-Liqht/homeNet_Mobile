@@ -105,17 +105,25 @@ export const isOwner = ({
       ) : (
         <>
           {status === "finished" ? (
-            <ButtonComponent
-              text="Finished"
-              type="primary"
-              disable
-              color={appColors.white}
-              textColor={appColors.green}
-              styles={{
-                borderWidth: 2,
-                borderColor: appColors.green,
-              }}
-            />
+            <>
+              <ButtonComponent
+                text="Finished"
+                type="primary"
+                disable
+                color={appColors.white}
+                textColor={appColors.green}
+                styles={{
+                  borderWidth: 2,
+                  borderColor: appColors.green,
+                }}
+              />
+              <ButtonComponent
+                text="Close"
+                type="primary"
+               
+                onPress={onClose}
+              />
+            </>
           ) : status === "accepting" ? (
             <>
               <ButtonComponent

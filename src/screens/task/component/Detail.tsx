@@ -33,6 +33,7 @@ interface Props {
   id: string;
   ownerPhoto: string;
   ownerName: string;
+  ownerId: string;
   title: string;
   description: string;
   startTime: Date;
@@ -44,6 +45,7 @@ interface Props {
 
 export default function Detail({
   id,
+  ownerId,
   ownerPhoto,
   ownerName,
   title,
@@ -66,6 +68,7 @@ export default function Detail({
   const [members, setMembers] = useState<Member[]>([]);
   const [taskDetail, setTaskDetail] = useState<Props>({
     id: "",
+    ownerId: "",
     ownerPhoto: "",
     ownerName: "",
     title: "",
@@ -91,6 +94,7 @@ export default function Detail({
     if (isEdit) {
       setTaskDetail({
         id,
+        ownerId,
         ownerPhoto,
         ownerName,
         title,
@@ -109,16 +113,17 @@ export default function Detail({
     try {
       setIsLoading(true);
       const res = await taskApi.acceptRequest(id);
-      console.log(res.data);
       if (res.data.code === 200) {
-        
-            setIsEdit(false);
+ 
 
-            dispatch(refreshTask());
+        await taskApi.send(ownerId, "task");
+        setIsEdit(false);
 
-            onClose();
-        }
-      
+        dispatch(refreshTask());
+
+        onClose();
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -167,6 +172,12 @@ export default function Detail({
             id
           );
           if (res.data.code === 200) {
+            const assignees = taskDetail.assignees.map(
+              (assignee) => assignee._id
+            );
+            console.log(assignees);
+
+            await taskApi.send(assignees, "update");
             setIsLoading(false);
             Dialog.show({
               type: ALERT_TYPE.SUCCESS,
@@ -294,6 +305,9 @@ export default function Detail({
       const res = await taskApi.delete(user._id, id);
       console.log(res.data);
       if (res.data.code === 200) {
+        const assignees = taskDetail.assignees.map((assignee) => assignee._id);
+
+        await taskApi.send(assignees, "delete");
         Dialog.show({
           type: ALERT_TYPE.SUCCESS,
           title: "Delete Task",
@@ -305,6 +319,7 @@ export default function Detail({
             dispatch(refreshTask());
           },
         });
+        setIsLoading(false);
       } else {
         Dialog.show({
           type: ALERT_TYPE.WARNING,
@@ -312,8 +327,8 @@ export default function Detail({
           textBody: res.data.data,
           button: "I Got It",
         });
+        setIsLoading(false);
       }
-      setIsLoading(false);
     } catch (error) {
       console.log(error);
       setIsLoading(false);

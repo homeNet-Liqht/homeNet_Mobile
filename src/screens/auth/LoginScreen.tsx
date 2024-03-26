@@ -66,12 +66,11 @@ export const LoginScreen = ({ navigation, route }: any) => {
         });
       } else {
         const res = await authApi.login(values.email, values.password);
-        console.log(res.data);
-        
+
         await CookieManager.get(
           `${process.env.REACT_APP_API_URL}/auth/signin`
         ).then((cookies) => {
-            
+
           setIsLoading(false);
           dispatch(addAuth({ accessToken: cookies.accesstoken.value }));
           useAsyncStorage("accessToken").setItem(cookies.accesstoken.value);
