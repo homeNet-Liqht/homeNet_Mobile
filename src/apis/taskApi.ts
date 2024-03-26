@@ -30,9 +30,9 @@ const taskApi = {
         const url = `/task/upload-edit-image`
         return axiosClient.post(url, formData, { headers: { "Content-Type": "multipart/form-data" } })
     },
-    getTasks: (lastIndex?: number) => {
-        console.log(lastIndex);
-        const url = `/task/tasks${lastIndex ? `?lastDataIndex=${lastIndex}` : ''}`;
+    getTasks: () => {
+
+        const url = `/task/tasks`;
 
         return axiosClient.get(url);
     },

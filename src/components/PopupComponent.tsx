@@ -37,16 +37,16 @@ const PopupComponent: React.FC<PopupComponentProps> = ({ options }) => {
             color={appColors.white}
           />
           <TextComponent
-            text={`${title}\n${body}`} // Render title and body
+            text={`${title}\n${body}`} 
             size={15}
-            styles={{ fontWeight: "500" }}
             color={appColors.white}
+            styles={{ fontWeight: "500" }}
           />
         </SectionComponent>
       </SectionComponent>
       <SectionComponent styles={styles.buttonWrapper}>
-        <ButtonComponent text="Detail" />
-        <ButtonComponent text="I got it!" />
+        <ButtonComponent text="Detail" color={appColors.white} />
+        <ButtonComponent text="I got it!" color={appColors.white} />
       </SectionComponent>
     </LinearGradient>
   );

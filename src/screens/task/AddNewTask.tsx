@@ -164,7 +164,9 @@ function AddNewTask({ navigation }: any) {
       if (res.data.code === 200) {
       console.log("send noti");
 
-        await taskApi.send(Task.assignees, "task");
+        const res = await taskApi.send(Task.assignees, "task");
+        console.log(res.data.data);
+        
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
