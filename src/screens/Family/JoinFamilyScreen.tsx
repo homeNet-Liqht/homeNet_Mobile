@@ -21,7 +21,6 @@ export default function JoinFamilyScreen({ navigation }: any) {
   const [invitedLink, setInvitedLink] = useState("");
   const handleJoinFamily = async () => {
     try {
-      console.log(invitedLink);
       await FamilyApi.join(invitedLink);
       navigation.navigate("ProfileScreen");
     } catch (e) {
@@ -48,7 +47,7 @@ export default function JoinFamilyScreen({ navigation }: any) {
         style={{
           flex: 1,
         }}
-        
+
         behavior="height"
         keyboardVerticalOffset={60}
       >

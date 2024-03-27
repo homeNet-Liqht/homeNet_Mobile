@@ -25,9 +25,7 @@ export default function Notification() {
       setIsLoading(false);
     }
   };
-  console.log(message);
 
-  console.log(notifications);
 
   return (
     <ContainerComponent back title="Notifications" isScroll>
