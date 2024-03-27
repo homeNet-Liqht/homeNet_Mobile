@@ -1,6 +1,7 @@
 import axiosClient from './axiosClient.ts';
 
 const userApi = {
+
   currentUser: () => {
     const url = `/user/current-user/`
     return axiosClient.get(url)

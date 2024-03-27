@@ -1,18 +1,19 @@
 import React, {useEffect, useState} from "react";
 
 import {
-    ContainerComponent, SectionComponent,
+    ContainerComponent, RowComponent, SectionComponent, TextComponent,
 } from "../../components";
 
 import {appColors} from "../../constants/appColors";
 import {appInfo} from "../../constants/appInfo";
 import {SceneMap, TabBar, TabView} from "react-native-tab-view";
 import RenderItem from "./component/RenderItem.tsx";
-import {Platform, StyleSheet, TouchableOpacity} from "react-native";
+import {Image, Platform, StyleSheet, TouchableOpacity, View} from "react-native";
 import {Add} from "iconsax-react-native";
-import {taskApi} from "../../apis";
+import {familyApi, taskApi} from "../../apis";
 import {useSelector} from "react-redux";
 import {userSelector} from "../../redux/reducers/userReducer.ts";
+import {LoadingModal} from "../../modals";
 
 interface TaskData {
     _id: string;
@@ -29,31 +30,49 @@ interface TaskData {
 
 }
 
-export default function TaskScreen({navigation}: any) {
+export default function TaskScreen({route, navigation}: any) {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const item = route.params?.item
+
     const [index, setIndex] = React.useState(1);
-    const [todayTask,setTodayTask,] = useState<TaskData[]>([])
-    const [pastTask,setPastTask,] = useState<TaskData[]>([])
-    const [futureTask,setFutureTask,] = useState<TaskData[]>([])
+    const [todayTask, setTodayTask,] = useState<TaskData[]>([])
+    const [pastTask, setPastTask,] = useState<TaskData[]>([])
+    const [futureTask, setFutureTask,] = useState<TaskData[]>([])
+    const [members, setMembers] = useState<any[]>([]);
+    const [userData, setUserData] = useState(useSelector(userSelector))
+    const fetchMember = async () => {
+        try {
+            const res = await familyApi.getFamily();
+            setMembers(res.data.data.members);
 
-
-
-    const userData = useSelector(userSelector);
-
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     useEffect(() => {
+
         handleFetchTodayTask()
         handleFetchYesterdayTask()
         handleFetchTomorrowTask()
-    }, []);
+        fetchMember()
+
+    }, [item, userData]);
 
     const handleFetchTodayTask = async () => {
+        setIsLoading(true);
         try {
-            const res = await taskApi.getTaskById( userData._id, "present")
+            const res = await taskApi.getTaskById(userData._id, "present")
             setTodayTask(res.data.data)
-        }catch (e) {
+
+            setIsLoading(false);
+
+        } catch (e) {
             console.log(e)
         }
     }
+
     const handleFetchYesterdayTask = async () => {
         try {
             const res = await taskApi.getTaskById(userData._id, "past")
@@ -63,20 +82,16 @@ export default function TaskScreen({navigation}: any) {
             console.log(e)
         }
     }
-     const handleFetchTomorrowTask = async () => {
+
+    const handleFetchTomorrowTask = async () => {
         try {
-            const res = await taskApi.getTaskById( userData._id, "future")
+            const res = await taskApi.getTaskById(userData._id, "future")
             setFutureTask(res.data.data)
 
-        }catch (e) {
+        } catch (e) {
             console.log(e)
         }
     }
-
-
-
-
-
 
     const [routes] = React.useState([
         {key: 'Yesterday', title: 'Yesterday'},
@@ -85,28 +100,71 @@ export default function TaskScreen({navigation}: any) {
     ]);
 
     const renderScene = SceneMap({
-        Yesterday:() => RenderItem(pastTask),
-        Today:() => RenderItem(todayTask),
-        Tomorrow:() => RenderItem(futureTask),
+        Yesterday: () => RenderItem(pastTask),
+        Today: () => RenderItem(todayTask),
+        Tomorrow: () => RenderItem(futureTask),
     });
 
 
-    const renderTabBar = (props:any) => (
+    const renderTabBar = (props: any) => (
         <TabBar
             {...props}
             activeColor={appColors.primary}
-            indicatorStyle={{ backgroundColor: appColors.primary }}
+            indicatorStyle={{backgroundColor: appColors.primary}}
             labelStyle={{
                 color: "black",
                 textTransform: "none"
-        }}
-            style={{ backgroundColor: "white" }}
+            }}
+            style={{backgroundColor: "white"}}
         />
     );
 
     return (
         <ContainerComponent title={"Task Status"}>
 
+            <RowComponent styles={{
+                width: appInfo.size.WIDTH * 0.99,
+
+            }} justify={"space-around"}>
+                <RowComponent styles={{flex:1}}>
+                    <TextComponent text={userData.name} styles={{fontWeight: "bold"}}  size={16} color={appColors.red}/>
+                </RowComponent>
+                <RowComponent styles={{flex:1}}>
+                    {
+                        members.map((item: any, index: any) => (
+
+                            <TouchableOpacity onPress={() => {
+                                setUserData(item)
+                            }}>
+                                <View style={{
+                                    width: 30,
+                                    height: 30,
+                                    backgroundColor: userData._id == item._id ? appColors.red : appColors.gray1,
+                                    borderRadius: 100,
+                                    marginLeft: 1,
+                                    justifyContent: 'center',
+                                    alignItems: "center",
+
+                                }}>
+                                    {
+                                        item.photo
+                                            ?
+                                            <Image style={{
+                                                width: 25,
+                                                height: 25,
+                                                borderRadius: 100
+                                            }} source={{uri: item.photo}}/>
+                                            :
+                                            <View>
+                                                <TextComponent text={item.name[0]}/>
+                                            </View>
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                        ))
+                    }
+                </RowComponent>
+            </RowComponent>
             <TabView
                 renderTabBar={renderTabBar}
                 navigationState={{index, routes}}
@@ -122,16 +180,15 @@ export default function TaskScreen({navigation}: any) {
                     }}
                     style={styles.plusWrapper}
                 >
-                    <Add size={25} color={appColors.white} />
+                    <Add size={25} color={appColors.white}/>
+
                 </TouchableOpacity>
             </SectionComponent>
-
-
+            <LoadingModal visible={isLoading}/>
 
         </ContainerComponent>
     );
 }
-
 
 
 const styles = StyleSheet.create({

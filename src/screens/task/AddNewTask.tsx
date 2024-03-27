@@ -26,6 +26,7 @@ import { LoadingModal } from "../../modals";
 import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
 import { useDispatch } from "react-redux";
 import { refreshTask } from "../../redux/reducers/taskReducer";
+import {red} from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 const initialValue: {
   title: string;
   description: string;
@@ -146,9 +147,6 @@ function AddNewTask({ navigation }: any) {
           formData.append("image", Task.photo);
         }
       }
-      console.log(formData.getParts());
-
-      console.log("Pre Upload");
       if (Task.assignees.length < 1) {
         Dialog.show({
           type: ALERT_TYPE.WARNING,
@@ -162,11 +160,7 @@ function AddNewTask({ navigation }: any) {
       const res = await taskApi.createTask(formData);
 
       if (res.data.code === 200) {
-      console.log("send noti");
-
-        const res = await taskApi.send(Task.assignees, "task");
-        console.log(res.data.data);
-        
+        await taskApi.send(Task.assignees, "task");
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
@@ -177,7 +171,7 @@ function AddNewTask({ navigation }: any) {
             setTask(initialValue);
             dispatch(refreshTask());
 
-            navigation.navigate("TaskScreen");
+            navigation.navigate("TaskScreen",{item: Task.startAt.toISOString()});
           },
         });
       } else {
