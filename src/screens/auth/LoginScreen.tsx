@@ -79,7 +79,7 @@ export const LoginScreen = ({ navigation, route }: any) => {
           useAsyncStorage("refreshToken").setItem(cookies.refreshtoken.value);
         });
       }
-    } catch (e : any) {
+    } catch (e) {
       setIsLoading(false);
 
       if (e.data.code == 403) {

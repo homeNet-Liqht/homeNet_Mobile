@@ -8,12 +8,7 @@ import {
 import { appColors } from "../../../constants/appColors";
 import { appInfo } from "../../../constants/appInfo";
 
-export default function Notify({
-  message,
-  image,
-  name,
-
-}: any) {
+export default function Notify({ message, image, name }: any) {
   const updatedMessage = (message: string) => {
     const messageArray = message.split(": ");
     return {

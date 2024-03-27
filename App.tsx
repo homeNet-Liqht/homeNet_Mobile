@@ -9,7 +9,6 @@ import { AlertNotificationRoot } from "react-native-alert-notification";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { CalendarProvider } from "react-native-calendars";
-import { NotificationServices } from "./src/utils/notificationService.tsx";
 
 function App(): React.JSX.Element {
 
@@ -19,8 +18,8 @@ function App(): React.JSX.Element {
         <BottomSheetModalProvider>
           <CalendarProvider date={"yyyy-MM-dd"}>
             <StatusBar
-              backgroundColor={"rgba(0, 0, 0, 0)"} // Transparent background color
-              translucent={true} // Make the status bar translucent
+              backgroundColor={"rgba(0, 0, 0, 0)"} 
+              translucent={true} 
               barStyle={"dark-content"}
             />
             <AlertNotificationRoot>

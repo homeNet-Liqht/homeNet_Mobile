@@ -1,156 +1,234 @@
-import React, {useEffect, useState} from "react";
-
+import React, { useEffect, useState } from "react";
 import {
-    ContainerComponent, SectionComponent,
+  ContainerComponent,
+  RowComponent,
+  SectionComponent,
+  SpaceComponent,
+  TextComponent,
 } from "../../components";
-
-import {appColors} from "../../constants/appColors";
-import {appInfo} from "../../constants/appInfo";
-import {SceneMap, TabBar, TabView} from "react-native-tab-view";
-import RenderItem from "./component/RenderItem.tsx";
-import {Platform, StyleSheet, TouchableOpacity} from "react-native";
-import {Add} from "iconsax-react-native";
-import {taskApi} from "../../apis";
-import {useSelector} from "react-redux";
-import {userSelector} from "../../redux/reducers/userReducer.ts";
+import { appColors } from "../../constants/appColors";
+import { ScrollView, StyleSheet, Platform } from "react-native";
+import { appInfo } from "../../constants/appInfo";
+import Task from "./component/Task";
+import { taskApi } from "../../apis";
+import { LoadingModal } from "../../modals";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Add, ArrowCircleDown } from "iconsax-react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { addTask, taskSelector } from "../../redux/reducers/taskReducer";
+import Detail from "./component/Detail";
+import { userSelector } from "../../redux/reducers/userReducer";
 
 interface TaskData {
+  _id: string;
+  title: string;
+  status: string;
+  assigner: {
     _id: string;
-    title: string;
-    status: string;
-    description: string,
-    startTime: string,
-    endTime: string,
-    assigner: {
-        _id: string;
-        photo: string;
-        name: string;
-    };
-
+    photo: string;
+    name: string;
+  };
 }
 
-export default function TaskScreen({navigation}: any) {
-    const [index, setIndex] = React.useState(1);
-    const [todayTask,setTodayTask,] = useState<TaskData[]>([])
-    const [pastTask,setPastTask,] = useState<TaskData[]>([])
-    const [futureTask,setFutureTask,] = useState<TaskData[]>([])
+const initDetailData = {
+  _id: "",
+  assignees: [{ _id: "", name: "", photo: "" }],
+  assigner: {
+    _id: "",
+    name: "",
+    photo: "",
+  },
+  task: {
+    _id: "",
+    startTime: "",
+    endTime: "",
+    description: "",
+    photo: [],
+    location: [],
+    status: "",
+    title: "",
+  },
+};
 
+export default function TaskScreen({ navigation }: any) {
+  const [taskData, setTaskData] = useState<TaskData[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [detailData, setDetailData] = useState(initDetailData);
+  const dispatch = useDispatch();
+  const refreshTask = useSelector(taskSelector);
+  const userData = useSelector(userSelector);
 
+  const isAssigner = detailData.assigner._id == userData._id;
 
-    const userData = useSelector(userSelector);
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
-
-    useEffect(() => {
-        handleFetchTodayTask()
-        handleFetchYesterdayTask()
-        handleFetchTomorrowTask()
-    }, []);
-
-    const handleFetchTodayTask = async () => {
-        try {
-            const res = await taskApi.getTaskById( userData._id, "present")
-            setTodayTask(res.data.data)
-        }catch (e) {
-            console.log(e)
-        }
+  useEffect(() => {
+    if (refreshTask.refresh) {
+      setTaskData([]);
+      fetchTasks(0);
+      dispatch(addTask());
     }
-    const handleFetchYesterdayTask = async () => {
-        try {
-            const res = await taskApi.getTaskById(userData._id, "past")
-            setPastTask(res.data.data)
+  }, [refreshTask.refresh]);
 
-        } catch (e) {
-            console.log(e)
-        }
+  const getTaskDetail = async (id: string) => {
+    setIsLoading(true);
+    try {
+      const res = await taskApi.getSingleTask(id);
+      setDetailData(res.data.data);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
     }
-     const handleFetchTomorrowTask = async () => {
-        try {
-            const res = await taskApi.getTaskById( userData._id, "future")
-            setFutureTask(res.data.data)
+  };
 
-        }catch (e) {
-            console.log(e)
-        }
+  const fetchTasks = async () => {
+    setIsLoading(true);
+    try {
+      const res = await taskApi.getTasks();
+
+      setTaskData(res.data.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setIsLoading(false);
     }
+  };
+  const handleCloseModal = () => {
+    setIsVisible(false);
+  };
+  return (
+    <ContainerComponent>
+      {taskData ? (
+        <SectionComponent>
+          <TextComponent
+            text="Task Status"
+            size={22}
+            styles={{ fontWeight: "bold" }}
+          />
+        </SectionComponent>
+      ) : null}
 
+      {taskData ? (
+        <SectionComponent>
+          <SectionComponent styles={styles.barBorder}>
+            <RowComponent styles={styles.barWrapper}>
+              <TextComponent
+                text="Task"
+                size={13}
+                styles={{ fontWeight: "300" }}
+                color={appColors.gray}
+              />
+              <RowComponent styles={styles.barItemWrapper}>
+                <TextComponent
+                  text="Status"
+                  size={13}
+                  styles={{ fontWeight: "300" }}
+                  color={appColors.gray}
+                />
+                <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
+                <TextComponent
+                  text="Owner"
+                  size={13}
+                  styles={{ fontWeight: "300" }}
+                  color={appColors.gray}
+                />
+              </RowComponent>
+            </RowComponent>
+          </SectionComponent>
+          <ScrollView style={styles.scrollWrapper}>
+            {taskData.map((task) => (
+              <TouchableOpacity
+                key={task._id}
+                onPress={() => {
+                  getTaskDetail(task._id);
+                  setIsVisible(!isVisible);
+                }}
+              >
+                <Task
+                  title={task.title}
+                  status={task.status}
+                  photo={task.assigner.photo}
+                  name={task.assigner.name}
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </SectionComponent>
+      ) : (
+        <TextComponent text="Loading..." />
+      )}
 
-
-
-
-
-    const [routes] = React.useState([
-        {key: 'Yesterday', title: 'Yesterday'},
-        {key: 'Today', title: 'Today'},
-        {key: 'Tomorrow', title: 'Tomorrow'},
-    ]);
-
-    const renderScene = SceneMap({
-        Yesterday:() => RenderItem(pastTask),
-        Today:() => RenderItem(todayTask),
-        Tomorrow:() => RenderItem(futureTask),
-    });
-
-
-    const renderTabBar = (props:any) => (
-        <TabBar
-            {...props}
-            activeColor={appColors.primary}
-            indicatorStyle={{ backgroundColor: appColors.primary }}
-            labelStyle={{
-                color: "black",
-                textTransform: "none"
-        }}
-            style={{ backgroundColor: "white" }}
-        />
-    );
-
-    return (
-        <ContainerComponent title={"Task Status"}>
-
-            <TabView
-                renderTabBar={renderTabBar}
-                navigationState={{index, routes}}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{width: appInfo.size.WIDTH}}
-            />
-
-            <SectionComponent styles={styles.plus}>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.navigate("AddNewTask");
-                    }}
-                    style={styles.plusWrapper}
-                >
-                    <Add size={25} color={appColors.white} />
-                </TouchableOpacity>
-            </SectionComponent>
-
-
-
-        </ContainerComponent>
-    );
+      <SectionComponent styles={styles.plus}>
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(addTask());
+            navigation.navigate("AddNewTask");
+          }}
+          style={styles.plusWrapper}
+        >
+          <Add size={25} color={appColors.white} />
+        </TouchableOpacity>
+      </SectionComponent>
+      <Detail
+        visible={isVisible}
+        id={detailData.task._id}
+        ownerId={detailData.assigner._id}
+        status={detailData.task.status}
+        ownerName={detailData.assigner.name}
+        ownerPhoto={detailData.assigner.photo}
+        title={detailData.task.title}
+        description={detailData.task.description}
+        startTime={detailData.task.startTime}
+        endTime={detailData.task.endTime}
+        assignees={detailData.assignees}
+        taskPhoto={detailData.task.photo}
+        onClose={() => handleCloseModal()}
+        isAssigner={isAssigner}
+      />
+      <LoadingModal visible={isLoading} />
+    </ContainerComponent>
+  );
 }
-
-
 
 const styles = StyleSheet.create({
-    plus: {
-        position: "absolute",
-        bottom: appInfo.size.HEIGHT * 0.005,
-        right: appInfo.size.WIDTH * 0.01,
-    },
-    plusWrapper: {
-        height: 40,
-        width: 40,
-        borderRadius: 40,
-        backgroundColor: appColors.primary,
-        justifyContent: "center",
-        alignItems: "center",
-        ...Platform.select({
-            android: {
-                elevation: 1.5,
-            },
-        }),
-    },
+  scrollWrapper: {
+    maxHeight: appInfo.size.HEIGHT * 0.7,
+  },
+  barBorder: {
+    borderTopWidth: 1,
+    justifyContent: "center",
+    height: appInfo.size.HEIGHT * 0.08,
+    borderColor: appColors.gray,
+  },
+  barWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  barItemWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  plus: {
+    position: "absolute",
+    bottom: appInfo.size.HEIGHT * 0.005,
+    right: appInfo.size.WIDTH * 0.01,
+  },
+  plusWrapper: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+    backgroundColor: appColors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    ...Platform.select({
+      android: {
+        elevation: 1.5,
+      },
+    }),
+  },
 });
