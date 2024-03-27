@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ContainerComponent, SectionComponent } from "../../components";
+import {
+  ContainerComponent,
+  SectionComponent,
+  TextComponent,
+} from "../../components";
 import Notify from "./component/notify";
 import { notifyApi } from "../../apis";
-
-export default function Notification() {
+import { Image } from "react-native";
+import { appInfo } from "../../constants/appInfo";
+export default function Notification({ navigation }: any) {
   const [notifications, setNotifications] = useState<Object[]>();
   const refreshNotifications = notifications?.length;
   const [message, setMessage] = useState<string>();
@@ -25,16 +30,36 @@ export default function Notification() {
       setIsLoading(false);
     }
   };
-  console.log(message);
-
-  console.log(notifications);
 
   return (
     <ContainerComponent back title="Notifications" isScroll>
-      <Notify />
-      <Notify />
-      <Notify />
-      <Notify />
+      <SectionComponent
+        styles={{ justifyContent: "center", alignItems: "center" }}
+      >
+        {notifications ? (
+          notifications.map((notification, index) => (
+            <Notify
+              key={index}
+              message={notification.message}
+              image={notification.sender_id.photo}
+              name={notification.sender_id.name}
+              taskId={notification.task_id}
+              type={notification.type}
+              navigation={navigation}
+            />
+          ))
+        ) : (
+          <SectionComponent
+            styles={{
+              alignSelf: "center",
+              marginTop: appInfo.size.HEIGHT * 0.2,
+            }}
+          >
+            <Image source={require("../../assets/imgs/notification.png")} />
+            <TextComponent text={"No notification to show!"} />
+          </SectionComponent>
+        )}
+      </SectionComponent>
     </ContainerComponent>
   );
 }

@@ -160,12 +160,13 @@ function AddNewTask({ navigation }: any) {
       }
 
       const res = await taskApi.createTask(formData);
-
+      console.log(res.data._id);
+      
       if (res.data.code === 200) {
-      console.log("send noti");
 
-        const res = await taskApi.send(Task.assignees, "task");
-        console.log(res.data.data);
+        const message = await taskApi.send(Task.assignees, "task", res.data._id);
+        setTask(initialValue);
+        console.log(message.data);
         
         setIsLoading(false);
         Dialog.show({
@@ -174,7 +175,6 @@ function AddNewTask({ navigation }: any) {
           textBody: res.data.data,
           button: "Close",
           onHide: () => {
-            setTask(initialValue);
             dispatch(refreshTask());
 
             navigation.navigate("TaskScreen");

@@ -25,6 +25,7 @@ import {
   AlertNotificationRoot,
   Toast,
 } from "react-native-alert-notification";
+import { NotificationServices } from "../../utils/notificationService.tsx";
 
 const initValue = {
   email: "",
@@ -70,6 +71,7 @@ export const LoginScreen = ({ navigation, route }: any) => {
         await CookieManager.get(
           `${process.env.REACT_APP_API_URL}/auth/signin`
         ).then((cookies) => {
+          NotificationServices.checkNotificationPerson();
 
           setIsLoading(false);
           dispatch(addAuth({ accessToken: cookies.accesstoken.value }));

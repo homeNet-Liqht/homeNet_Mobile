@@ -13,7 +13,7 @@ import {
   TextComponent,
 } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
-import { userApi } from "../../apis";
+import { notifyApi, taskApi, userApi } from "../../apis";
 import { addUser, userSelector } from "../../redux/reducers/userReducer";
 import { LoadingModal } from "../../modals";
 import { globalStyles } from "../styles/globalStyles.ts";
@@ -42,7 +42,7 @@ function HomeScreen({ navigation }: any) {
     temp: "",
     weather: "",
   });
-
+  const [notification, setNotifications] = useState(0);
   const [address, setAddress] = useState<Address>();
   const dispatch = useDispatch();
   const [currentDate, setCurrentDate] = useState(
@@ -115,10 +115,10 @@ function HomeScreen({ navigation }: any) {
       setIsLoading(true);
       getCurrentUser();
     }
-
   }, [dispatch]);
 
   useEffect(() => {
+    getTotalNotification();
     getWeatherInCurrentPosition();
     NotificationServices.checkNotificationPerson();
   }, []);
@@ -146,8 +146,6 @@ function HomeScreen({ navigation }: any) {
   };
 
   const getCurrentUser = async () => {
-    setIsLoading(false);
-
     const currentUser = await userApi.currentUser();
     if (currentUser) {
       const user = currentUser.data;
@@ -156,6 +154,14 @@ function HomeScreen({ navigation }: any) {
       await AsyncStorage.setItem("user", JSON.stringify(user));
     }
     setIsLoading(false);
+  };
+  const getTotalNotification = async () => {
+    try {
+      const res = await notifyApi.show();
+      setNotifications(res.data.data.length);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -228,14 +234,21 @@ function HomeScreen({ navigation }: any) {
               <View
                 style={{
                   backgroundColor: "coral",
-                  width: 10,
-                  height: 10,
+                  width: 15,
+                  height: 15,
                   borderRadius: 100,
                   position: "absolute",
-                  right: 8,
-                  top: 5,
+                  right: 3,
+                  top: -1,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-              />
+              >
+                <TextComponent
+                  text={notification ? notification.toString() : "0"}
+                  size={11}
+                />
+              </View>
             </CircleComponent>
           </TouchableOpacity>
         </RowComponent>

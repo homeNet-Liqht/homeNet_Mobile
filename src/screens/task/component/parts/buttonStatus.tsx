@@ -117,14 +117,9 @@ export const isOwner = ({
                   borderColor: appColors.green,
                 }}
               />
-              <ButtonComponent
-                text="Close"
-                type="primary"
-               
-                onPress={onClose}
-              />
+              <ButtonComponent text="Close" type="primary" onPress={onClose} />
             </>
-          ) : status === "accepting" ? (
+          ) : status === "pending" ? (
             <>
               <ButtonComponent
                 text="Finish"
@@ -144,17 +139,20 @@ export const isOwner = ({
               />
             </>
           ) : (
-            <ButtonComponent
-              text="You're late"
-              type="primary"
-              disable
-              color={appColors.white}
-              textColor={appColors.orange}
-              styles={{
-                borderWidth: 2,
-                borderColor: appColors.orange,
-              }}
-            />
+            <>
+              <ButtonComponent
+                text="You're late"
+                type="primary"
+                disable
+                color={appColors.white}
+                textColor={appColors.orange}
+                styles={{
+                  borderWidth: 2,
+                  borderColor: appColors.orange,
+                }}
+              />
+              <ButtonComponent text="Close" type="primary" onPress={onClose} />
+            </>
           )}
         </>
       )}

@@ -114,13 +114,9 @@ export default function Detail({
       setIsLoading(true);
       const res = await taskApi.acceptRequest(id);
       if (res.data.code === 200) {
- 
-
-        await taskApi.send(ownerId, "task");
+        await taskApi.send(ownerId, "finish", id);
         setIsEdit(false);
-
         dispatch(refreshTask());
-
         onClose();
       }
 
@@ -177,7 +173,7 @@ export default function Detail({
             );
             console.log(assignees);
 
-            await taskApi.send(assignees, "update");
+            await taskApi.send(assignees, "update", id);
             setIsLoading(false);
             Dialog.show({
               type: ALERT_TYPE.SUCCESS,
@@ -307,7 +303,7 @@ export default function Detail({
       if (res.data.code === 200) {
         const assignees = taskDetail.assignees.map((assignee) => assignee._id);
 
-        await taskApi.send(assignees, "delete");
+        await taskApi.send(assignees, "delete", id);
         Dialog.show({
           type: ALERT_TYPE.SUCCESS,
           title: "Delete Task",
