@@ -15,6 +15,7 @@ import {
 import CalendarScreen from "../screens/Calendar/CalendarScreen.tsx";
 import TaskNavigator from "./TaskNavigator.tsx";
 import DrawerNavigator from "./DrawerNavigator.tsx";
+import MapScreen from "../screens/map/MapScreen.tsx";
 
 export default function TabNavigator() {
   const Tab = createBottomTabNavigator();
@@ -51,7 +52,7 @@ export default function TabNavigator() {
       <Tab.Screen name={"Home"} component={HomeNavigator} />
       <Tab.Screen name={"Calendar"} component={CalendarScreen} />
       <Tab.Screen name={"Task"} component={TaskNavigator} />
-      <Tab.Screen name={"Map"} component={CalendarScreen} />
+      <Tab.Screen name={"Map"} component={MapScreen} />
     </Tab.Navigator>
   );
 }

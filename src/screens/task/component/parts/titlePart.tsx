@@ -27,7 +27,7 @@ export default function TitlePart({
           <TextComponent
             text={data.title}
             size={16}
-            styles={{ fontWeight: "700" }}
+            styles={{ fontWeight: "700", maxWidth: 200}}
           />
         )}
       </SectionComponent>
@@ -43,6 +43,7 @@ export default function TitlePart({
             style={{
               width: 35,
               height: 35,
+              marginLeft: 12,
               backgroundColor: appColors.primary,
               borderRadius: 100,
               justifyContent: "center",

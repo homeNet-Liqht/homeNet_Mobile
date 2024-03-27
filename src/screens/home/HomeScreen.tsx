@@ -9,6 +9,7 @@ import {
 import {
   RowComponent,
   SectionComponent,
+  SpaceComponent,
   TextComponent,
 } from "../../components";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +26,14 @@ import CircleComponent from "../../components/CircleComponent.tsx";
 import capitalizedText from "../../utils/capitalizedText.tsx";
 import { Address } from "../../models/address.tsx";
 import reverseGeoCode from "../../utils/reverseLocation.ts";
-
+import {
+  CalendarProvider,
+  ExpandableCalendar,
+  TimelineList,
+} from "react-native-calendars";
+import { NotificationServices } from "../../utils/notificationService.tsx";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+const INITIAL_TIME = { hour: 10, minutes: 0 };
 function HomeScreen({ navigation }: any) {
   const [userData, setUserData] = useState(useSelector(userSelector));
   const [isLoading, setIsLoading] = useState(false);
@@ -34,19 +42,87 @@ function HomeScreen({ navigation }: any) {
     temp: "",
     weather: "",
   });
+
   const [address, setAddress] = useState<Address>();
   const dispatch = useDispatch();
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
+  const createNewEvent = () => {
+    console.log("hehe");
+  };
+
+  const eventData = {
+    "2024-03-26": [
+      {
+        id: "1",
+        start: "2024-03-26 09:20:00",
+        end: "2024-03-26 12:00:00",
+        title: "Merge Request to React Native Calendars",
+        summary: "Merge Timeline Calendar to React Native Calendars",
+        color: "#e6add8",
+      },
+      {
+        id: "2",
+        start: "2024-03-26 09:20:00",
+        end: "2024-03-26 12:00:00",
+        title: "Merge Request to React Native Calendars",
+        summary: "Merge Timeline Calendar to React Native Calendars",
+        color: "#fff",
+      },
+      {
+        id: "3",
+        start: "2024-03-26 09:20:00",
+        end: "2024-03-26 12:00:00",
+        title: "Merge Request to React Native Calendars",
+        summary: "Merge Timeline Calendar to React Native Calendars",
+        color: "#fff",
+      },
+      {
+        id: "4",
+        start: "2024-03-26 10:20:00",
+        end: "2024-03-26 12:00:00",
+        title: "Merge Request to React Native Calendars",
+        summary: "Merge Timeline Calendar to React Native Calendars",
+        color: "#fff",
+      },
+    ],
+  };
+
+  const onDateChanged = (date: any) => {
+    setCurrentDate(date);
+  };
+
+  const onMonthChange = (month: any, updateSource: any) => {
+    console.log("TimelineCalendarScreen onMonthChange: ", month, updateSource);
+  };
+
+  const timelineProps = {
+    format24h: true,
+    onBackgroundLongPress: createNewEvent,
+    unavailableHours: [
+      { start: 0, end: 6 },
+      { start: 22, end: 24 },
+    ],
+    overlapEventsSpacing: 8,
+    rightEdgeSpacing: 24,
+  };
+
   const temperatureConvert = (temp: any) => Math.floor(temp - 273.15) + "°";
   useEffect(() => {
     if (userData.name == "") {
       setIsLoading(true);
       getCurrentUser();
     }
+
   }, [dispatch]);
 
   useEffect(() => {
     getWeatherInCurrentPosition();
+    NotificationServices.checkNotificationPerson();
   }, []);
+
   const getWeatherInCurrentPosition = async () => {
     const currentPosition = await getCurrentPosition();
 
@@ -70,10 +146,14 @@ function HomeScreen({ navigation }: any) {
   };
 
   const getCurrentUser = async () => {
+    setIsLoading(false);
+
     const currentUser = await userApi.currentUser();
     if (currentUser) {
-      dispatch(addUser(currentUser.data));
-      setUserData(currentUser.data);
+      const user = currentUser.data;
+      dispatch(addUser(user));
+      setUserData(user);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
     }
     setIsLoading(false);
   };
@@ -180,12 +260,40 @@ function HomeScreen({ navigation }: any) {
         </RowComponent>
       </View>
 
-      <View
-        style={{
-          flex: 1,
-        }}
-      ></View>
       <LoadingModal visible={isLoading} />
+      <SpaceComponent />
+      <View
+        style={[
+          {
+            height: appInfo.size.HEIGHT * 0.5,
+          },
+          globalStyles.shadow,
+        ]}
+      >
+        <CalendarProvider
+          date={currentDate}
+          disabledOpacity={0.6}
+          onMonthChange={onMonthChange}
+          onDateChanged={onDateChanged}
+        >
+          <ExpandableCalendar
+            minDate={"2023-01-01"}
+            maxDate={"2025-12-31"}
+            onDayPress={(date) => {
+              setCurrentDate(date.dateString);
+            }}
+          />
+
+          <TimelineList
+            events={eventData}
+            showNowIndicator
+            timelineProps={timelineProps}
+            scrollToNow
+            scrollToFirst
+            initialTime={INITIAL_TIME}
+          />
+        </CalendarProvider>
+      </View>
     </View>
   );
 }

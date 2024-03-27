@@ -6,14 +6,16 @@ import {
   TextComponent,
 } from "../../../components";
 import { appInfo } from "../../../constants/appInfo";
-import { Image, Platform, StyleSheet } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import capitalizedText from "../../../utils/capitalizedText";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { appColors } from "../../../constants/appColors";
 
 interface TaskProps {
   title: string;
   status: string;
   photo: string;
+  name: string;
 }
 
 const getStatusColor = (status: string) => {
@@ -24,14 +26,14 @@ const getStatusColor = (status: string) => {
       return "orange";
     case "finished":
       return "blue";
-    case "cancelled":
+    case "missing":
       return "red";
     default:
       return "black";
   }
 };
 
-const Task: React.FC<TaskProps> = ({ title, status, photo }) => {
+const Task: React.FC<TaskProps> = ({ title, status, photo, name }) => {
   const color = getStatusColor(status);
   const capitalizedTitle = capitalizedText(title);
   const capitalizedStatus = capitalizedText(status);
@@ -49,7 +51,35 @@ const Task: React.FC<TaskProps> = ({ title, status, photo }) => {
         <RowComponent styles={styles.taskShow}>
           <TextComponent text={capitalizedStatus} size={13} color={color} />
           <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
-          <Image source={{ uri: photo }} style={styles.ownerImage} />
+          {photo ? (
+            <Image
+              style={{
+                width: appInfo.size.WIDTH * 0.1,
+                height: appInfo.size.WIDTH * 0.1,
+                backgroundColor: appColors.primary,
+                borderRadius: 100,
+              }}
+              source={{ uri: photo }}
+            />
+          ) : (
+            <View
+              style={{
+                width: appInfo.size.WIDTH * 0.1,
+                height: appInfo.size.WIDTH * 0.1,
+                backgroundColor: appColors.primary,
+                borderRadius: 100,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TextComponent
+                color={appColors.white}
+                size={appInfo.size.WIDTH * 0.05}
+                styles={{ fontWeight: "bold" }}
+                text={name[0]}
+              />
+            </View>
+          )}
         </RowComponent>
       </RowComponent>
     </SectionComponent>

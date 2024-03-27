@@ -1,20 +1,32 @@
-import React from 'react';
-import { View, Text} from "react-native";
-import {ButtonComponent} from "../../components";
-import {useDispatch} from "react-redux";
-import {removeAuth} from "../../redux/reducers/authReducer.ts";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { LoginManager } from 'react-native-fbsdk-next';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
+import Geolocation from "@react-native-community/geolocation";
 
+const styles = StyleSheet.create({
+    container: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+});
 
 function MapScreen() {
-    const dispatch = useDispatch()
+
 
     return (
-        <View>
-            <Text>MapScreen</Text>
-        </View>
+        <MapView
+            style={styles.map}
+            initialRegion={{
+                latitude: 37.78825,
+                longitude: -122.4324,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            }}
+        />
     );
 }
 

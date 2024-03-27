@@ -1,262 +1,213 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
+
 import {
-  ContainerComponent,
-  RowComponent,
-  SectionComponent,
-  SpaceComponent,
-  TextComponent,
+    ContainerComponent, RowComponent, SectionComponent, TextComponent,
 } from "../../components";
-import { appColors } from "../../constants/appColors";
-import { ScrollView, StyleSheet, Platform } from "react-native";
-import { appInfo } from "../../constants/appInfo";
-import Task from "./component/Task";
-import { taskApi } from "../../apis";
-import { LoadingModal } from "../../modals";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Add, ArrowCircleDown } from "iconsax-react-native";
-import { useDispatch, useSelector } from "react-redux";
-import { addTask, taskSelector } from "../../redux/reducers/taskReducer";
-import Detail from "./component/Detail";
-import { userSelector } from "../../redux/reducers/userReducer";
+
+import {appColors} from "../../constants/appColors";
+import {appInfo} from "../../constants/appInfo";
+import {SceneMap, TabBar, TabView} from "react-native-tab-view";
+import RenderItem from "./component/RenderItem.tsx";
+import {Image, Platform, StyleSheet, TouchableOpacity, View} from "react-native";
+import {Add} from "iconsax-react-native";
+import {familyApi, taskApi} from "../../apis";
+import {useSelector} from "react-redux";
+import {userSelector} from "../../redux/reducers/userReducer.ts";
+import {LoadingModal} from "../../modals";
 
 interface TaskData {
-  _id: string;
-  title: string;
-  status: string;
-  assigner: {
     _id: string;
-    photo: string;
-  };
+    title: string;
+    status: string;
+    description: string,
+    startTime: string,
+    endTime: string,
+    assigner: {
+        _id: string;
+        photo: string;
+        name: string;
+    };
+
 }
 
-const initDetailData = {
-  _id: "",
-  assignees: [{ _id: "", name: "", photo: "" }],
-  assigner: {
-    _id: "",
-    name: "",
-    photo: "",
-  },
-  task: {
-    _id: "",
-    startTime: "",
-    endTime: "",
-    description: "",
-    photo: [],
-    location: [],
-    status: "",
-    title: "",
-  },
-};
+export default function TaskScreen({route, navigation}: any) {
+    const [isLoading, setIsLoading] = useState(false);
 
-export default function TaskScreen({ navigation }: any) {
-  const [taskData, setTaskData] = useState<TaskData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(0);
-  const [noMoreData, setNoMoreData] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [detailData, setDetailData] = useState(initDetailData);
-  const dispatch = useDispatch();
-  const refreshTask = useSelector(taskSelector);
-  const userData = useSelector(userSelector);
+    const item = route.params?.item
 
-  const isAssigner = detailData.assigner._id == userData._id;
+    const [index, setIndex] = React.useState(1);
+    const [todayTask, setTodayTask,] = useState<TaskData[]>([])
+    const [pastTask, setPastTask,] = useState<TaskData[]>([])
+    const [futureTask, setFutureTask,] = useState<TaskData[]>([])
+    const [members, setMembers] = useState<any[]>([]);
+    const [userData, setUserData] = useState(useSelector(userSelector))
+    const fetchMember = async () => {
+        try {
+            const res = await familyApi.getFamily();
+            setMembers(res.data.data.members);
 
-  useEffect(() => {
-    fetchTasks(page);
-  }, []);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-  useEffect(() => {
-    if (refreshTask.refresh) {
-      setTaskData([]);
-      setPage(0);
-      fetchTasks(0); 
-      dispatch(addTask());
+    useEffect(() => {
+
+        handleFetchTodayTask()
+        handleFetchYesterdayTask()
+        handleFetchTomorrowTask()
+        fetchMember()
+
+    }, [item, userData]);
+
+    const handleFetchTodayTask = async () => {
+        setIsLoading(true);
+        try {
+            const res = await taskApi.getTaskById(userData._id, "present")
+            setTodayTask(res.data.data)
+
+            setIsLoading(false);
+
+        } catch (e) {
+            console.log(e)
+        }
     }
-  }, [refreshTask.refresh]);
 
-  const getTaskDetail = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const res = await taskApi.getSingleTask(id);
-      console.log(res.data.data);
-      setDetailData(res.data.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
-  };
-  
-  const fetchTasks = async (pageNumber: number) => {
-    setIsLoading(true);
-    try {
-      const res = await taskApi.getTasks(pageNumber);
-      if (res.data.data.length === 0) {
-        setNoMoreData(true);
-      } else {
-        setTaskData((prevData) => [...prevData, ...res.data.data]);
-        setPage(res.data.lastDataIndex);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-      setIsLoading(false);
-    }
-  };
-  const handleCloseModal = () => {
-    setIsVisible(false);
-  };
+    const handleFetchYesterdayTask = async () => {
+        try {
+            const res = await taskApi.getTaskById(userData._id, "past")
+            setPastTask(res.data.data)
 
-  const loadMoreTasks = () => {
-    if (!isLoading && !noMoreData) {
-      const nextPage = page + 1;
-      fetchTasks(nextPage);
+        } catch (e) {
+            console.log(e)
+        }
     }
-  };
 
-  return (
-    <ContainerComponent>
-      <SectionComponent>
-        <TextComponent
-          text="Task Status"
-          size={22}
-          styles={{ fontWeight: "bold" }}
+    const handleFetchTomorrowTask = async () => {
+        try {
+            const res = await taskApi.getTaskById(userData._id, "future")
+            setFutureTask(res.data.data)
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+    const [routes] = React.useState([
+        {key: 'Yesterday', title: 'Yesterday'},
+        {key: 'Today', title: 'Today'},
+        {key: 'Tomorrow', title: 'Tomorrow'},
+    ]);
+
+    const renderScene = SceneMap({
+        Yesterday: () => RenderItem(pastTask),
+        Today: () => RenderItem(todayTask),
+        Tomorrow: () => RenderItem(futureTask),
+    });
+
+
+    const renderTabBar = (props: any) => (
+        <TabBar
+            {...props}
+            activeColor={appColors.primary}
+            indicatorStyle={{backgroundColor: appColors.primary}}
+            labelStyle={{
+                color: "black",
+                textTransform: "none"
+            }}
+            style={{backgroundColor: "white"}}
         />
-      </SectionComponent>
-      <SectionComponent>
-        <SectionComponent styles={styles.barBorder}>
-          <RowComponent styles={styles.barWrapper}>
-            <TextComponent
-              text="Task"
-              size={13}
-              styles={{ fontWeight: "300" }}
-              color={appColors.gray}
-            />
-            <RowComponent styles={styles.barItemWrapper}>
-              <TextComponent
-                text="Status"
-                size={13}
-                styles={{ fontWeight: "300" }}
-                color={appColors.gray}
-              />
-              <SpaceComponent width={appInfo.size.WIDTH * 0.1} />
-              <TextComponent
-                text="Owner"
-                size={13}
-                styles={{ fontWeight: "300" }}
-                color={appColors.gray}
-              />
-            </RowComponent>
-          </RowComponent>
-        </SectionComponent>
-        <ScrollView style={styles.scrollWrapper}>
-          {taskData.map((task) => (
-            <TouchableOpacity
-              key={task._id}
-              onPress={() => {
-                getTaskDetail(task._id);
-                setIsVisible(!isVisible);
-              }}
-            >
-              <Task
-                title={task.title}
-                status={task.status}
-                photo={task.assigner.photo}
-              />
-            </TouchableOpacity>
-          ))}
-          {noMoreData && (
-            <SectionComponent>
-              <RowComponent>
-                <TextComponent
-                  text="No more data to see"
-                  size={11}
-                  color={appColors.gray}
-                />
-              </RowComponent>
-            </SectionComponent>
-          )}
-          {!noMoreData && (
-            <RowComponent>
-              <TouchableOpacity
-                onPress={() => loadMoreTasks()}
-                disabled={isLoading}
-              >
-                <ArrowCircleDown size={25} color={appColors.gray} />
-              </TouchableOpacity>
-            </RowComponent>
-          )}
-        </ScrollView>
-      </SectionComponent>
+    );
 
-      <SectionComponent styles={styles.plus}>
-        <TouchableOpacity
-          onPress={() => {
-            dispatch(addTask());
-            navigation.navigate("AddNewTask");
-          }}
-          style={styles.plusWrapper}
-        >
-          <Add size={25} color={appColors.white} />
-        </TouchableOpacity>
-      </SectionComponent>
-      <Detail
-        visible={isVisible}
-        id={detailData.task._id}
-        status={detailData.task.status}
-        ownerName={detailData.assigner.name}
-        ownerPhoto={detailData.assigner.photo}
-        title={detailData.task.title}
-        description={detailData.task.description}
-        startTime={detailData.task.startTime}
-        endTime={detailData.task.endTime}
-        assignees={detailData.assignees}
-        taskPhoto={detailData.task.photo}
-        onClose={() => handleCloseModal()}
-        isAssigner={isAssigner}
-      />
-      <LoadingModal visible={isLoading} />
-    </ContainerComponent>
-  );
+    return (
+        <ContainerComponent title={"Task Status"}>
+
+            <RowComponent styles={{
+                width: appInfo.size.WIDTH * 0.99,
+
+            }} justify={"space-around"}>
+                <RowComponent styles={{flex:1}}>
+                    <TextComponent text={userData.name} styles={{fontWeight: "bold"}}  size={16} color={appColors.red}/>
+                </RowComponent>
+                <RowComponent styles={{flex:1}}>
+                    {
+                        members.map((item: any, index: any) => (
+
+                            <TouchableOpacity onPress={() => {
+                                setUserData(item)
+                            }}>
+                                <View style={{
+                                    width: 30,
+                                    height: 30,
+                                    backgroundColor: userData._id == item._id ? appColors.red : appColors.gray1,
+                                    borderRadius: 100,
+                                    marginLeft: 1,
+                                    justifyContent: 'center',
+                                    alignItems: "center",
+
+                                }}>
+                                    {
+                                        item.photo
+                                            ?
+                                            <Image style={{
+                                                width: 25,
+                                                height: 25,
+                                                borderRadius: 100
+                                            }} source={{uri: item.photo}}/>
+                                            :
+                                            <View>
+                                                <TextComponent text={item.name[0]}/>
+                                            </View>
+                                    }
+                                </View>
+                            </TouchableOpacity>
+                        ))
+                    }
+                </RowComponent>
+            </RowComponent>
+            <TabView
+                renderTabBar={renderTabBar}
+                navigationState={{index, routes}}
+                renderScene={renderScene}
+                onIndexChange={setIndex}
+                initialLayout={{width: appInfo.size.WIDTH}}
+            />
+
+            <SectionComponent styles={styles.plus}>
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate("AddNewTask");
+                    }}
+                    style={styles.plusWrapper}
+                >
+                    <Add size={25} color={appColors.white}/>
+
+                </TouchableOpacity>
+            </SectionComponent>
+            <LoadingModal visible={isLoading}/>
+
+        </ContainerComponent>
+    );
 }
+
 
 const styles = StyleSheet.create({
-  scrollWrapper: {
-    maxHeight: appInfo.size.HEIGHT * 0.7,
-  },
-  barBorder: {
-    borderTopWidth: 1,
-    justifyContent: "center",
-    height: appInfo.size.HEIGHT * 0.08,
-    borderColor: appColors.gray,
-  },
-  barWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  barItemWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  plus: {
-    position: "absolute",
-    bottom: appInfo.size.HEIGHT * 0.005,
-    right: appInfo.size.WIDTH * 0.01,
-  },
-  plusWrapper: {
-    height: 40,
-    width: 40,
-    borderRadius: 40,
-    backgroundColor: appColors.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    ...Platform.select({
-      android: {
-        elevation: 1.5,
-      },
-    }),
-  },
+    plus: {
+        position: "absolute",
+        bottom: appInfo.size.HEIGHT * 0.005,
+        right: appInfo.size.WIDTH * 0.01,
+    },
+    plusWrapper: {
+        height: 40,
+        width: 40,
+        borderRadius: 40,
+        backgroundColor: appColors.primary,
+        justifyContent: "center",
+        alignItems: "center",
+        ...Platform.select({
+            android: {
+                elevation: 1.5,
+            },
+        }),
+    },
 });
