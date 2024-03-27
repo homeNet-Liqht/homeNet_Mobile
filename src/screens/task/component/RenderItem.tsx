@@ -76,7 +76,7 @@ const RenderItem = (Data: TaskData[] ) => {
 
                 {
                     Data.map((item: any, index: any) => (
-                        <TouchableOpacity key={index} onPress={() => {
+                        <TouchableOpacity  key={index} onPress={() => {
                             getTaskDetail(item._id)
                         }}>
                             <View style={{
