@@ -13,7 +13,7 @@ const getCurrentLocation = () => {
         console.warn(error.message);
         reject(error);
       },
-        {enableHighAccuracy: false, timeout: 20000,  },
+        {enableHighAccuracy: false, timeout: 20000 },
 
     );
   });

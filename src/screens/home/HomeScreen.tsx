@@ -44,14 +44,16 @@ function HomeScreen({ navigation }: any) {
   });
 
   const [address, setAddress] = useState<Address>();
-  const dispatch = useDispatch();
   const [currentDate, setCurrentDate] = useState(
     new Date().toISOString().split("T")[0]
   );
 
-  const createNewEvent = () => {
-    console.log("hehe");
-  };
+
+
+
+
+  const dispatch = useDispatch();
+
 
   const eventData = {
     "2024-03-26": [
@@ -100,7 +102,7 @@ function HomeScreen({ navigation }: any) {
 
   const timelineProps = {
     format24h: true,
-    onBackgroundLongPress: createNewEvent,
+    onBackgroundLongPress: () =>{},
     unavailableHours: [
       { start: 0, end: 6 },
       { start: 22, end: 24 },

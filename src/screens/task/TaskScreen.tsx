@@ -65,7 +65,6 @@ export default function TaskScreen({route, navigation}: any) {
         try {
             const res = await taskApi.getTaskById(userData._id, "present")
             setTodayTask(res.data.data)
-            console.log("res",res.data.data)
 
 
             setIsLoading(false);
