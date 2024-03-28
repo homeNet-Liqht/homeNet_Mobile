@@ -20,7 +20,7 @@ function App(): React.JSX.Element {
             try {
                 await locationApi.updateLocation(item.latitude, item.longitude)
             }catch (e) {
-                console.log(e)
+                console.log("cannot update",e)
             }
         })
     }, 15000);
