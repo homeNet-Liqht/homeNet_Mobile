@@ -171,7 +171,7 @@ function AddNewTask({ navigation }: any) {
             setTask(initialValue);
             dispatch(refreshTask());
 
-            navigation.navigate("TaskScreen",{item: Task.startAt.toISOString()});
+            navigation.navigate("TaskScreen",{item: res.data._id});
           },
         });
       } else {

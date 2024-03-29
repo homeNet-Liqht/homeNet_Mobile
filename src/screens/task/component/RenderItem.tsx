@@ -1,4 +1,4 @@
-import {TouchableOpacity, View} from "react-native";
+import {Image, TouchableOpacity, View} from "react-native";
 import {ContainerComponent, RowComponent, SectionComponent, TextComponent} from "../../../components";
 import React, {useState} from "react";
 import {useSelector} from "react-redux";
@@ -10,6 +10,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Detail from "./Detail.tsx";
 import {LoadingModal} from "../../../modals";
 import {err} from "react-native-svg";
+import {Data} from "iconsax-react-native";
 
 const initDetailData = {
     _id: "",
@@ -42,7 +43,7 @@ interface TaskData {
     };
 }
 
-const RenderItem = (Data: TaskData[] ) => {
+const RenderItem = (Data: TaskData[], handleSetIsChange: () => void) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
@@ -69,14 +70,15 @@ const RenderItem = (Data: TaskData[] ) => {
         setIsVisible(false);
     };
 
-
     return (
+
+
         <ContainerComponent isScroll>
             <SectionComponent>
 
                 {
-                    Data.map((item: any, index: any) => (
-                        <TouchableOpacity  key={index} onPress={() => {
+                    Data.length !=0 ? Data.map((item: any, index: any) => (
+                        <TouchableOpacity key={index} onPress={() => {
                             getTaskDetail(item._id)
                         }}>
                             <View style={{
@@ -129,8 +131,26 @@ const RenderItem = (Data: TaskData[] ) => {
                                 </RowComponent>
                             </View>
                         </TouchableOpacity>
-                    ))
+                    )):
+                        <View style={{
+                            width: appInfo.size.WIDTH ,
+                            height: appInfo.size.WIDTH * 0.85,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}>
+                            <Image
+                                style={{
+                                    width: appInfo.size.WIDTH* 0.9 ,
+                                    height: appInfo.size.WIDTH * 0.5,
+                                    resizeMode: "contain"
+                                }}
+                                source={require("../../../assets/imgs/notask.png")}/>
+                            <TextComponent color={"black"} text={"No Task "}/>
+                        </View>
+
                 }
+
+
             </SectionComponent>
 
             <Detail
@@ -147,10 +167,12 @@ const RenderItem = (Data: TaskData[] ) => {
                 taskPhoto={detailData.task.photo}
                 onClose={() => handleCloseModal()}
                 isAssigner={isAssigner}
+                setIsChange={() => handleSetIsChange()}
             />
             <LoadingModal visible={isLoading}/>
 
         </ContainerComponent>
+
 
     )
 }
