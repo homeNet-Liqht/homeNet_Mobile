@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import {
+    ButtonComponent,
     ContainerComponent, RowComponent, SectionComponent, TextComponent,
 } from "../../components";
 
@@ -9,7 +10,7 @@ import {appInfo} from "../../constants/appInfo";
 import {SceneMap, TabBar, TabView} from "react-native-tab-view";
 import RenderItem from "./component/RenderItem.tsx";
 import {Image, Platform, StyleSheet, TouchableOpacity, View} from "react-native";
-import {Add} from "iconsax-react-native";
+import {Add, Data} from "iconsax-react-native";
 import {familyApi, taskApi} from "../../apis";
 import {useSelector} from "react-redux";
 import {userSelector} from "../../redux/reducers/userReducer.ts";
@@ -41,6 +42,26 @@ export default function TaskScreen({route, navigation}: any) {
     const [futureTask, setFutureTask,] = useState<TaskData[]>([])
     const [members, setMembers] = useState<any[]>([]);
     const [userData, setUserData] = useState(useSelector(userSelector))
+    const [isChange, setIsChange] = useState(false)
+
+    const [family, setFamily] = useState<any>();
+
+    useEffect(() => {
+        GetFamily()
+    }, []);
+    const GetFamily = async () => {
+        try {
+            setIsLoading(true);
+            const res = await familyApi.getFamily();
+            res ? setFamily(res.data.data) : setFamily(null);
+
+            setIsLoading(false);
+        } catch (e) {
+            setIsLoading(false);
+        }
+    };
+
+
     const fetchMember = async () => {
         try {
             const res = await familyApi.getFamily();
@@ -58,12 +79,13 @@ export default function TaskScreen({route, navigation}: any) {
         handleFetchTomorrowTask()
         fetchMember()
 
-    }, [item, userData]);
+    }, [item, userData,isChange]);
 
     const handleFetchTodayTask = async () => {
         setIsLoading(true);
         try {
             const res = await taskApi.getTaskById(userData._id, "present")
+
             setTodayTask(res.data.data)
 
             setIsLoading(false);
@@ -71,6 +93,10 @@ export default function TaskScreen({route, navigation}: any) {
         } catch (e) {
             console.log(e)
         }
+    }
+
+    const handleSetIsChange = () => {
+        setIsChange(!isChange)
     }
 
     const handleFetchYesterdayTask = async () => {
@@ -100,9 +126,9 @@ export default function TaskScreen({route, navigation}: any) {
     ]);
 
     const renderScene = SceneMap({
-        Yesterday: () => RenderItem(pastTask),
-        Today: () => RenderItem(todayTask),
-        Tomorrow: () => RenderItem(futureTask),
+        Yesterday: () => RenderItem(pastTask, () => handleSetIsChange()),
+        Today: () => RenderItem(todayTask,() =>  handleSetIsChange()),
+        Tomorrow: () => RenderItem(futureTask,() => handleSetIsChange()),
     });
 
 
@@ -118,75 +144,160 @@ export default function TaskScreen({route, navigation}: any) {
             style={{backgroundColor: "white"}}
         />
     );
-
     return (
-        <ContainerComponent title={"Task Status"}>
+        family ?
+            <ContainerComponent title={"Task Sstatus"}>
 
-            <RowComponent styles={{
-                width: appInfo.size.WIDTH * 0.99,
+                <RowComponent styles={{
+                    width: appInfo.size.WIDTH * 0.99,
 
-            }} justify={"space-around"}>
-                <RowComponent styles={{flex:1}}>
-                    <TextComponent text={userData.name} styles={{fontWeight: "bold"}}  size={16} color={appColors.red}/>
-                </RowComponent>
-                <RowComponent styles={{flex:1}}>
-                    {
-                        members.map((item: any, index: any) => (
+                }} justify={"space-around"}>
+                    <RowComponent styles={{flex:1}}>
+                        <TextComponent text={userData.name} styles={{fontWeight: "bold"}}  size={16} color={appColors.red}/>
+                    </RowComponent>
+                    <RowComponent styles={{flex:1}}>
+                        {
+                            members.map((item: any, index: any) => (
 
-                            <TouchableOpacity key={index} onPress={() => {
-                                setUserData(item)
-                            }}>
-                                <View style={{
-                                    width: 30,
-                                    height: 30,
-                                    backgroundColor: userData._id == item._id ? appColors.red : appColors.gray1,
-                                    borderRadius: 100,
-                                    marginLeft: 1,
-                                    justifyContent: 'center',
-                                    alignItems: "center",
-
+                                <TouchableOpacity key={index} onPress={() => {
+                                    setUserData(item)
                                 }}>
-                                    {
-                                        item.photo
-                                            ?
-                                            <Image style={{
-                                                width: 25,
-                                                height: 25,
-                                                borderRadius: 100
-                                            }} source={{uri: item.photo}}/>
-                                            :
-                                            <View>
-                                                <TextComponent text={item.name[0]}/>
-                                            </View>
-                                    }
-                                </View>
-                            </TouchableOpacity>
-                        ))
-                    }
+                                    <View style={{
+                                        width: 30,
+                                        height: 30,
+                                        backgroundColor: userData._id == item._id ? appColors.red : appColors.gray1,
+                                        borderRadius: 100,
+                                        marginLeft: 1,
+                                        justifyContent: 'center',
+                                        alignItems: "center",
+
+                                    }}>
+                                        {
+                                            item.photo
+                                                ?
+                                                <Image style={{
+                                                    width: 25,
+                                                    height: 25,
+                                                    borderRadius: 100
+                                                }} source={{uri: item.photo}}/>
+                                                :
+                                                <View>
+                                                    <TextComponent text={item.name[0]}/>
+                                                </View>
+                                        }
+                                    </View>
+                                </TouchableOpacity>
+                            ))
+                        }
+                    </RowComponent>
                 </RowComponent>
-            </RowComponent>
-            <TabView
-                renderTabBar={renderTabBar}
-                navigationState={{index, routes}}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{width: appInfo.size.WIDTH}}
-            />
+                <TabView
+                    renderTabBar={renderTabBar}
+                    navigationState={{index, routes}}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={{width: appInfo.size.WIDTH}}
+                />
 
-            <SectionComponent styles={styles.plus}>
-                <TouchableOpacity
-                    onPress={() => {
-                        navigation.navigate("AddNewTask");
+                <SectionComponent styles={styles.plus}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.navigate("AddNewTask");
+                        }}
+                        style={styles.plusWrapper}
+                    >
+                        <Add size={25} color={appColors.white}/>
+
+                    </TouchableOpacity>
+                </SectionComponent>
+                <LoadingModal visible={isLoading}/>
+
+            </ContainerComponent>:
+            <>
+                <SectionComponent
+                    styles={{
+                        height: appInfo.size.HEIGHT,
+                        justifyContent: "center",
+                        alignItems: "center",
                     }}
-                    style={styles.plusWrapper}
                 >
-                    <Add size={25} color={appColors.white}/>
-
-                </TouchableOpacity>
-            </SectionComponent>
-            <LoadingModal visible={isLoading}/>
-
-        </ContainerComponent>
+                    <RowComponent
+                        styles={{
+                            width: appInfo.size.WIDTH * 0.9,
+                            backgroundColor: appColors.primary,
+                            borderRadius: 20,
+                            padding: 5,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <SectionComponent
+                            styles={{
+                                flex: 1,
+                                height: appInfo.size.HEIGHT * 0.15,
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <TextComponent
+                                size={14}
+                                color={appColors.white}
+                                styles={{ fontWeight: "bold" }}
+                                text={"Create Family now!!"}
+                            />
+                            <ButtonComponent
+                                styles={{
+                                    borderRadius: 30,
+                                    paddingHorizontal: 5,
+                                    paddingVertical: 5,
+                                    minHeight: 10,
+                                    marginBottom: 0,
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    backgroundColor: appColors.red,
+                                }}
+                                text={"Create"}
+                                onPress={() => {
+                                    navigation.navigate("CreateFamilyScreen");
+                                }}
+                                type={"primary"}
+                                textStyles={{ fontWeight: "bold" }}
+                                textColor={appColors.white}
+                                color={appColors.white}
+                            />
+                            <ButtonComponent
+                                styles={{
+                                    borderRadius: 30,
+                                    paddingHorizontal: 5,
+                                    paddingVertical: 5,
+                                    minHeight: 10,
+                                    marginBottom: 0,
+                                    backgroundColor: appColors.orange,
+                                }}
+                                text={"Join"}
+                                onPress={() => {
+                                    navigation.navigate("JoinFamilyScreen");
+                                }}
+                                textStyles={{ fontWeight: "bold" }}
+                                type={"primary"}
+                                textColor={appColors.white}
+                                color={appColors.white}
+                            />
+                        </SectionComponent>
+                        <SectionComponent styles={{ flex: 1 }}>
+                            <Image
+                                source={require("../../assets/imgs/family-draw.png")}
+                                style={{
+                                    width: appInfo.size.WIDTH * 0.4,
+                                    resizeMode: "stretch",
+                                    height: appInfo.size.HEIGHT * 0.133,
+                                }}
+                            />
+                        </SectionComponent>
+                    </RowComponent>
+                </SectionComponent>
+            </>
     );
 }
 

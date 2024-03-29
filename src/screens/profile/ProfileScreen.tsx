@@ -25,6 +25,8 @@ export default function ProfileScreen({ navigation }: any) {
   const [family, setFamily] = useState<any>();
   const [task, setTask] = useState<any>(1);
 
+  const [events,setEvents] = useState()
+
   useEffect(() => {
     GetFamily();
     GetTask();
@@ -32,7 +34,23 @@ export default function ProfileScreen({ navigation }: any) {
 
   const GetTask = async () => {
     try {
-      const res = await taskApi.getOwnTask();
+      const res = await taskApi.getTaskById(user._id, "present");
+      const events =[]
+      const newEvent = res.data.data
+      if (newEvent){
+        newEvent.map((item:any, index:any) =>{
+          const startTime = new Date(new Date(item.actualStartTime).getTime() + (7 * 60 * 60 * 1000));
+
+          const event = {
+            time: `${startTime.toISOString().split('T')[1].split('.')[0]}`,
+            title: item.title,
+            descrtiption: item.descrtiption
+          }
+          events.push(event)
+
+        })
+        setEvents(events)
+      }
     } catch (e) {
       console.log(e);
     }
@@ -60,11 +78,6 @@ export default function ProfileScreen({ navigation }: any) {
       icon: <Edit size={size} color={color} />,
     },
     {
-      key: "Change Password",
-      title: "Change Password",
-      icon: <Lock size={size} color={color} />,
-    },
-    {
       key: "Logout",
       title: "Logout",
       icon: <Logout size={size} color={color} />,
@@ -77,13 +90,7 @@ export default function ProfileScreen({ navigation }: any) {
     dataBottomSheet: bottomSheetFlatList,
   };
 
-  const events = [
-    { time: "09:00", title: "Sự kiện 1", description: "Mô tả sự kiện 1" },
-    { time: "10:00", title: "Sự kiện 2", description: "Mô tả sự kiện 2" },
-    { time: "11:30", title: "Sự kiện 2", description: "Mô tả sự kiện 2" },
-    { time: "1:30", title: "Sự kiện 2", description: "Mô tả sự kiện 2" },
-    { time: "11:30", title: "Sự kiện 2", description: "Mô tả sự kiện 2" },
-  ];
+
 
   return (
     <>

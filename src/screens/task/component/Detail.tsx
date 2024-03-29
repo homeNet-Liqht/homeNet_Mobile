@@ -58,6 +58,7 @@ export default function Detail(
         visible,
         onClose,
         isAssigner,
+        setIsChange
     }: any) {
     const handleClose = () => {
         onClose();
@@ -184,6 +185,7 @@ export default function Detail(
                             button: "Close",
                             onHide: () => {
                                 setIsEdit(false);
+                                setIsChange()
                                 onClose();
 
                             },
@@ -310,6 +312,7 @@ export default function Detail(
                     button: "Return now!",
                     onHide: () => {
                         setIsEdit(false);
+                        setIsChange()
                         onClose();
 
                     },
