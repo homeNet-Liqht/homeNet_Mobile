@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { SectionComponent } from "../../../components";
-import { StyleSheet } from "react-native";
-import { appColors } from "../../../constants/appColors";
+import React, {useEffect, useState} from "react";
+import {SectionComponent} from "../../../components";
+import {StyleSheet} from "react-native";
+import {appColors} from "../../../constants/appColors";
 import Modal from "react-native-modal";
-import { ScrollView } from "react-native-gesture-handler";
+import {ScrollView} from "react-native-gesture-handler";
 import Member from "./Member";
-import { familyApi, taskApi } from "../../../apis";
+import {familyApi, taskApi} from "../../../apis";
 import TitlePart from "./parts/titlePart";
-import { isOwner } from "./parts/buttonStatus";
+import {isOwner} from "./parts/buttonStatus";
 import Description from "./parts/descriptionPart";
 import TimePart from "./parts/timePart";
 import AssigneesPart from "./parts/assigneesPart";
@@ -16,13 +16,12 @@ import {
   requestExternalReadPermission,
   requestExternalWritePermission,
 } from "../../../utils/requestDevices";
-import { selectFiles } from "../../../utils/photoLibraryAction";
-import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
-import { useDispatch, useSelector } from "react-redux";
-import { userSelector } from "../../../redux/reducers/userReducer";
-import { LoadingModal } from "../../../modals";
-import { refreshTask } from "../../../redux/reducers/taskReducer";
-
+import {selectFiles} from "../../../utils/photoLibraryAction";
+import {ALERT_TYPE, Dialog} from "react-native-alert-notification";
+import {useDispatch, useSelector} from "react-redux";
+import {userSelector} from "../../../redux/reducers/userReducer";
+import {LoadingModal} from "../../../modals";
+import {refreshTask} from "../../../redux/reducers/taskReducer";
 interface Member {
   _id: string;
   name: string;
@@ -43,22 +42,24 @@ interface Props {
   status: string;
 }
 
-export default function Detail({
-  id,
-  ownerId,
-  ownerPhoto,
-  ownerName,
-  title,
-  description,
-  startTime,
-  endTime,
-  assignees,
-  taskPhoto,
-  status,
-  visible,
-  onClose,
-  isAssigner,
-}: any) {
+export default function Detail(
+    {
+      id,
+      ownerId,
+      ownerPhoto,
+      ownerName,
+      title,
+      description,
+      startTime,
+      endTime,
+      assignees,
+      taskPhoto,
+      status,
+      visible,
+      onClose,
+      isAssigner,
+      setIsChange
+    }: any) {
   const handleClose = () => {
     onClose();
   };
@@ -114,9 +115,13 @@ export default function Detail({
       setIsLoading(true);
       const res = await taskApi.acceptRequest(id);
       if (res.data.code === 200) {
-        await taskApi.send(ownerId, "finish", id);
+
+
+        await taskApi.send(ownerId, "task");
         setIsEdit(false);
+
         dispatch(refreshTask());
+
         onClose();
       }
 
@@ -132,7 +137,7 @@ export default function Detail({
       if (taskDetail) {
         setIsLoading(true);
         const assigneesId = taskDetail.assignees.map(
-          (assignee) => assignee._id
+            (assignee) => assignee._id
         );
 
         if (taskDetail.assignees.length < 1) {
@@ -155,25 +160,23 @@ export default function Detail({
           setIsLoading(false);
           return;
         }
-        console.log("Pre Upload");
         try {
           const res = await taskApi.updateTask(
-            assigneesId,
-            taskDetail.title,
-            taskDetail.startTime,
-            taskDetail.endTime,
-            taskDetail.description,
-            taskDetail.taskPhoto,
-            user._id,
-            id
+              assigneesId,
+              taskDetail.title,
+              taskDetail.startTime,
+              taskDetail.endTime,
+              taskDetail.description,
+              taskDetail.taskPhoto,
+              user._id,
+              id
           );
           if (res.data.code === 200) {
             const assignees = taskDetail.assignees.map(
-              (assignee) => assignee._id
+                (assignee) => assignee._id
             );
-            console.log(assignees);
 
-            await taskApi.send(assignees, "update", id);
+            await taskApi.send(assignees, "update");
             setIsLoading(false);
             Dialog.show({
               type: ALERT_TYPE.SUCCESS,
@@ -182,8 +185,9 @@ export default function Detail({
               button: "Close",
               onHide: () => {
                 setIsEdit(false);
+                setIsChange()
                 onClose();
-                dispatch(refreshTask());
+
               },
             });
           } else {
@@ -235,7 +239,7 @@ export default function Detail({
     setTaskDetail((prevTask) => {
       const updatedTaskPhoto = [...prevTask.taskPhoto];
       updatedTaskPhoto.splice(indexToRemove, 1);
-      return { ...prevTask, taskPhoto: updatedTaskPhoto };
+      return {...prevTask, taskPhoto: updatedTaskPhoto};
     });
   };
 
@@ -246,7 +250,7 @@ export default function Detail({
       }
 
       const index = prevTask.assignees.findIndex(
-        (assignee) => assignee._id === id
+          (assignee) => assignee._id === id
       );
       if (index === -1) {
         const member = members.find((member) => member._id === id);
@@ -258,7 +262,7 @@ export default function Detail({
         }
       } else {
         const updatedAssignees = prevTask.assignees.filter(
-          (assignee) => assignee._id !== id
+            (assignee) => assignee._id !== id
         );
 
         return {
@@ -293,9 +297,6 @@ export default function Detail({
   };
 
   const handleDeleteTask = async (id: string) => {
-    console.log(id);
-    console.log(user._id);
-
     try {
       setIsLoading(true);
       const res = await taskApi.delete(user._id, id);
@@ -303,7 +304,7 @@ export default function Detail({
       if (res.data.code === 200) {
         const assignees = taskDetail.assignees.map((assignee) => assignee._id);
 
-        await taskApi.send(assignees, "delete", id);
+        await taskApi.send(assignees, "delete");
         Dialog.show({
           type: ALERT_TYPE.SUCCESS,
           title: "Delete Task",
@@ -311,8 +312,9 @@ export default function Detail({
           button: "Return now!",
           onHide: () => {
             setIsEdit(false);
+            setIsChange()
             onClose();
-            dispatch(refreshTask());
+
           },
         });
         setIsLoading(false);
@@ -322,6 +324,7 @@ export default function Detail({
           title: "Delete Task",
           textBody: res.data.data,
           button: "I Got It",
+
         });
         setIsLoading(false);
       }
@@ -332,61 +335,61 @@ export default function Detail({
   };
 
   return (
-    <Modal style={styles.wrapper} isVisible={visible}>
-      <TitlePart
-        data={{ ownerName, ownerPhoto, title }}
-        editData={taskDetail}
-        isEdit={isEdit}
-        handleChange={(val) => handleChange("title", val)}
-      />
-      <ScrollView showsHorizontalScrollIndicator={false}>
-        <SectionComponent>
-          <Description
-            data={{ description }}
+      <Modal style={styles.wrapper} isVisible={visible}>
+        <TitlePart
+            data={{ownerName, ownerPhoto, title}}
             editData={taskDetail}
             isEdit={isEdit}
-            handleChange={(val) => handleChange("description", val)}
-          />
-          <TimePart
-            data={{ endTime }}
-            editData={taskDetail}
-            isEdit={isEdit}
-            handleChangeStartAt={(val) => handleChange("startAt", val)}
-            handleChangeEndAt={(val) => handleChange("endAt", val)}
-          />
+            handleChange={(val:any) => handleChange("title", val)}
+        />
+        <ScrollView showsHorizontalScrollIndicator={false}>
+          <SectionComponent>
+            <Description
+                data={{description}}
+                editData={taskDetail}
+                isEdit={isEdit}
+                handleChange={(val:any) => handleChange("description", val)}
+            />
+            <TimePart
+                data={{endTime}}
+                editData={taskDetail}
+                isEdit={isEdit}
+                handleChangeStartAt={(val:any) => handleChange("startAt", val)}
+                handleChangeEndAt={(val:any) => handleChange("endAt", val)}
+            />
 
-          <AssigneesPart
-            data={{ assignees }}
-            editData={taskDetail}
-            members={members}
-            handleChange={(id) => handleMemberPress(id)}
-            isEdit={isEdit}
-          />
-          <ImagesPart
-            data={{ taskPhoto }}
-            isEdit={isEdit}
-            editData={taskDetail}
-            handleChange={() => handleDocumentSelection()}
-            removePicture={(index) => removePicture(index)}
-          />
-        </SectionComponent>
+            <AssigneesPart
+                data={{assignees}}
+                editData={taskDetail}
+                members={members}
+                handleChange={(id:any) => handleMemberPress(id)}
+                isEdit={isEdit}
+            />
+            <ImagesPart
+                data={{taskPhoto}}
+                isEdit={isEdit}
+                editData={taskDetail}
+                handleChange={() => handleDocumentSelection()}
+                removePicture={(index:any) => removePicture(index)}
+            />
+          </SectionComponent>
 
-        <SectionComponent>
-          {isOwner({
-            id,
-            isAssigner,
-            status,
-            isEdit,
-            setIsEdit,
-            onClose,
-            handleEditTask,
-            handleDeleteTask,
-            acceptRequest,
-          })}
-        </SectionComponent>
-      </ScrollView>
-      <LoadingModal visible={isLoading} />
-    </Modal>
+          <SectionComponent>
+            {isOwner({
+              id,
+              isAssigner,
+              status,
+              isEdit,
+              setIsEdit,
+              onClose,
+              handleEditTask,
+              handleDeleteTask,
+              acceptRequest,
+            })}
+          </SectionComponent>
+        </ScrollView>
+        <LoadingModal visible={isLoading}/>
+      </Modal>
   );
 }
 

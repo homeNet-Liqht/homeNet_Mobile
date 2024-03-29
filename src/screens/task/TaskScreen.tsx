@@ -120,15 +120,13 @@ export default function TaskScreen({route, navigation}: any) {
     }
 
     const [routes] = React.useState([
-        {key: 'Yesterday', title: 'Yesterday'},
+        {key: 'Past', title: 'Past'},
         {key: 'Today', title: 'Today'},
-        {key: 'Tomorrow', title: 'Tomorrow'},
     ]);
 
     const renderScene = SceneMap({
-        Yesterday: () => RenderItem(pastTask, () => handleSetIsChange()),
+        Past: () => RenderItem(pastTask, () => handleSetIsChange()),
         Today: () => RenderItem(todayTask,() =>  handleSetIsChange()),
-        Tomorrow: () => RenderItem(futureTask,() => handleSetIsChange()),
     });
 
 
@@ -146,7 +144,7 @@ export default function TaskScreen({route, navigation}: any) {
     );
     return (
         family ?
-            <ContainerComponent title={"Task Sstatus"}>
+            <ContainerComponent title={"Task Status"}>
 
                 <RowComponent styles={{
                     width: appInfo.size.WIDTH * 0.99,
