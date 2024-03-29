@@ -23,11 +23,8 @@ type Ref = BottomSheetModal
 const CustomBottomSheet = forwardRef<Ref, Props>((props, ref) => {
 
     const initialSizeOfBottomSheet = (props.dataBottomSheet?.length === 2) ? "20%" : (props.dataBottomSheet?.length === 1) ? "15%" : "25%";
-
     const scalableSizeOfBottomSheet = (props.dataBottomSheet?.length > 3) ? "50%" : initialSizeOfBottomSheet
-
     const snapPoints = useMemo(() => [initialSizeOfBottomSheet, scalableSizeOfBottomSheet  ], [])
-
     const renderBackdrop = useCallback(
         (props: any) =>
             <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props}/>

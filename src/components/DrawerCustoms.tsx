@@ -25,7 +25,6 @@ const DrawerCustoms = ({ navigation }: any) => {
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  console.log(user);
 
   const size = 20;
   const color = appColors.gray;
@@ -49,11 +48,11 @@ const DrawerCustoms = ({ navigation }: any) => {
 
   const handleLogout = async () => {
     try {
-      
+
       setIsLoading(true);
       const fcmToken = await AsyncStorage.getItem("fcmToken");
       console.log(user);
-      
+
       if(fcmToken) {
         if (user.fcmToken && user.fcmToken.length > 0) {
           const items = [...user.fcmToken];

@@ -26,6 +26,7 @@ import { LoadingModal } from "../../modals";
 import { ALERT_TYPE, Dialog } from "react-native-alert-notification";
 import { useDispatch } from "react-redux";
 import { refreshTask } from "../../redux/reducers/taskReducer";
+import {red} from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 const initialValue: {
   title: string;
   description: string;
@@ -146,9 +147,6 @@ function AddNewTask({ navigation }: any) {
           formData.append("image", Task.photo);
         }
       }
-      console.log(formData.getParts());
-
-      console.log("Pre Upload");
       if (Task.assignees.length < 1) {
         Dialog.show({
           type: ALERT_TYPE.WARNING,
@@ -160,14 +158,12 @@ function AddNewTask({ navigation }: any) {
       }
 
       const res = await taskApi.createTask(formData);
-      console.log(res.data._id);
-      
+
       if (res.data.code === 200) {
 
         const message = await taskApi.send(Task.assignees, "task", res.data._id);
         setTask(initialValue);
-        console.log(message.data);
-        
+
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
@@ -175,9 +171,10 @@ function AddNewTask({ navigation }: any) {
           textBody: res.data.data,
           button: "Close",
           onHide: () => {
+            setTask(initialValue);
             dispatch(refreshTask());
 
-            navigation.navigate("TaskScreen");
+            navigation.navigate("TaskScreen",{item: res.data._id});
           },
         });
       } else {
@@ -221,7 +218,7 @@ function AddNewTask({ navigation }: any) {
           <TextComponent text="Members" size={18} styles={styles.title} />
           <View style={styles.memberWrapper}>
             {members ? (
-                members.map((member) => {
+                members.map((member:any) => {
                   const isChosen = Task.assignees.includes(member._id);
 
                   return (

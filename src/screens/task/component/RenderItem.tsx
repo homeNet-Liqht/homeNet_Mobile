@@ -1,4 +1,4 @@
-import {TouchableOpacity, View} from "react-native";
+import {Image, TouchableOpacity, View} from "react-native";
 import {ContainerComponent, RowComponent, SectionComponent, TextComponent} from "../../../components";
 import React, {useState} from "react";
 import {useSelector} from "react-redux";
@@ -10,6 +10,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Detail from "./Detail.tsx";
 import {LoadingModal} from "../../../modals";
 import {err} from "react-native-svg";
+import {Data} from "iconsax-react-native";
 
 const initDetailData = {
     _id: "",
@@ -42,16 +43,12 @@ interface TaskData {
     };
 }
 
-const RenderItem = (Data: TaskData[]) => {
+const RenderItem = (Data: TaskData[], handleSetIsChange: () => void) => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
-
-
     const [detailData, setDetailData] = useState(initDetailData);
-
     const userData = useSelector(userSelector);
-
     const isAssigner = detailData.assigner._id == userData._id;
 
 
@@ -73,68 +70,87 @@ const RenderItem = (Data: TaskData[]) => {
         setIsVisible(false);
     };
 
-
     return (
-        <ContainerComponent>
+
+
+        <ContainerComponent isScroll>
             <SectionComponent>
 
                 {
-                    Data.map((item: any, index: any) => (
-                            <TouchableOpacity key={index}  onPress={() => {
-                                getTaskDetail(item._id)
+                    Data.length !=0 ? Data.map((item: any, index: any) => (
+                        <TouchableOpacity key={index} onPress={() => {
+                            getTaskDetail(item._id)
+                        }}>
+                            <View style={{
+                                width: appInfo.size.WIDTH * 0.9,
+                                height: appInfo.size.HEIGHT * 0.1,
+                                backgroundColor: appColors.primary,
+                                marginBottom: 15,
+                                borderRadius: 10,
+                                padding: 10
                             }}>
-                                <View style={{
-                                    width: appInfo.size.WIDTH * 0.9,
-                                    height: appInfo.size.HEIGHT * 0.1,
-                                    backgroundColor: appColors.primary,
-                                    marginBottom: 15,
-                                    borderRadius: 10,
-                                    padding: 10
-                                }}>
-                                    <RowComponent justify={"flex-start"}>
-                                        <View style={{
-                                            height: appInfo.size.HEIGHT * 0.07,
-                                            width: appInfo.size.HEIGHT * 0.07,
-                                            backgroundColor: appColors.gray1,
-                                            borderRadius: 10,
-                                            justifyContent: "center",
-                                            alignItems: "center"
-                                        }}>
-                                            <Entypo size={appInfo.size.HEIGHT * 0.03} color={appColors.white}
-                                                    name={"calendar"}/>
-                                        </View>
+                                <RowComponent justify={"flex-start"}>
+                                    <View style={{
+                                        height: appInfo.size.HEIGHT * 0.07,
+                                        width: appInfo.size.HEIGHT * 0.07,
+                                        backgroundColor: appColors.gray1,
+                                        borderRadius: 10,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}>
+                                        <Entypo size={appInfo.size.HEIGHT * 0.03} color={appColors.white}
+                                                name={"calendar"}/>
+                                    </View>
 
-                                        <View style={{
-                                            marginLeft: appInfo.size.WIDTH * 0.01,
-                                            justifyContent: "space-between",
-                                            flexDirection: "column",
-                                            height: appInfo.size.HEIGHT * 0.065,
-                                        }}>
-                                            <TextComponent styles={{fontWeight: "bold"}} color={appColors.white}
-                                                           text={item.title}/>
-                                            <RowComponent styles={{
-                                                alignItems: "center"
-                                            }} justify={"flex-start"}>
-                                                <Entypo size={15} color={appColors.white} name={"clock"}/>
-                                                <TextComponent
-                                                    styles={{
-                                                        marginLeft: appInfo.size.WIDTH * 0.01,
-                                                    }}
-                                                    color={appColors.white}
-                                                    text={`${new Date(new Date(item.startTime)
-                                                        .getTime() + (7 * 60 * 60 * 1000))
-                                                        .toISOString().split('T')[1]
-                                                        .split('.')[0]} - ${new Date(new Date(item.endTime)
-                                                        .getTime() + (7 * 60 * 60 * 1000))
-                                                        .toISOString().split('T')[1]
-                                                        .split('.')[0]}`}/>
-                                            </RowComponent>
-                                        </View>
-                                    </RowComponent>
-                                </View>
-                            </TouchableOpacity>
-                    ))
+                                    <View style={{
+                                        marginLeft: appInfo.size.WIDTH * 0.01,
+                                        justifyContent: "space-between",
+                                        flexDirection: "column",
+                                        height: appInfo.size.HEIGHT * 0.065,
+                                    }}>
+                                        <TextComponent styles={{fontWeight: "bold"}} color={appColors.white}
+                                                       text={item.title}/>
+                                        <RowComponent styles={{
+                                            alignItems: "center"
+                                        }} justify={"flex-start"}>
+                                            <Entypo size={15} color={appColors.white} name={"clock"}/>
+                                            <TextComponent
+                                                styles={{
+                                                    marginLeft: appInfo.size.WIDTH * 0.01,
+                                                }}
+                                                color={appColors.white}
+                                                text={`${new Date(new Date(item.startTime)
+                                                    .getTime() + (7 * 60 * 60 * 1000))
+                                                    .toISOString().split('T')[1]
+                                                    .split('.')[0]} - ${new Date(new Date(item.endTime)
+                                                    .getTime() + (7 * 60 * 60 * 1000))
+                                                    .toISOString().split('T')[1]
+                                                    .split('.')[0]}`}/>
+                                        </RowComponent>
+                                    </View>
+                                </RowComponent>
+                            </View>
+                        </TouchableOpacity>
+                    )):
+                        <View style={{
+                            width: appInfo.size.WIDTH ,
+                            height: appInfo.size.WIDTH * 0.85,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}>
+                            <Image
+                                style={{
+                                    width: appInfo.size.WIDTH* 0.9 ,
+                                    height: appInfo.size.WIDTH * 0.5,
+                                    resizeMode: "contain"
+                                }}
+                                source={require("../../../assets/imgs/notask.png")}/>
+                            <TextComponent color={"black"} text={"No Task "}/>
+                        </View>
+
                 }
+
+
             </SectionComponent>
 
             <Detail
@@ -151,10 +167,12 @@ const RenderItem = (Data: TaskData[]) => {
                 taskPhoto={detailData.task.photo}
                 onClose={() => handleCloseModal()}
                 isAssigner={isAssigner}
+                setIsChange={() => handleSetIsChange()}
             />
             <LoadingModal visible={isLoading}/>
 
         </ContainerComponent>
+
 
     )
 }

@@ -38,12 +38,10 @@ const taskApi = {
     },
 
     send: (receivers: string[], type: string, task_id?: string) => {
-        console.log("aaaa");
-
         const url = `/notification/send`
         return axiosClient.post(url, {receivers: receivers, type: type, task_id: task_id})
-
     },
+
     getOwnTask: () => {
         const url = "task/current-user-tasks"
         return axiosClient.get(url)
