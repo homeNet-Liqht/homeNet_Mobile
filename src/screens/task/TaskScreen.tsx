@@ -15,6 +15,7 @@ import {familyApi, taskApi} from "../../apis";
 import {useSelector} from "react-redux";
 import {userSelector} from "../../redux/reducers/userReducer.ts";
 import {LoadingModal} from "../../modals";
+import {taskSelector} from "../../redux/reducers/taskReducer.ts";
 
 interface TaskData {
     _id: string;
@@ -46,16 +47,20 @@ export default function TaskScreen({route, navigation}: any) {
 
     const [family, setFamily] = useState<any>();
 
-    useEffect(() => {
-        GetFamily()
-    }, []);
+    const intervalId = setInterval(async () => {
+        try {
+            GetFamily();
+
+        } catch (e) {
+            console.log("error", e)
+        }
+    }, 10000);
+
     const GetFamily = async () => {
         try {
-            setIsLoading(true);
             const res = await familyApi.getFamily();
             res ? setFamily(res.data.data) : setFamily(null);
 
-            setIsLoading(false);
         } catch (e) {
             setIsLoading(false);
         }

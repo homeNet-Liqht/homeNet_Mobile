@@ -16,6 +16,8 @@ import {selectFile} from "../../utils/photoLibraryAction.tsx";
 import {Camera} from "iconsax-react-native";
 import {familyApi} from "../../apis";
 import {LoadingModal} from "../../modals";
+import {useDispatch} from "react-redux";
+import {refreshTask} from "../../redux/reducers/taskReducer.ts";
 
 
 export default function CreateFamilyScreen({navigation}: any) {
@@ -28,12 +30,16 @@ export default function CreateFamilyScreen({navigation}: any) {
         const res = await selectFile()
         res && setPhoto(res[0])
     }
+
+    const dispatch = useDispatch()
     const handleCreateFamily = async () =>{
         formData.append('image', photo);
         formData.append('familyName',familyName);
         setIsLoading(true)
         try {
             const res = await familyApi.create(formData)
+
+            dispatch(refreshTask(new Date().toISOString()))
             navigation.negative("ProfileScreen")
             setIsLoading(false)
         }catch (e:any) {

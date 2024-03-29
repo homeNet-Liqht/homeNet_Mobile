@@ -19,6 +19,7 @@ import { Edit, Lock, Logout } from "iconsax-react-native";
 import { familyApi, taskApi } from "../../apis";
 import Timeline from "react-native-timeline-flatlist";
 import {taskSelector} from "../../redux/reducers/taskReducer.ts";
+import locationApi from "../../apis/locationApi.ts";
 
 export default function ProfileScreen({ navigation }: any) {
   const user = useSelector(userSelector);
@@ -28,14 +29,20 @@ export default function ProfileScreen({ navigation }: any) {
 
   const [events,setEvents] = useState()
 
-  useEffect(() => {
-    GetFamily();
-  }, []);
+  const intervalId = setInterval(async () => {
+    try {
+      GetFamily();
 
-  const rf = useSelector(taskSelector)
+    } catch (e) {
+      console.log("error", e)
+    }
+  }, 10000);
+
   useEffect(() => {
     GetTask();
-  }, [rf]);
+    GetFamily();
+
+  }, []);
 
   const GetTask = async () => {
     try {
@@ -63,11 +70,9 @@ export default function ProfileScreen({ navigation }: any) {
 
   const GetFamily = async () => {
     try {
-      setIsLoading(true);
       const res = await familyApi.getFamily();
       res ? setFamily(res.data.data) : setFamily(null);
 
-      setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
     }
