@@ -14,6 +14,7 @@ import {taskApi} from "../../apis";
 import {useSelector} from "react-redux";
 import {userSelector} from "../../redux/reducers/userReducer.ts";
 import {LoadingModal} from "../../modals";
+import {taskSelector} from "../../redux/reducers/taskReducer.ts";
 
 
 
@@ -52,10 +53,10 @@ const CalendarScreen = () => {
         isAssigner = detailData.assigner._id == userData._id;
     }
 
-
+    const refreshTask = useSelector(taskSelector)
     useEffect(() => {
         getEvent();
-    }, [currentDate]);
+    }, [currentDate,refreshTask]);
 
 
     const getTaskDetail = async (id: string) => {

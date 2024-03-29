@@ -18,6 +18,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { Edit, Lock, Logout } from "iconsax-react-native";
 import { familyApi, taskApi } from "../../apis";
 import Timeline from "react-native-timeline-flatlist";
+import {taskSelector} from "../../redux/reducers/taskReducer.ts";
 
 export default function ProfileScreen({ navigation }: any) {
   const user = useSelector(userSelector);
@@ -29,8 +30,12 @@ export default function ProfileScreen({ navigation }: any) {
 
   useEffect(() => {
     GetFamily();
-    GetTask();
   }, []);
+
+  const rf = useSelector(taskSelector)
+  useEffect(() => {
+    GetTask();
+  }, [rf]);
 
   const GetTask = async () => {
     try {

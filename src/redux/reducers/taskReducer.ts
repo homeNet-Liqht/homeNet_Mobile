@@ -4,22 +4,19 @@ const taskSlice = createSlice({
     name: 'task',
     initialState: {
         taskRefresh: {
-            refresh: false
+            refresh: ""
 
         }
     },
     reducers: {
-        addTask: (state) => {
-            state.taskRefresh.refresh = false
-        },
-        refreshTask: (state) => {
-            state.taskRefresh.refresh = true
+        refreshTask: (state,action) => {
+            state.taskRefresh.refresh = action.payload
         },
 
     }
 });
 
 export const taskReducer = taskSlice.reducer;
-export const { refreshTask, addTask } = taskSlice.actions;
+export const { refreshTask } = taskSlice.actions;
 
 export const taskSelector = (state: any) => state.taskReducer.taskRefresh;

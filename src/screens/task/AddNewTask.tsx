@@ -172,7 +172,7 @@ function AddNewTask({ navigation }: any) {
           button: "Close",
           onHide: () => {
             setTask(initialValue);
-            dispatch(refreshTask());
+            dispatch(refreshTask(`${res.data._id} ${new Date().toISOString()}`))
 
             navigation.navigate("TaskScreen",{item: res.data._id});
           },

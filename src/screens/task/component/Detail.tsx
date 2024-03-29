@@ -119,9 +119,6 @@ export default function Detail(
 
         await taskApi.send(ownerId, "task");
         setIsEdit(false);
-
-        dispatch(refreshTask());
-
         onClose();
       }
 
@@ -187,7 +184,7 @@ export default function Detail(
                 setIsEdit(false);
                 setIsChange()
                 onClose();
-
+                dispatch(refreshTask(`${id} ${new Date().toISOString()}`))
               },
             });
           } else {
@@ -242,6 +239,7 @@ export default function Detail(
       return {...prevTask, taskPhoto: updatedTaskPhoto};
     });
   };
+
 
   const handleMemberPress = (id: string) => {
     setTaskDetail((prevTask) => {
@@ -300,7 +298,6 @@ export default function Detail(
     try {
       setIsLoading(true);
       const res = await taskApi.delete(user._id, id);
-      console.log(res.data);
       if (res.data.code === 200) {
         const assignees = taskDetail.assignees.map((assignee) => assignee._id);
 
@@ -314,7 +311,7 @@ export default function Detail(
             setIsEdit(false);
             setIsChange()
             onClose();
-
+            dispatch(refreshTask(`${id} ${new Date().toISOString()}`))
           },
         });
         setIsLoading(false);

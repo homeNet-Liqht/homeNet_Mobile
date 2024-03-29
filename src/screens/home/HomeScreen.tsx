@@ -37,6 +37,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TaskApi from "../../apis/taskApi.ts";
 import locationApi from "../../apis/locationApi.ts";
 import MapView, {Marker} from "react-native-maps";
+import {taskSelector} from "../../redux/reducers/taskReducer.ts";
 
 const INITIAL_TIME = { hour: 10, minutes: 0 };
 const ASPECT_RATIO = appInfo.size.WIDTH / appInfo.size.HEIGHT;
@@ -125,11 +126,11 @@ function HomeScreen({ navigation }: any) {
             console.log(e)
         }
     }
-
+    const refreshTask = useSelector(taskSelector)
 
     useEffect(() => {
         getEvent();
-    }, [currentDate]);
+    }, [currentDate,refreshTask]);
 
 
 
