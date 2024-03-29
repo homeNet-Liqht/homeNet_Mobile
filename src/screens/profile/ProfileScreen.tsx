@@ -35,7 +35,7 @@ export default function ProfileScreen({ navigation }: any) {
   const GetTask = async () => {
     try {
       const res = await taskApi.getTaskById(user._id, "present");
-      const events =[]
+      const events: any =[]
       const newEvent = res.data.data
       if (newEvent){
         newEvent.map((item:any, index:any) =>{
