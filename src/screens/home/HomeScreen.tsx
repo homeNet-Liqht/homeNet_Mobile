@@ -1,19 +1,20 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef,useState } from "react";
 import {
-    Image, ScrollView,
-    StatusBar,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Image,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+    ScrollView
 } from "react-native";
 import {
-    RowComponent,
-    SectionComponent,
-    SpaceComponent,
-    TextComponent,
+  RowComponent,
+  SectionComponent,
+  SpaceComponent,
+  TextComponent,
 } from "../../components";
 import {useDispatch, useSelector} from "react-redux";
-import {familyApi, taskApi, userApi} from "../../apis";
+import {notifyApi,familyApi, taskApi, userApi} from "../../apis";
 import {addUser, userSelector} from "../../redux/reducers/userReducer";
 import {LoadingModal} from "../../modals";
 import {globalStyles} from "../styles/globalStyles.ts";
@@ -24,20 +25,20 @@ import getCurrentPosition from "../../utils/getCurrentPosition.ts";
 import getWeatherOfCurrentPosition from "../../utils/getWeatherOfCurrentPosition.ts";
 import CircleComponent from "../../components/CircleComponent.tsx";
 import capitalizedText from "../../utils/capitalizedText.tsx";
-import {Address} from "../../models/address.tsx";
+import { Address } from "../../models/address.tsx";
 import reverseGeoCode from "../../utils/reverseLocation.ts";
 import {
-    CalendarProvider,
-    ExpandableCalendar,
-    TimelineList,
+  CalendarProvider,
+  ExpandableCalendar,
+  TimelineList,
 } from "react-native-calendars";
-import {NotificationServices} from "../../utils/notificationService.tsx";
+import { NotificationServices } from "../../utils/notificationService.tsx";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TaskApi from "../../apis/taskApi.ts";
 import locationApi from "../../apis/locationApi.ts";
 import MapView, {Marker} from "react-native-maps";
 
-const INITIAL_TIME = {hour: 10, minutes: 0};
+const INITIAL_TIME = { hour: 10, minutes: 0 };
 const ASPECT_RATIO = appInfo.size.WIDTH / appInfo.size.HEIGHT;
 const LATITUDE_DELTA = 0.04;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
@@ -61,25 +62,40 @@ const initialState: data[] = [{
     memberName: "",
 }]
 
-function HomeScreen({navigation}: any) {
+
+
+
+
+function HomeScreen({ navigation }: any) {
     const mapRef = useRef<MapView>(null)
     const [members, setMembers] = useState<any[]>([]);
     const [userPosition, setUserPosition] = useState({
         latitude: 0,
         longitude: 0
     })
-    const [userData, setUserData] = useState(useSelector(userSelector));
-    const [isLoading, setIsLoading] = useState(false);
-    const [currentWeather, setCurrentWeather] = useState({
-        icon: "",
-        temp: "",
-        weather: "",
-    });
 
-    const [address, setAddress] = useState<Address>();
-    const [currentDate, setCurrentDate] = useState(
-        new Date().toISOString().split("T")[0]
-    );
+
+
+    const [userData, setUserData] = useState(useSelector(userSelector));
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentWeather, setCurrentWeather] = useState({
+    icon: "",
+    temp: "",
+    weather: "",
+  });
+
+  const [notification, setNotifications] = useState(0);
+  const [address, setAddress] = useState<Address>();
+  const dispatch = useDispatch();
+  const [currentDate, setCurrentDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
+
+  const createNewEvent = () => {
+    console.log("hehe");
+  };
+
+
     const [eventData, setEventData] = useState({
         [currentDate]: []
     })
@@ -173,7 +189,9 @@ function HomeScreen({navigation}: any) {
     };
 
 
-    const dispatch = useDispatch();
+
+
+
 
 
     const onDateChanged = (date: any) => {
@@ -199,55 +217,62 @@ function HomeScreen({navigation}: any) {
         }
     };
 
-    const temperatureConvert = (temp: any) => Math.floor(temp - 273.15) + "°";
-    useEffect(() => {
-        if (userData.name == "") {
-            setIsLoading(true);
-            getCurrentUser();
-        }
+  const temperatureConvert = (temp: any) => Math.floor(temp - 273.15) + "°";
+  useEffect(() => {
+    if (userData.name == "") {
+      setIsLoading(true);
+      getCurrentUser();
+    }
 
-    }, [dispatch]);
+  }, [dispatch]);
 
-    useEffect(() => {
-        getWeatherInCurrentPosition();
-        NotificationServices.checkNotificationPerson();
-    }, []);
+  useEffect(() => {
+      getTotalNotification();
+      getWeatherInCurrentPosition();
+    NotificationServices.checkNotificationPerson();
+  }, []);
 
-    const getWeatherInCurrentPosition = async () => {
-        const currentPosition = await getCurrentPosition();
+  const getWeatherInCurrentPosition = async () => {
+    const currentPosition = await getCurrentPosition();
 
-        if (currentPosition) {
-            const resWeather = await getWeatherOfCurrentPosition(
-                currentPosition.latitude,
-                currentPosition.longitude
-            );
-            const resLocation = await reverseGeoCode(
-                currentPosition.latitude,
-                currentPosition.longitude
-            );
-            resWeather &&
-            setCurrentWeather({
-                icon: resWeather.data.weather[0].icon,
-                temp: resWeather.data.main.temp,
-                weather: resWeather.data.weather[0].description,
-            });
-            resLocation && setAddress(resLocation);
+    if (currentPosition) {
+      const resWeather = await getWeatherOfCurrentPosition(
+        currentPosition.latitude,
+        currentPosition.longitude
+      );
+      const resLocation = await reverseGeoCode(
+        currentPosition.latitude,
+        currentPosition.longitude
+      );
+      resWeather &&
+        setCurrentWeather({
+          icon: resWeather.data.weather[0].icon,
+          temp: resWeather.data.main.temp,
+          weather: resWeather.data.weather[0].description,
+        });
+      resLocation && setAddress(resLocation);
+    }
+  };
+
+  const getCurrentUser = async () => {
+
+    const currentUser = await userApi.currentUser();
+    if (currentUser) {
+      const user = currentUser.data;
+      dispatch(addUser(user));
+      setUserData(user);
+      await AsyncStorage.setItem("user", JSON.stringify(user));
+    }
+    setIsLoading(false);
+  };
+    const getTotalNotification = async () => {
+        try {
+            const res = await notifyApi.show();
+            setNotifications(res.data.data.length);
+        } catch (error) {
+            console.log(error);
         }
     };
-
-    const getCurrentUser = async () => {
-        setIsLoading(false);
-
-        const currentUser = await userApi.currentUser();
-        if (currentUser) {
-            const user = currentUser.data;
-            dispatch(addUser(user));
-            setUserData(user);
-            await AsyncStorage.setItem("user", JSON.stringify(user));
-        }
-        setIsLoading(false);
-    };
-
     return (
 
         <ScrollView style={[globalStyles.container]}>
@@ -351,29 +376,29 @@ function HomeScreen({navigation}: any) {
                 </RowComponent>
             </View>
 
-            <LoadingModal visible={isLoading}/>
-            <SpaceComponent/>
-            <View
-                style={[
-                    {
-                        height: appInfo.size.HEIGHT * 0.5,
-                    },
-                    globalStyles.shadow,
-                ]}
-            >
-                <CalendarProvider
-                    date={currentDate}
-                    disabledOpacity={0.6}
-                    onMonthChange={onMonthChange}
-                    onDateChanged={onDateChanged}
-                >
-                    <ExpandableCalendar
-                        minDate={"2023-01-01"}
-                        maxDate={"2025-12-31"}
-                        onDayPress={(date) => {
-                            setCurrentDate(date.dateString);
-                        }}
-                    />
+      <LoadingModal visible={isLoading} />
+      <SpaceComponent />
+      <View
+        style={[
+          {
+            height: appInfo.size.HEIGHT * 0.5,
+          },
+          globalStyles.shadow,
+        ]}
+      >
+        <CalendarProvider
+          date={currentDate}
+          disabledOpacity={0.6}
+          onMonthChange={onMonthChange}
+          onDateChanged={onDateChanged}
+        >
+          <ExpandableCalendar
+            minDate={"2023-01-01"}
+            maxDate={"2025-12-31"}
+            onDayPress={(date) => {
+              setCurrentDate(date.dateString);
+            }}
+          />
 
                     <TimelineList
                         events={eventData}

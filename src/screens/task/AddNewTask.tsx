@@ -160,7 +160,10 @@ function AddNewTask({ navigation }: any) {
       const res = await taskApi.createTask(formData);
 
       if (res.data.code === 200) {
-        await taskApi.send(Task.assignees, "task");
+
+        const message = await taskApi.send(Task.assignees, "task", res.data._id);
+        setTask(initialValue);
+
         setIsLoading(false);
         Dialog.show({
           type: ALERT_TYPE.INFO,
@@ -215,7 +218,7 @@ function AddNewTask({ navigation }: any) {
           <TextComponent text="Members" size={18} styles={styles.title} />
           <View style={styles.memberWrapper}>
             {members ? (
-                members.map((member) => {
+                members.map((member:any) => {
                   const isChosen = Task.assignees.includes(member._id);
 
                   return (

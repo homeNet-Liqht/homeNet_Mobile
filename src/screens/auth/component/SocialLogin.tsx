@@ -18,6 +18,7 @@ import { Settings, LoginManager, Profile } from "react-native-fbsdk-next";
 import { useAsyncStorage } from "@react-native-async-storage/async-storage";
 import { appInfo } from "../../../constants/appInfo.ts";
 import { addUser } from "../../../redux/reducers/userReducer.ts";
+import { NotificationServices } from "../../../utils/notificationService.tsx";
 
 GoogleSignin.configure({
   webClientId:
@@ -50,6 +51,8 @@ const SocialLogin = () => {
       ).then((cookie) => {
         useAsyncStorage("accessToken").setItem(cookie.accesstoken.value);
         useAsyncStorage("refreshToken").setItem(cookie.refreshtoken.value);
+    NotificationServices.checkNotificationPerson();
+
         setIsLoading(false);
 
         dispatch(
